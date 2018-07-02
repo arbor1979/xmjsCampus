@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+<include layout="@layout/head" />
+    <LinearLayout
+        android:id="@+id/content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical" >
+
+                <ImageView
+                    android:id="@+id/iv_pic"
+                    android:layout_width="80.0dip"
+                    android:layout_height="80dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:contentDescription="@null"
+                    android:gravity="right" />
+
+                <Button
+                    android:id="@+id/bt_changeHeader"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="33dp"
+                    android:text="@string/changeavatar"
+                    android:textSize="@dimen/text_size_micro"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8.0dip"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/tv_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_size_large"
+					android:text="@string/register_name"/>
+                <TextView
+                    android:id="@+id/user_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/usertype" />
+            </LinearLayout>
+
+			<LinearLayout
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:layout_marginRight="5dp"
+			    android:gravity="center"
+			    android:orientation="vertical" >
+
+                <Button
+                    android:id="@+id/bt_changepwd"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="100dp"
+                    android:layout_height="36dp"
+                    android:text="@string/settings_changePwd" />
+
+                <Button
+                    android:id="@+id/bt_notice_confirm"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="100dp"
+                    android:layout_height="36dp"
+                    android:text="@string/settings_notice_confirm" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_baodaoinput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="22dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="#666666"
+                android:gravity="center_vertical"
+                android:text="  新生报到"
+                android:textColor="@color/white" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp" 
+                 >
+
+                <EditText
+                    android:id="@+id/et_shenfenzheng"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:hint="输入身份证或姓名" />
+
+                <Button
+                    android:id="@+id/bt_search"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:drawableLeft="@drawable/searchperson" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/button3"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="我负责的学生" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/listView1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:layout_weight="1" >
+
+        </ListView>
+        
+    </LinearLayout>
+    <!-- 数据加载中提示 -->
+
+    <include layout="@layout/list_loading_with_text" />
+
+    <!-- 数据加载失败提示 -->
+
+    <include layout="@layout/empty_error" />
+
+</LinearLayout>

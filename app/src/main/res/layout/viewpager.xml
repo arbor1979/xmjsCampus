@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dip"
+        android:background="@drawable/bg_viewpager_title"
+        android:gravity="center_vertical" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="40dip"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/yesterday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/date_section1"
+                android:textSize="@dimen/text_size_normal" />
+
+            <TextView
+                android:id="@+id/en_yesterday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/en_yesterday"
+                android:textSize="@dimen/text_size_xmicro" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/today"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/date_section2"
+                android:textSize="@dimen/text_size_normal" />
+
+            <TextView
+                android:id="@+id/en_today"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/en_today"
+                android:textSize="@dimen/text_size_xmicro" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="40dip"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/tomorrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/date_section3"
+                android:textSize="@dimen/text_size_normal" />
+
+            <TextView
+                android:id="@+id/en_tomorrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/en_tomorrow"
+                android:textSize="@dimen/text_size_xmicro" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <android.support.v4.view.ViewPager
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".TabHostActivity" >
+    </android.support.v4.view.ViewPager>
+
+</LinearLayout>

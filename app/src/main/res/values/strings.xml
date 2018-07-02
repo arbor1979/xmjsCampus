@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Head textview -->
+    <string name="back">返回</string>
+    <string name="app_name">厦门技师</string>
+    <string name="go">确定</string>
+    <string name="register_address">注册邮箱</string>
+    <string name="register_name">真实姓名</string>
+    <string name="register_password">登陆密码</string>
+    <string name="hint_address">you@domian.com</string>
+    <string name="hint_name">请输入您的真实姓名</string>
+    <string name="hint_password">请输入您的登陆密码</string>
+    <string name="submit_photo">上传头像</string>
+    <string name="hint_login_username">学号/工号/新生身份证</string>
+    <string name="hint_login_password">密码</string>
+    <string name="login">登录系统</string>
+    <string name="hint_verify_info">请登录邮箱获取验证码</string>
+    <string name="re_register_password">重复密码</string>
+    <string name="hint_re_password">请再次输入登录密码</string>
+    <string name="register_instruction">说明：</string>
+    <string name="register_instruction_info">此注册流程仅限于老师使用，注册完成以后老师可以使用些应用进行管理班级、学生、课表、测验、成绩，以及可以和学生及学生家长进行沟通等操作。</string>
+    <string name="register_instruction_info1">学生在“掌上校园”应用中使用。</string>
+    <string name="register_instruction_info2">家长在“掌上校园”应用中使用。</string>
+    <string name="register_verify">验证码</string>
+    <string name="grade_search">成绩查询</string>
+    <string name="data_init_loadings">数据初始化中…</string>
+    <!-- data loading -->
+    <string name="check_network">请检查网络后轻点屏幕重试</string>
+    <string name="data_request_failure">数据获取失败</string>
+    <string name="data_loading_progress">加载中…</string>
+    <string name="no_data">没有数据记录</string>
+
+    <!-- System settings -->
+    <string name="logout">退出登录</string>
+    <string name="settings_option">设置选项</string>
+    <string name="settings_dayalert">每日课程提醒</string>
+    <string name="settings_alerttime">每日提醒时间</string>
+    <string name="settings_cur_xueqi">当前学期</string>
+    <string name="settings_week_firstday">周第一天</string>
+    <string name="settings_schedule_bg">课表背景</string>
+    <string name="sunday">周日</string>
+    <string name="monday">周一</string>
+    <string name="reset_schedule_bg">重置背景</string>
+    <string name="select_schedule_bg">更改背景</string>
+    <string name="settings_schedule">上课时间表</string>
+    <string name="settings_changePwd">修改密码</string>
+    <string name="settings_aboutus">关于我们</string>
+    <string name="settings_userId">用户名</string>
+    <string name="settings_newpwd">密码</string>
+    <string name="settings_confirmnewpwd">确认密码</string>
+    <string name="settings_newpwdtip">填写密码</string>
+    <string name="settings_confirmnewpwdtip">再次填写确认</string>
+    <!-- Common -->
+    <string name="Commons.Ok">确定</string>
+    <string name="Commons.SDCardErrorTitle">SD卡不能使用</string>
+    <string name="Commons.SDCardErrorNoSDMsg">找不到SD卡</string>
+    <string name="Commons.SDCardErrorSDUnavailable">SD卡不能使用</string>
+    <string name="curriculum">课表</string>
+     <string name="course">课程</string>
+    <string name="study">学习</string>
+    <string name="message">消息</string>
+    <string name="contacts">联系人</string>
+    <string name="member">成员</string>
+    <string name="summary">总结</string>
+    <string name="school">校内</string>
+    <string name="mystatus">我的</string>
+    <string name="roll_call">点名</string>
+	<string name="album">相册</string>
+    <!-- Home Page -->
+    <string name="date_section1">昨天</string>
+    <string name="date_section2">今天</string>
+    <string name="date_section3">明天</string>
+    <string name="en_yesterday">Yesterday</string>
+    <string name="en_today">Today</string>
+    <string name="en_tomorrow">Tomorrow</string>
+
+    <!-- ClassRoom -->
+    <string name="classroom_course">课件</string>
+    <string name="classroom_test">测验</string>
+    <string name="attend">出勤</string>
+    <string name="late">迟到</string>
+    <string name="leave">请假</string>
+    <string name="absence">缺勤</string>
+    <string name="gongjia">公假</string>
+    <string name="bingjia">病假</string>
+    <string name="shuijiao">睡觉</string>
+    <string name="wanshouji">玩手机</string>
+    <string name="wuzhaoxiaofu">无着校服</string>
+    <string name="zaotui">早退</string>
+    <string name="uploading">上传</string>
+
+    <!-- 登录 -->
+    <string name="login_title">掌上校园</string>
+    <string name="error_username_required">请输入用户名</string>
+    <string name="first_experience">进入演示</string>
+    <string name="summary_discipline">授课纪律评价</string>
+    <string name="summary_health">教室卫生评价</string>
+    <string name="summary_content">授课内容</string>
+    <string name="content_hint">请输入授课内容总结</string>
+    <string name="album_hint">天气不错，心情也不错...</string>
+    <string name="summary_homework">作业布置</string>
+    <string name="summary_classroom_situation">课堂情况简要</string>
+    <string name="homework_hint">请输入布置作业内容</string>
+    <string name="classroom_situation_hint">请输入课堂情况简要</string>
+    <string name="summary_perfect">优</string>
+    <string name="summary_good">良</string>
+    <string name="summary_well">中</string>
+    <string name="summary_bad">差</string>
+    <string name="login_bottom">CopyRightⓒ厦门技师学院</string>
+    <string name="please_choose_user_type">请选择用户类型</string>
+
+    <!-- 沟通 -->
+    <string name="notice_send">发送通知</string>
+    <string name="notice_class_hint">请选择要发送通知的班级</string>
+    <string name="notice_content_hint">请输入通知内容…</string>
+    <string name="search_cancel">取消</string>
+    <string name="search_choose_cls">搜索班级</string>
+    <string name="search_choose_stu">搜索学生</string>
+    <string name="search_choose_hint">请输入关键字</string>
+
+    <!-- 汇总 -->
+    <string name="summary_attend">出勤汇总</string>
+    <string name="summary_exam">测验汇总</string>
+    <string name="summary_grade">成绩汇总</string>
+    <!-- 课程 -->
+    <string name="rank">评级</string>
+    <string name="brought_course">所带课程</string>
+    <string name="brought_class">所带班级</string>
+    <string name="course_rating">课程评分</string>
+    <string name="course_date">上课日期</string>
+    <string name="class_room">教室</string>
+    <string name="homework">课后作业</string>
+    
+    <string name="ketangjilv">课堂纪律</string>
+    <string name="jiaoshiweisheng">教室卫生</string>
+    <string name="teacher_profile">教师简介</string>
+    <string name="course_profile">课程简介</string>
+    <string name="course_pingjia">课堂情况</string>
+    <!-- 课表 -->
+
+    <!-- 首页侧栏 -->
+    <string name="page_myinfo">我的资料</string>
+    <string name="page_myalbum">我的相册</string>
+    <string name="page_setting">系统设置</string>
+    <string name="page_feedback">意见反馈</string>
+    <string name="clear_cache">清除缓存</string>
+    <string name="app_version">软件版本：</string>
+     <string name="version_detection">版本检测</string>
+    <!-- 学生详情 -->
+    <string name="stu_phone">学生电话：</string>
+    <string name="stu_email">学生邮箱：</string>
+    <string name="parent_name">家长姓名：</string>
+    <string name="parent_phone">家长电话：</string>
+    <string name="address">家庭住址：</string>
+    <string name="stu_remark">该生备注：</string>
+
+    <!-- 侧栏详情 -->
+    <string name="feedback_send">提交意见</string>
+    <string name="feedback_content_hint">请输入您的意见</string>
+    <string name="feedback_title">\u3000\u3000如果您在使用中有什么问题或建议，欢迎告知我们，我们的技术人员会努力帮您解决。</string>
+
+    <!-- 获取图片 -->
+    <string name="delete">删除</string>
+    <string name="show">查看</string>
+    <string name="pize">拍照</string>
+    <string name="location_picture">本地图片</string>
+    <string name="close">取消</string>
+
+    <string name="call_phone">拨打电话</string>
+    <string name="send_sms">发送短信</string>
+    <!-- XListView -->
+    <string name="xlistview_header_hint_normal">下拉刷新</string>
+    <string name="xlistview_header_hint_ready">松开刷新数据</string>
+    <string name="xlistview_header_hint_loading">正在加载…</string>
+    <string name="xlistview_header_last_time">上次更新时间：</string>
+    <string name="xlistview_footer_hint_normal">查看更多</string>
+    <string name="xlistview_footer_hint_ready">松开载入更多</string>
+
+    <!-- Widget -->
+    <string name="header_hint_refresh_normal">下拉可以刷新</string>
+    <string name="header_hint_refresh_ready">松开可以刷新</string>
+    <string name="header_hint_refresh_loading">正在刷新&#8230;</string>
+    <string name="header_hint_refresh_time">更新于：</string>
+    <string name="footer_hint_load_normal">查看更多</string>
+    <string name="footer_hint_load_ready">松开载入更多</string>
+
+    <!-- school -->
+    <string name="read_more">阅读全文</string>
+    <string name="view_by_week">按周查询:</string>
+    <string name="time_to">至</string>
+
+    <!-- alert -->
+    <string name="alert_dialog_ok">确定</string>
+    <string name="alert_dialog_cancel">取消</string>
+    <string name="alert_confirm_delete_all_cached_images">确认删除所有缓存图片,包括用户头像和聊天图片?</string>
+    <string name="cleared_all_cached_images">已清除所有缓存文件</string>
+
+    <string name="border_top">Border Top</string>
+    <string name="border_bottom">Border Bottom</string>
+    <string name="image_url">Image Url</string>
+   
+    <string name="ptr_pull_to_refresh">Pull to refresh</string>
+    <string name="ptr_release_to_refresh">Release to refresh</string>
+    <string name="ptr_loading">Loading</string>
+    <string name="ptr_last_updated">Updated: %1$s</string>
+    <string name="enter_confirm">入读确认</string>
+    <string name="dialog_pleaseinputyourletterno">是否确认入读本校？如选入读，需在随后的页面完成个人资料，如选放弃，需要到招生办申请退档。</string>
+    <string name="enter">入读</string>
+    <string name="giveup">放弃</string>
+</resources>

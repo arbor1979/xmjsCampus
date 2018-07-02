@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="gray">#6c6c6c</color>
+    <color name="login_background">#0054A5</color>
+    <color name="background">#27ae62</color>
+    <color name="background_gray">#EDEDED</color>
+    <color name="transparent">#00000000</color>
+    <color name="bottom_tab_bg_color">#43464A</color>
+    <color name="botton_tab_background">#094f07</color>
+    <color name="shadow_start">#80000000</color>
+    <color name="shadow_end">#00000000</color>
+    <color name="semitransparent">#99000000</color>
+    <color name="text_gray">#ff666666</color>
+    <color name="list_empty_background">#ebe8e8</color>
+    <color name="all_bg">#f5f5f5</color>
+     <color name="list_background">#E6FFFF</color>
+    <!-- dialog -->
+    <color name="item_sel">#999999</color>
+    <color name="bn_nor">#d0decd</color>
+    <color name="bn_sel">#999999</color>
+    <!-- subject -->
+    <color name="subject_single">#880052A5</color>
+    <color name="subject_double">#88245bb1</color>
+    <color name="subject_current">#21ab00</color>
+    <color name="red_color">#F20331</color>
+    
+    <color name="blue_color_shade">#3698D2</color>
+    <!-- title -->
+    <color name="title_sel">#66ffffff</color>
+    <color name="title_nor">#0027ae62</color>
+    <color name="title_color">#333333</color>
+
+    <!-- login -->
+    <color name="login_delete_sel">#dd999999</color>
+    <!-- contacts -->
+    <color name="contacts_member_nor">#22000000</color>
+    <color name="contacts_member_sel">#99000000</color>
+    <color name="contacts_member_stroke">#44000000</color>
+
+    <!-- 边框 -->
+    <color name="common_frame">#55d2d2d7</color>
+    <color name="common_frame_sel">#55d2d2d7</color>
+    <!--   <color name="common_view">#55d2d2d7</color> -->
+    <!-- topBar -->
+    <!-- <color name="topbar_bg">#0096fa</color> -->
+    <color name="topbar_bg">#00000000</color>
+    <color name="topbar_btn_sel">#55ffffff</color>
+    <!--<color name="topbar_background">#ff27ae62</color>-->
+    <color name="topbar_background">#ff0054A5</color>
+        <!--<color name="topbar_background_light">#8827ae62</color>-->
+    <color name="topbar_background_light">#880054A5</color>
+    <!-- school -->
+    <color name="stoped_color">#245bb1</color>
+    <color name="runing_color">#27ae62</color>
+    <color name="no_start_color">#d3912b</color>
+    <color name="unread">#FFF6CE</color>
+    <color name="class_detail_bg">#e9f7ef</color>
+    <color name="head_gray">#E2E7E5</color>
+    
+    <!--classdetail-->
+    <color name="title_bg">#f0eff4</color>
+    
+    <color name="field_text_color">#33a7ff</color>
+    <color name="button_ok">#078347</color>
+	<!--radio_button-->
+	 <color name="radio_button_selected_color">#27ae62</color>
+    <!-- <color name="radio_button_selected_color">#ff33b5e5</color> -->
+    <color name="radio_button_unselected_color">@android:color/transparent</color>
+     <color name="dialog_textColor">#444444</color>
+     <color name="dialog_textColorHint">#c2d2c9</color>
+	
+     <color name="moban_color_blueviolet">#8A2BE2</color>
+     <color name="moban_color_goldenrod">#DAA520</color>
+     <color name="moban_color_blue">#2831AF</color>
+     <color name="moban_color_red">#AF2831</color>
+     <color name="moban_color_brown">#AF6228</color>
+     <color name="moban_color_pink">#D44094</color>
+    <color name="holo_blue_light">#ff33b5e5</color>
+     <color name="child_item_diveder">#D6D6D5</color>
+     <color name="child_item_bg">#E5E5E5</color>
+     <color name="group_item_bg">#F3F3F3</color>
+      <color name="group_item_pressed_bg">#E5E5E5</color>
+      <color name="list_item_text_pressed_bg">#FF822E</color>
+     <color name="tab_text_color">#787878</color>
+</resources>

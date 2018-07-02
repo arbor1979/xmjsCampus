@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_stuinfo1"
+    android:orientation="vertical" >
+
+    <include layout="@layout/setting_head" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dip"
+            android:layout_marginLeft="10dip" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:orientation="vertical"
+                android:layout_marginBottom="10dip" >
+
+                <ImageView
+                    android:id="@+id/image_camera"
+                    android:layout_width="72dip"
+                    android:layout_height="72dip"
+                    android:layout_gravity="center_horizontal"
+                    android:clickable="true"
+                    android:contentDescription="@null"
+                    android:src="@drawable/camera"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dip"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <ImageView
+                    android:layout_width="28dip"
+                    android:layout_height="28dip"
+                    android:layout_marginRight="2dip"
+                    android:contentDescription="@null"
+                    android:src="@drawable/stuinfo_photo" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="学生姓名"
+                    android:textColor="#cfe6d9"
+                    android:textSize="@dimen/text_size_small" />
+
+                <EditText
+                    android:id="@+id/et_stuinfo_stuname"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dip"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg"
+                    android:inputType="text"
+                    android:text="程萌萌"
+                    android:textColor="#fefefe"
+                    android:textSize="@dimen/text_size_small" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0.5dip"
+                android:background="@android:color/transparent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dip"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <ImageView
+                    android:layout_width="28dip"
+                    android:layout_height="28dip"
+                    android:layout_marginRight="2dip"
+                    android:contentDescription="@null"
+                    android:src="@drawable/chatfriendinfo_img_sex"
+                    android:scaleType="centerInside" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="性别"
+                    android:textColor="#cfe6d9"
+                    android:textSize="@dimen/text_size_small" />
+
+                <Spinner
+                    android:id="@+id/et_stuinfo_sex"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dip"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0.5dip"
+                android:background="@android:color/transparent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dip"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <ImageView
+                    android:layout_width="28dip"
+                    android:layout_height="28dip"
+                    android:layout_marginRight="2dip"
+                    android:contentDescription="@null"
+                    android:src="@drawable/stuinfo_email" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="邮箱"
+                    android:textColor="#cfe6d9"
+                    android:textSize="@dimen/text_size_small" />
+
+                <EditText
+                    android:id="@+id/et_stuinfo_email"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dip"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg"
+                    android:inputType="textEmailAddress"
+                    android:text="11@qq.com"
+                    android:textColor="#fefefe"
+                    android:textSize="@dimen/text_size_small" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0.5dip"
+                android:background="@android:color/transparent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dip"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <ImageView
+                    android:layout_width="28dip"
+                    android:layout_height="28dip"
+                    android:layout_marginRight="2dip"
+                    android:contentDescription="@null"
+                    android:src="@drawable/stuinfo_phone" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="学生电话"
+                    android:textColor="#cfe6d9"
+                    android:textSize="@dimen/text_size_small" />
+
+                <EditText
+                    android:id="@+id/et_stuinfo_stuphone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dip"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg"
+                    android:inputType="phone"
+                    android:maxLength="11"
+                    android:text="13813456542"
+                    android:textColor="#fefefe"
+                    android:textSize="@dimen/text_size_small" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0.5dip"
+                android:background="@android:color/transparent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dip"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <ImageView
+                    android:layout_width="28dip"
+                    android:layout_height="28dip"
+                    android:layout_marginRight="2dip"
+                    android:contentDescription="@null"
+                    android:src="@drawable/stuinfo_photo" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="家长姓名"
+                    android:textColor="#cfe6d9"
+                    android:textSize="@dimen/text_size_small" />
+
+                <EditText
+                    android:id="@+id/et_stuinfo_paname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dip"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg"
+                    android:inputType="text"
+                    android:text="程光华"
+                    android:textColor="#fefefe"
+                    android:textSize="@dimen/text_size_small" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0.5dip"
+                android:background="@android:color/transparent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dip"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <ImageView
+                    android:layout_width="28dip"
+                    android:layout_height="28dip"
+                    android:layout_marginRight="2dip"
+                    android:contentDescription="@null"
+                    android:src="@drawable/stuinfo_callphoto" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="家长电话"
+                    android:textColor="#cfe6d9"
+                    android:textSize="@dimen/text_size_small" />
+
+                <EditText
+                    android:id="@+id/et_stuinfo_paphone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dip"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg"
+                    android:inputType="phone"
+                    android:maxLength="11"
+                    android:text="18713456542"
+                    android:textColor="#fefefe"
+                    android:textSize="@dimen/text_size_small" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0.5dip"
+                android:background="@android:color/transparent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dip"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <ImageView
+                    android:layout_width="28dip"
+                    android:layout_height="28dip"
+                    android:layout_marginRight="2dip"
+                    android:contentDescription="@null"
+                    android:src="@drawable/stuinfo_address" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="家庭地址"
+                    android:textColor="#cfe6d9"
+                    android:textSize="@dimen/text_size_small" />
+
+                <EditText
+                    android:id="@+id/et_stuinfo_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dip"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg"
+                    android:inputType="text"
+                    android:text="江苏省某市某街107号"
+                    android:textColor="#fefefe"
+                    android:textSize="@dimen/text_size_small" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0.5dip"
+                android:background="@android:color/transparent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <ImageView
+                    android:layout_width="28dip"
+                    android:layout_height="28dip"
+                    android:layout_marginRight="2dip"
+                    android:contentDescription="@null"
+                    android:src="@drawable/stuinfo_remark" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="备注信息"
+                    android:textColor="#cfe6d9"
+                    android:textSize="@dimen/text_size_small" />
+
+                <EditText
+                    android:id="@+id/et_stuinfo_remark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dip"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg"
+                    android:inputType="text"
+                    android:text="该生本学期表现不佳，情人代点名。"
+                    android:textColor="#fefefe"
+                    android:textSize="@dimen/text_size_small" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
