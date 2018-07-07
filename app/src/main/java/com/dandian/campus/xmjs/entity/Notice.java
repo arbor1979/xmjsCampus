@@ -49,6 +49,8 @@ public class Notice implements Serializable{
 		this.endText = jo.optString("最下边一行文本");
 		this.endUrl = jo.optString("最下边一行URL");
 		this.ifread = jo.optString("已阅");
+		if(this.ifread.length()==0)
+			this.ifread="0";
 	}
 
 	public String getNewsType() {

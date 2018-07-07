@@ -199,9 +199,9 @@ public class LoginActivity extends UmengNotifyClickActivity implements OnClickLi
 						AppUtility.showToastMsg(LoginActivity.this,"初始化课表失败");
 					else if(!PrefUtility.getBoolean(Constants.PREF_INIT_CONTACT_FLAG, false))
 						AppUtility.showToastMsg(LoginActivity.this,"初始化联系人失败");
-					if(mLoadingDialog!=null)
-						mLoadingDialog.dismiss();
 				}
+				if(mLoadingDialog!=null)
+					mLoadingDialog.dismiss();
 					
 			}
 		}
@@ -424,7 +424,7 @@ public class LoginActivity extends UmengNotifyClickActivity implements OnClickLi
 							PrefUtility.put(Constants.PREF_SCHOOL_DOMAIN,user.getDomain());
 							PrefUtility.put(Constants.PREF_CHECK_HOSTID,user.getUserNumber());
 							PrefUtility.put(Constants.PREF_CHECK_USERTYPE,user.getUserType());
-							
+							PrefUtility.put(Constants.PREF_CHECK_USERSTATUS,user.getsStatus());
 							checkCode = PrefUtility.get(Constants.PREF_CHECK_CODE, "");// 获取用户校验码
 							
 							//PrefUtility.putObject("user", user);
@@ -490,14 +490,14 @@ public class LoginActivity extends UmengNotifyClickActivity implements OnClickLi
 										});
 
 							}
-							//mLoadingDialog.dismiss(); // 关闭登陆提醒
-							if(mLoadingDialog!=null)
-								mLoadingDialog.dismiss();
+							CampusAPI.schoolYingXinUrl="http://"+user.getDomain().replace("/appserver/","/NewStudent/mobiles/");
+
 							
 						}
 						else if(user.getLoginStatus().equals("新生"))
 						{
 							PrefUtility.put(Constants.PREF_SCHOOL_DOMAIN,user.getDomain());
+							CampusAPI.schoolYingXinUrl="http://"+user.getDomain().replace("/appserver/","/NewStudent/mobiles/");
 							loginAsNewStudent();
 						}
 						else {
@@ -544,7 +544,7 @@ public class LoginActivity extends UmengNotifyClickActivity implements OnClickLi
 						PrefUtility.put(Constants.PREF_CHECK_CODE, user.getCheckCode());
 						PrefUtility.put(Constants.PREF_CHECK_HOSTID, user.getUserNumber());
 						PrefUtility.put(Constants.PREF_CHECK_USERTYPE, user.getUserType());
-
+						PrefUtility.put(Constants.PREF_CHECK_USERSTATUS,user.getsStatus());
 						PrefUtility.put(Constants.PREF_INIT_DATA_STR, jo.optJSONObject("用户信息").toString());
 						PrefUtility.put(Constants.PREF_INIT_CONTACT_STR, jo.optString("显示字段"));
 
@@ -555,13 +555,33 @@ public class LoginActivity extends UmengNotifyClickActivity implements OnClickLi
 						userDao.delete((PreparedDelete<User>) userDao.deleteBuilder().prepare());
 						userDao.create(user);
 
+						if (cb_remeberPwd.isChecked()) {
+							AccountInfo info = accountInfoDao.queryBuilder().where()
+									.eq("userName", mUsername).queryForFirst();
+							if (info == null) {
+								AccountInfo accountInfo = new AccountInfo();
+								long time = new Date().getTime();
+								accountInfo.setUserName(mUsername);
+								accountInfo.setPassWord(mPassword);
+								accountInfo.setLoginTime(time);
+								accountInfoDao.create(accountInfo);
+							} else {
+								long time = new Date().getTime();
+								info.setUserName(mUsername);
+								info.setPassWord(mPassword);
+								info.setLoginTime(time);
+								accountInfoDao.update(info);
+							}
+						}
 						String baiduUserId=PrefUtility.get(Constants.PREF_BAIDU_USERID, "");
 						if(baiduUserId.length()>0)
 						{
-							InitData initData = new InitData(LoginActivity.this, getHelper(), null,"postBaiDuUserId",user.getSortNumber());
+							InitData initData = new InitData(LoginActivity.this, getHelper(), null,"postBaiDuUserId",user.getCheckCode());
 							initData.postBaiduUserId();
 						}
+
 						jumpMain();
+
 					}
 				} catch (Exception e) {
 					if(mLoadingDialog!=null)

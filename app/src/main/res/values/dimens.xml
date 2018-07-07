@@ -39,4 +39,5 @@
     <dimen name="work_attendance_hight">210dip</dimen>
     <!-- contacts -->
     <dimen name="radio_button_conner_radius">5dp</dimen>
+    <dimen name="text_size_huge">24.0sp</dimen>
 </resources>

@@ -116,7 +116,7 @@ public class ShowPersonInfo extends Activity {
 		}
 		user=((CampusApplication)getApplicationContext()).getLoginUserObj();
 		
-		if(studentId.equals(user.getUserNumber()))
+		if(studentId.equals(user.getUserNumber()) && !user.getsStatus().equals("新生状态"))
 		{
 			changeheader= (Button) findViewById(R.id.bt_changeHeader);
 			changeheader.setVisibility(View.VISIBLE);
@@ -158,6 +158,8 @@ public class ShowPersonInfo extends Activity {
 					memberInfo.setChargeClass(user.getWithClass());
 					memberInfo.setChargeKeCheng(user.getWithCourse());
 					memberInfo.setStuPhone(user.getPhone());
+					memberInfo.setPrivName(user.getPrivName());
+					memberInfo.setOfficeTel(user.getOfficeTel());
 				}
 				else
 				{
@@ -221,7 +223,10 @@ public class ShowPersonInfo extends Activity {
 
 		//aq.id(R.id.iv_pic).image(userImage,flag,flag,800,R.drawable.ic_launcher);
 		aq.id(R.id.tv_name).text(memberInfo.getName());
-		aq.id(R.id.user_type).text(memberInfo.getUserType());
+		if(memberInfo.getUserType().equals("老师") && AppUtility.isNotEmpty(memberInfo.getPrivName()))
+			aq.id(R.id.user_type).text(memberInfo.getPrivName());
+		else
+			aq.id(R.id.user_type).text(memberInfo.getUserType());
 		aq.id(R.id.setting_tv_title).text("用户信息");
 		aq.id(R.id.back).clicked(new OnClickListener(){
 
@@ -248,6 +253,10 @@ public class ShowPersonInfo extends Activity {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("title", "性别");
 			map.put("info", memberInfo.getGender());
+			list.add(map);
+			map = new HashMap<String, Object>();
+			map.put("title", "办公电话");
+			map.put("info", memberInfo.getOfficeTel());
 			list.add(map);
 			if(userType.equals("老师"))
 			{
@@ -305,12 +314,29 @@ public class ShowPersonInfo extends Activity {
 			map.put("title", "单位");
 			map.put("info", memberInfo.getSchoolName());
 			list.add(map);
-			
-			map = new HashMap<String, Object>();
-			map.put("title", "学号");
-			map.put("info", memberInfo.getStudentID());
-			list.add(map);
-			
+
+            if(memberInfo.getStuStatus()!=null && memberInfo.getStuStatus().equals("新生状态"))
+            {
+				map = new HashMap<String, Object>();
+				map.put("title", "学生状态");
+				map.put("info", memberInfo.getStuStatus());
+				list.add(map);
+                map = new HashMap<String, Object>();
+                map.put("title", "家庭住址");
+                map.put("info", memberInfo.getAddress());
+                list.add(map);
+                map = new HashMap<String, Object>();
+                map.put("title", "院系名称");
+                map.put("info", memberInfo.getChargeClass());
+                list.add(map);
+
+            }
+            else {
+                map = new HashMap<String, Object>();
+                map.put("title", "学号");
+                map.put("info", memberInfo.getStudentID());
+                list.add(map);
+            }
 			map = new HashMap<String, Object>();
 			map.put("title", "班级");
 			map.put("info", memberInfo.getClassName());
@@ -391,7 +417,7 @@ public class ShowPersonInfo extends Activity {
             holder.title.setText((String)list.get(position).get("title"));
             holder.info.setText((String)list.get(position).get("info"));
             
-            if(holder.title.getText().equals("手机") && studentId.equals(user.getUserNumber()))
+            if(holder.title.getText().equals("手机") && studentId.equals(user.getUserNumber()) && !user.getsStatus().equals("新生状态"))
             {
             	holder.bt_changeNumber.setVisibility(View.VISIBLE);
             	holder.bt_changeNumber.setOnClickListener(new OnClickListener(){
@@ -424,7 +450,8 @@ public class ShowPersonInfo extends Activity {
             }
             else {
 				holder.bt_changeNumber.setVisibility(View.GONE);
-				Pattern pattern = Pattern.compile("^((13[0-9])|(15[^4])|(18[0,2,3,5-9])|(17[0-8])|(147))\\d{8}$");
+				//Pattern pattern = Pattern.compile("^((13[0-9])|(15[^4])|(18[0,2,3,5-9])|(17[0-8])|(147))\\d{8}$");
+				Pattern pattern = Pattern.compile("^((1\\d{10})|(0\\d{2,3}[\\-,]\\d{7,8})|0\\d{9,11}|[^0]\\d{6,7})$");
 				Linkify.addLinks(holder.info, pattern, "tel:", new Linkify.MatchFilter() {
 					public final boolean acceptMatch(CharSequence s, int start, int end) {
 						int digitCount = 0;
@@ -432,16 +459,17 @@ public class ShowPersonInfo extends Activity {
 						for (int i = start; i < end; i++) {
 							if (Character.isDigit(s.charAt(i))) {
 								digitCount++;
-								if (digitCount == 11) {
-									return true;
-								}
+
 							}
+						}
+						if (digitCount == 11 || digitCount == 7) {
+							return true;
 						}
 						return false;
 					}
 				}, Linkify.sPhoneNumberTransformFilter);
 			}
-            	
+
             if(holder.title.getText().equals("个人相册"))
             {
             	if(picCount==0)
@@ -452,7 +480,11 @@ public class ShowPersonInfo extends Activity {
             	else
             	{
             		holder.info.setText("已上传了"+picCount+"张照片");
-            		holder.private_album.setVisibility(View.VISIBLE);
+					String userStatus=PrefUtility.get(Constants.PREF_CHECK_USERSTATUS,"");
+					if(userStatus.equals("新生状态"))
+						holder.private_album.setVisibility(View.GONE);
+					else
+            			holder.private_album.setVisibility(View.VISIBLE);
             		AQuery aq = new AQuery(convertView);
             		for(int i=0;i<picList.size();i++)
             		{

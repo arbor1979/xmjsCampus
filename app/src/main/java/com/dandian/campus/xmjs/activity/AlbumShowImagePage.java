@@ -227,7 +227,8 @@ public class AlbumShowImagePage extends FragmentActivity {
 		});
 		LinearLayout layout=(LinearLayout)findViewById(R.id.setting_layout_goto);
 		LinearLayout layout1=(LinearLayout)findViewById(R.id.setting_layout_goto1);
-		layout.setVisibility(View.VISIBLE);
+		String userStatus=PrefUtility.get(Constants.PREF_CHECK_USERSTATUS,"");
+
 		layout1.setVisibility(View.VISIBLE);
 		btnRight = (Button) findViewById(R.id.setting_btn_goto);
 		btnShare= (Button) findViewById(R.id.setting_btn_goto1);
@@ -251,6 +252,14 @@ public class AlbumShowImagePage extends FragmentActivity {
 			
 		});
 		bottomLayout=(LinearLayout)findViewById(R.id.bottom);
+		if(userStatus.equals("新生状态")) {
+			layout.setVisibility(View.GONE);
+			bottomLayout.setVisibility(View.GONE);
+		}
+		else {
+			bottomLayout.setVisibility(View.VISIBLE);
+			layout.setVisibility(View.VISIBLE);
+		}
 		edit=(EditText)findViewById(R.id.edit);
 		TextView send=(TextView)findViewById(R.id.send);
 		send.setOnClickListener(new OnClickListener(){

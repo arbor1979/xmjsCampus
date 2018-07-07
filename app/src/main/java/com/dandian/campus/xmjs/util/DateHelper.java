@@ -123,14 +123,7 @@ public class DateHelper
 	
 	/**
 	 * 得到月份列表 eg: getMonthList("2008-01","2007-08","yyyy-MM")
-	 * 
-	 * @param startMonth
-	 *            开始月份
-	 * @param endMonth
-	 *            结束月份
-	 * @param pattern
-	 *            格式：如yyyy-MM
-	 * @return
+	 *
 	 */
 	public static List<Map<String, String>> getDayList(String startday,
 	        String endday, String pattern)
@@ -576,7 +569,6 @@ public class DateHelper
 	}
 	/**
 	 * 得到某月第一天
-	 * @param date
 	 * @return
 	 */
 	public static String getFirstdayOfMonth(String month, String pattern)
@@ -594,7 +586,6 @@ public class DateHelper
 	}
 	/**
 	 * 得到某月最后一天
-	 * @param date
 	 * @return
 	 */
 	public static String getLastdayOfMonth(String month, String pattern)
@@ -854,6 +845,14 @@ public class DateHelper
 		}
 		return list;
 	}
-	
+	public static boolean valid(String str){
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		try{
+			Date date = (Date)formatter.parse(str);
+			return str.equals(formatter.format(date));
+		}catch(Exception e){
+			return false;
+		}
+	}
 	
 }

@@ -1016,8 +1016,10 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 			}
 			else
 			{
+				String title=questions.get(i).getTitle();
 				String usersAnswer = questions.get(i).getUsersAnswer();
 				String isRequired = questions.get(i).getIsRequired();//是否必填
+				String validate=questions.get(i).getValidate();
 				if(AppUtility.isNotEmpty(isRequired)){
 					if(isRequired.equals("是")){
 						if(AppUtility.isNotEmpty(usersAnswer)){
@@ -1037,6 +1039,32 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 					}else{
 						Log.d(TAG, "222"+questions.get(i).getTitle());
 						AppUtility.showToastMsg(getActivity(),"请完成问卷再提交");
+						myListview.setSelection(i);
+						return null;
+					}
+				}
+				if(AppUtility.isNotEmpty(validate)){
+					if(validate.equals("手机号") && !AppUtility.checkPhone(usersAnswer))
+					{
+						AppUtility.showToastMsg(getActivity(),title+",格式不正确");
+						myListview.setSelection(i);
+						return null;
+					}
+					else if(validate.equals("浮点型") && !AppUtility.isDecimal(usersAnswer))
+					{
+						AppUtility.showToastMsg(getActivity(),title+",必须是浮点型数字,如:99.9");
+						myListview.setSelection(i);
+						return null;
+					}
+					else if(validate.equals("整型") && !AppUtility.isInteger(usersAnswer))
+					{
+						AppUtility.showToastMsg(getActivity(),title+",必须整形数字,如:99");
+						myListview.setSelection(i);
+						return null;
+					}
+					else if(validate.equals("邮箱") && !AppUtility.checkEmail(usersAnswer))
+					{
+						AppUtility.showToastMsg(getActivity(),title+",邮箱格式不正确");
 						myListview.setSelection(i);
 						return null;
 					}
@@ -1589,7 +1617,14 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 						// TODO Auto-generated method stub
 						JSONArray subOptionsJson=question.getSubOptions().optJSONArray(question.getUsersAnswerOne());
 						JSONObject item=subOptionsJson.optJSONObject(holder.sp_select1.getSelectedItemPosition());
-						question.setUsersAnswer(item.optString("id"));
+						if(item!=null)
+							question.setUsersAnswer(item.optString("id"));
+						else
+						{
+							String itemvalue=subOptionsJson.optString(holder.sp_select1.getSelectedItemPosition());
+							if(itemvalue!=null)
+								question.setUsersAnswer(itemvalue);
+						}
 					}
 					@Override
 					public void onNothingSelected(AdapterView<?> parent) {
@@ -1628,11 +1663,21 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 			for(int i=0;i<subOptionsJson.length();i++)
 			{
 				JSONObject item=subOptionsJson.optJSONObject(i);
-				if(item!=null)
-					subOptions[i]=item.optString("name");
-				if(question.getUsersAnswer().equals(item.optString("id")))
-					pos=i;
-					
+				if(item!=null) {
+					subOptions[i] = item.optString("name");
+					if (question.getUsersAnswer().equals(item.optString("id")))
+						pos = i;
+				}
+				else
+				{
+					String itemvalue=subOptionsJson.optString(i);
+					if(itemvalue!=null)
+					{
+						subOptions[i]=itemvalue;
+						if (question.getUsersAnswer().equals(itemvalue))
+							pos = i;
+					}
+				}
 			}
 			ArrayAdapter<String> bb = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_dropdown_item,subOptions);
 			sp.setAdapter(bb);

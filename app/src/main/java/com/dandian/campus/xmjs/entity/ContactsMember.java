@@ -72,6 +72,10 @@ public class ContactsMember implements Serializable{
 	private String chargeKeCheng;
 	@DatabaseField
 	private String schoolName;
+	@DatabaseField
+	private String privName;
+	@DatabaseField
+	private String officeTel;
 	
 	public String getSchoolName() {
 		return schoolName;
@@ -122,9 +126,33 @@ public class ContactsMember implements Serializable{
 		if (userNumber.indexOf("家长") > -1) {
 			stuPhone = jo.optString("手机");
 		}
+		if(stuStatus.equals("新生状态"))
+		{
+			stuPhone = jo.optString("学生电话");
+			chargeClass = jo.optString("院系名称");
+		}
 		schoolName=jo.optString("单位名称");
+		officeTel= jo.optString("部门电话");
+		privName= jo.optString("主要角色名称");
 		
 	}
+
+	public String getPrivName() {
+		return privName;
+	}
+
+	public void setPrivName(String privName) {
+		this.privName = privName;
+	}
+
+	public String getOfficeTel() {
+		return officeTel;
+	}
+
+	public void setOfficeTel(String officeTel) {
+		this.officeTel = officeTel;
+	}
+
 	public ContactsMember(net.minidev.json.JSONObject jo){
 		number = String.valueOf(jo.get("编号"));
 		studentID = String.valueOf(jo.get("学号"));
@@ -164,6 +192,14 @@ public class ContactsMember implements Serializable{
 		}
 		
 		schoolName=String.valueOf(jo.get("单位名称"));
+		if(jo.get("部门电话")!=null)
+			officeTel= String.valueOf(jo.get("部门电话"));
+		else
+			officeTel="";
+		if(jo.get("主要角色名称")!=null)
+			privName=String.valueOf(jo.get("主要角色名称"));
+		else
+			privName="";
 	}
 	public String getUserType() {
 		return userType;

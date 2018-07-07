@@ -136,7 +136,52 @@ public class QuestionnaireList implements Serializable {
 		private JSONArray fujianArray;
 		private JSONObject filterObj;
 		private int linkUpdate;
-		
+		private String needCut;
+		private String addcallback;
+		private String delcallback;
+		private int maxLetter;
+		private String validate;
+
+		public String getNeedCut() {
+			return needCut;
+		}
+
+		public void setNeedCut(String needCut) {
+			this.needCut = needCut;
+		}
+
+		public String getAddcallback() {
+			return addcallback;
+		}
+
+		public void setAddcallback(String addcallback) {
+			this.addcallback = addcallback;
+		}
+
+		public String getDelcallback() {
+			return delcallback;
+		}
+
+		public void setDelcallback(String delcallback) {
+			this.delcallback = delcallback;
+		}
+
+		public int getMaxLetter() {
+			return maxLetter;
+		}
+
+		public void setMaxLetter(int maxLetter) {
+			this.maxLetter = maxLetter;
+		}
+
+		public String getValidate() {
+			return validate;
+		}
+
+		public void setValidate(String validate) {
+			this.validate = validate;
+		}
+
 		public Question(JSONObject jo) {
 			title = jo.optString("题目");
 			status = jo.optString("类型");
@@ -152,6 +197,9 @@ public class QuestionnaireList implements Serializable {
 			subOptions= jo.optJSONObject("子选项");
 			isRequired = jo.optString("是否必填");
 			lines=jo.optInt("行数");
+			needCut=jo.optString("剪裁");
+			addcallback=jo.optString("addcallback");
+			delcallback=jo.optString("delcallback");
 			if(status.equals("图片")){
 				JSONArray jaimages = jo.optJSONArray("用户答案");
 				if(jaimages!=null){
@@ -170,6 +218,9 @@ public class QuestionnaireList implements Serializable {
 			}
 			filterObj=jo.optJSONObject("Json过滤");
 			linkUpdate=jo.optInt("关联更新");
+			maxLetter=jo.optInt("字符数");
+			validate=jo.optString("校验");
+
 			
 		}
 

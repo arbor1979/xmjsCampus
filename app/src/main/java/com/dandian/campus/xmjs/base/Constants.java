@@ -42,6 +42,7 @@ public class Constants {
 	 * 用户类型
 	 */
 	public static final String PREF_CHECK_USERTYPE = "pref.check_usertype";
+	public static final String PREF_CHECK_USERSTATUS = "pref.check_userstatus";
 	/**
 	 * 初始化基础数据标记
 	 */
@@ -94,6 +95,8 @@ public class Constants {
 	 * 允许教师修改教师上课记录信息字段_考勤
 	 */
 	public static final String PREF_ALLOW_SCHOOL_RECORDWORK_ATTENDANCEKEYS_STR = "pref.allow_school_record_work_attendancekeys_str";
+
+	public static final String PREF_CHANGEPWD_TIP_DATE = "pref.check_changepwd_tip_date";
 	/**
 	 * 当前周次
 	 */

@@ -193,11 +193,14 @@ public class AppUtility {
 	 * @return
 	 */
 	public static final boolean checkPhone(String phone) {
-		Pattern pattern = Pattern
-				.compile("^((13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$");
+		//Pattern pattern = Pattern.compile("^((13[0-9])|(15[0-9])|(18[0-9])|(17[0-9])|(147))\\d{8}$");
+		Pattern pattern = Pattern.compile("^(1\\d{10})$");
 		Matcher matcher = pattern.matcher(phone);
 
-		return matcher.matches();
+		if (matcher.matches()) {
+			return true;
+		}
+		return false;
 	}
 
 	public static void report(Throwable e) {
@@ -1018,5 +1021,19 @@ public class AppUtility {
 	    		downloadUrl(mUrl, file, widget.getContext());
 	    	}
         }
+	}
+	//是否浮点型
+	public static boolean isDecimal(String str) {
+		if(str==null || "".equals(str))
+			return false;
+		java.util.regex.Pattern pattern = Pattern.compile("[0-9]*(\\.?)[0-9]*");
+		return pattern.matcher(str).matches();
+	}
+	//是否整形
+	public static boolean isInteger(String str){
+		if(str==null )
+			return false;
+		Pattern pattern = Pattern.compile("[0-9]+");
+		return pattern.matcher(str).matches();
 	}
 }

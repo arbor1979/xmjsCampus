@@ -110,7 +110,27 @@ public class User implements Serializable {
 	private String company;
 	@DatabaseField
 	private String albumAdmin;
-	
+	@DatabaseField
+	private String privName;
+	@DatabaseField
+	private String officeTel;
+
+	public String getPrivName() {
+		return privName;
+	}
+
+	public void setPrivName(String privName) {
+		this.privName = privName;
+	}
+
+	public String getOfficeTel() {
+		return officeTel;
+	}
+
+	public void setOfficeTel(String officeTel) {
+		this.officeTel = officeTel;
+	}
+
 	public String getAlbumAdmin() {
 		return albumAdmin;
 	}
@@ -205,8 +225,10 @@ public class User implements Serializable {
 		pPhone = jo.optString("家长电话");
 		homeAddress = jo.optString("家庭住址");
 		remark = jo.optString("备注");
-		rootDomain = jo.optString("更域名");
+		rootDomain = jo.optString("院系名称");
 		albumAdmin= jo.optString("相册管理员");
+		officeTel= jo.optString("部门电话");
+		privName= jo.optString("主要角色名称");
 		latestAddress="";
 	}
 
@@ -265,12 +287,23 @@ public class User implements Serializable {
 		pPhone = String.valueOf(jo.get("家长电话"));
 		homeAddress = String.valueOf(jo.get("家庭住址"));
 		remark = String.valueOf(jo.get("备注"));
-		rootDomain = String.valueOf(jo.get("更域名"));
+		if(jo.get("院系名称")!=null)
+			rootDomain = String.valueOf(jo.get("院系名称"));
+		else
+			rootDomain="";
 		if(jo.get("相册管理员")!=null)
 			albumAdmin= String.valueOf(jo.get("相册管理员"));
 		else
 			albumAdmin="";
 		latestAddress="";
+		if(jo.get("部门电话")!=null)
+			officeTel= String.valueOf(jo.get("部门电话"));
+		else
+			officeTel="";
+		if(jo.get("主要角色名称")!=null)
+			privName=String.valueOf(jo.get("主要角色名称"));
+		else
+			privName="";
 	}
 	/**
 	 * 编号

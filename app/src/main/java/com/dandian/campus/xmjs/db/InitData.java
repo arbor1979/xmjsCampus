@@ -542,9 +542,18 @@ public class InitData {
 		String dataResult = "";
 		String baidu_userid = PrefUtility.get(Constants.PREF_BAIDU_USERID, "");
 		Log.d(TAG, "-------------------->baidu_userid:" + baidu_userid);
+		User user=((CampusApplication)context.getApplicationContext()).getLoginUserObj();
 		try {
 			JSONObject jsonObj = new JSONObject();
 			jsonObj.put("用户较验码", checkCode);
+			jsonObj.put("姓名",user.getName());
+			jsonObj.put("头像",user.getUserImage());
+			jsonObj.put("班号",user.getsClass());
+			jsonObj.put("性别",user.getGender());
+			jsonObj.put("院系名称",user.getRootDomain());
+			jsonObj.put("学生电话",user.getsPhone());
+            jsonObj.put("家庭住址",user.getHomeAddress());
+			jsonObj.put("学生状态",user.getsStatus());
 			jsonObj.put("百度云推送ID", baidu_userid);
 			String datetime = String.valueOf(new Date().getTime());
 			jsonObj.put("DATETIME", datetime);

@@ -32,6 +32,7 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.BitmapAjaxCallback;
 import com.androidquery.util.AQUtility;
+import com.dandian.campus.xmjs.activity.TabHostActivity;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.dandian.campus.xmjs.activity.LoginActivity;
@@ -75,11 +76,19 @@ public class CampusApplication extends Application {
 				LoginActivity.class);
 
 		loginUserObj=null;
-		PrefUtility.put(Constants.PREF_LOGIN_PASS, "");
-		PrefUtility.put(Constants.PREF_CHECK_CODE, "");
-
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 				| Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(intent);
+		//System.exit(0);
+	}
+	public void reLogin_newStudent()
+	{
+		PrefUtility.put(Constants.PREF_LOGIN_NAME, "");
+		PrefUtility.put(Constants.PREF_LOGIN_PASS, "");
+		Intent intent = new Intent(this,
+			LoginActivity.class);
+						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+								| Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(intent);
 		System.exit(0);
 	}
@@ -185,10 +194,12 @@ public class CampusApplication extends Application {
 		return loginUserObj;
 	}
 	public User getLoginUserObjAllowNull() {
+		/*
 		if(loginUserObj==null)
 		{
 			reLogin();
 		}
+		*/
 		return loginUserObj;
 	}
 	private User getUserByDao()
@@ -312,6 +323,8 @@ public class CampusApplication extends Application {
 		updateColumn(getHelper().getWritableDatabase(), "User", "albumAdmin", "varchar", "''");
 		updateColumn(getHelper().getWritableDatabase(), "Student", "liveSchool", "varchar", "''");
 		updateColumn(getHelper().getWritableDatabase(), "Student", "zuohao", "varchar", "''");
+		updateColumn(getHelper().getWritableDatabase(), "User", "officeTel", "varchar", "''");
+		updateColumn(getHelper().getWritableDatabase(), "User", "privName", "varchar", "''");
 		/*
 		try {
 			TableUtils.createTable(getHelper().getConnectionSource(), ChatMsgDetail.class);

@@ -103,12 +103,20 @@ public class ChatFriendActivity extends Activity implements OnItemClickListener 
 		menu = (Button) findViewById(R.id.btn_back);
 		layout_menu = (LinearLayout) findViewById(R.id.layout_back);
 		title = (TextView) findViewById(R.id.tv_title);
-		menu.setBackgroundResource(R.drawable.bg_title_homepage_back);
+
 		title.setText("消息");
 		LinearLayout lygoto=(LinearLayout) findViewById(R.id.layout_goto);
 		lygoto.setVisibility(View.VISIBLE);
 		Button btgoto=(Button) findViewById(R.id.btn_goto);
-		btgoto.setText("群发");
+		String userStatus=PrefUtility.get(Constants.PREF_CHECK_USERSTATUS,"");
+		if(userStatus.equals("新生状态")) {
+			btgoto.setVisibility(View.GONE);
+			menu.setBackgroundResource(R.drawable.relogin);
+		}
+		else {
+			btgoto.setText("群发");
+			menu.setBackgroundResource(R.drawable.bg_title_homepage_back);
+		}
 		btgoto.setOnClickListener(new OnClickListener(){
 
 			@Override
@@ -295,8 +303,10 @@ public class ChatFriendActivity extends Activity implements OnItemClickListener 
 						toid=chatFriend.getToid().split(",")[0];
 					else
 						toid=chatFriend.getToid();
-					ContactsMember contactsMember=((CampusApplication)getApplicationContext()).getLinkManDic().get(toid);
-					
+					ContactsMember contactsMember=null;
+					String userStatus=PrefUtility.get(Constants.PREF_CHECK_USERSTATUS,"");
+					if(!userStatus.equals("新生状态"))
+						contactsMember=((CampusApplication)getApplicationContext()).getLinkManDic().get(toid);
 					if(userType.equals("老师") && contactsMember!=null && contactsMember.getUserType().equals("学生"))
 					{
 						Intent intent = new Intent(ChatFriendActivity.this,StudentInfoActivity.class);

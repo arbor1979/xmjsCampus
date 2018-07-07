@@ -1,6 +1,8 @@
 package com.dandian.campus.xmjs.api;
 
+import com.dandian.campus.xmjs.CampusApplication;
 import com.dandian.campus.xmjs.base.Constants;
+import com.dandian.campus.xmjs.entity.User;
 import com.dandian.campus.xmjs.util.PrefUtility;
 
 public class CampusAPI {
@@ -15,7 +17,7 @@ public class CampusAPI {
 
 	public static String DOWNLOAD_DONE = "http://laoshi.dandian.net/KeJianCounter.php";// 提交下载完成数据
 	public static String DOWNLOAD_DELETE = "http://laoshi.dandian.net/KeJianDelete.php";// 提交删除已下载文件数据
-
+	public static String schoolYingXinUrl="";
 	public static void request(final String url, final CampusParameters params,
 			final String HTTP_METHOD, RequestListener listener) {
 		String domain=PrefUtility.get(Constants.PREF_SCHOOL_DOMAIN,"");
@@ -40,10 +42,8 @@ public class CampusAPI {
 	public static void loginCheckNewStudent(CampusParameters params,
 								  RequestListener listener) {
 		// request("?action=logincheck", params, HTTP_METHOD, listener);
-		String domain=PrefUtility.get(Constants.PREF_SCHOOL_DOMAIN,"");
-		String schoolBaseUrl="http://"+domain.replace("/appserver/","/NewStudent/mobiles/");
 		AsyncFoodSafeRunner.request(
-				schoolBaseUrl+"processcheck.php", params,
+				schoolYingXinUrl+"processcheck.php", params,
 				HTTP_METHOD, listener);
 	}
 	/**
@@ -291,7 +291,12 @@ public class CampusAPI {
 	 */
 	public static void getSchool(CampusParameters params,
 			RequestListener listener) {
-		String url = "http://laoshi.dandian.net/InterfaceStudent/XUESHENG.php";
+		String userStatus=PrefUtility.get(Constants.PREF_CHECK_USERSTATUS,"");
+		String url="";
+		if(userStatus.equals("新生状态"))
+			url = schoolYingXinUrl + "school-module.php";
+		else
+		 	url = "http://laoshi.dandian.net/InterfaceStudent/XUESHENG.php";
 		AsyncFoodSafeRunner.request(url, params, HTTP_METHOD, listener);
 	}
 
@@ -306,7 +311,13 @@ public class CampusAPI {
 	 */
 	public static void getSchoolItem(CampusParameters params, String Interface,
 			RequestListener listener) {
-		String url = "http://laoshi.dandian.net/InterfaceStudent/" + Interface;
+
+        String userStatus=PrefUtility.get(Constants.PREF_CHECK_USERSTATUS,"");
+        String url="";
+        if(userStatus.equals("新生状态"))
+            url = schoolYingXinUrl + Interface;
+        else
+		    url = "http://laoshi.dandian.net/InterfaceStudent/" + Interface;
 		if(Interface.substring(0, 4).toLowerCase().equals("http"))
 			url=Interface;
 		AsyncFoodSafeRunner.request(url, params, HTTP_METHOD, listener);
@@ -463,5 +474,22 @@ public class CampusAPI {
 		AsyncFoodSafeRunner.request(
 				"http://laoshi.dandian.net/Baidu_Get_MSG_List.php", params,
 				HTTP_METHOD, listener);
+	}
+	public static void baodaoHandle(CampusParameters params,
+									RequestListener listener) {
+		// request("?action=logincheck", params, HTTP_METHOD, listener);
+		AsyncFoodSafeRunner.request(
+				schoolYingXinUrl+"baodaoHandle.php", params,
+				HTTP_METHOD, listener);
+	}
+	public static void getUrl(String url,CampusParameters params,
+							  RequestListener listener) {
+
+		AsyncFoodSafeRunner.request(url, params, HTTP_METHOD2, listener);
+	}
+	public static void getNeedSubmit(CampusParameters params,
+									 RequestListener listener) {
+		String url = schoolYingXinUrl+"school-module.php?action=needSubmit";
+		AsyncFoodSafeRunner.request(url, params, HTTP_METHOD, listener);
 	}
 }

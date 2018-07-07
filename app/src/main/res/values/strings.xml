@@ -64,7 +64,7 @@
     <string name="member">成员</string>
     <string name="summary">总结</string>
     <string name="school">校内</string>
-    <string name="mystatus">我的</string>
+    <string name="mystatus">新生</string>
     <string name="roll_call">点名</string>
 	<string name="album">相册</string>
     <!-- Home Page -->
@@ -208,4 +208,26 @@
     <string name="dialog_pleaseinputyourletterno">是否确认入读本校？如选入读，需在随后的页面完成个人资料，如选放弃，需要到招生办申请退档。</string>
     <string name="enter">入读</string>
     <string name="giveup">放弃</string>
+    <string name="trace">追踪</string>
+    <string name="nodata">没有数据.</string>
+    <string name="nosubmitdata">没有需提交的数据</string>
+    <string name="submitInfo">报到</string>
+    <string name="changeavatar">更换头像</string>
+    <string name="usertype">用户类型</string>
+    <string name="settings_notice_confirm">入读确认</string>
+    <string name="save">保存</string>
+    <string name="pwdisempty">密码不能为空</string>
+    <string name="pwdisdifferent">两次输入密码不一致</string>
+    <string name="savesuc">保存成功！</string>
+    <string name="failed">失败</string>
+    <string name="saving">保存中…</string>
+    <string name="inputoldpwd">请输入旧密码</string>
+    <string name="oldpwdwrong">旧密码不正确！</string>
+    <string name="oldpwd">旧密码</string>
+    <string name="newpwd">新密码</string>
+    <string name="deleteconfirm">删除确认</string>
+    <string name="ifconfirmdelete">是否确认删除此条留言?</string>
+    <string name="yes">是</string>
+    <string name="no">否</string>
+    <string name="title_activity_baodao_handle">报到处理</string>
 </resources>

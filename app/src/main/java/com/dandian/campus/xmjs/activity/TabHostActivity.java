@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
@@ -85,7 +86,7 @@ public class TabHostActivity extends TabActivity   {
 	private Intent communicationIntent;
 	private Intent schoolIntent;
 	private Intent albumIntent;
-	private Intent myStatusIntent;
+	private Intent myStatusIntent,submitDataIntent;
 	private TextView pageTime, pageName, departmentOrClassName;
 	private ImageView pagePhoto;
 	private Button pageMyInfo, pageMyAlbum,/* pageRecommend, */pageSetting, pageClearCache,
@@ -101,7 +102,8 @@ public class TabHostActivity extends TabActivity   {
 	// private final static String TAB_TAG_SUMMARY = "tab_tag_summary";
 	private final static String TAB_TAG_SCHOOL = "tab_tag_school";
 	private final static String TAB_TAG_ALBUM = "tab_tag_album";
-	private final static String TAB_TAG_MYSTATUS = "tab_tag_mystatus";
+	private final static String TAB_TAG_MYSELF = "tab_tag_mystatus";
+	private final static String TAB_TAG_FINISH = "tab_tag_finish";
 	private Dao<Notice, Integer> noticeInfoDao;
 	// public static int currentWeek = 0,selectedWeek = 0,maxWeek =
 	// 0;//当前周次,选择周次,选择周次
@@ -115,7 +117,7 @@ public class TabHostActivity extends TabActivity   {
 	public final String SMessage = "showmsg_message";
 	public final String BAThumbData = "showmsg_thumb_data";
 	private User user;
-	private boolean isIntoBack;
+	private boolean isIntoBack=false;
 	public static MenuListener menuListener;
 	public static DisplayImageOptions headOptions;
 	private String downloadUrl;
@@ -284,7 +286,6 @@ public class TabHostActivity extends TabActivity   {
 		PushAgent.getInstance(context).onAppStart();
 		
 		iniImageLoader();
-		isIntoBack=true;
 		/*
 		//判断用户是否第一次运行
 		boolean checkrun = PrefUtility.getBoolean(Constants.PREF_CHECK_RUN,
@@ -301,7 +302,11 @@ public class TabHostActivity extends TabActivity   {
 		String userNumber=PrefUtility.get(Constants.PREF_CHECK_HOSTID, "");
 		if(user==null || checkCode.length()==0 || userNumber.length()==0 || (!user.getsStatus().equals("新生状态") && ((CampusApplication)getApplicationContext()).getLinkManDic()==null))
 		{
-			finish();
+            Intent intent = new Intent(this,
+                    LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
 			return;
 		}
 
@@ -348,7 +353,10 @@ public class TabHostActivity extends TabActivity   {
 			View nearBtn = mainTab.findViewById(R.id.bottom_tab_work);
 			nearBtn.setSelected(true);
 		}
-
+		Intent intent = new Intent(AppUtility.getContext(), Alarmreceiver.class);
+		intent.setAction("getMsgList");
+		sendBroadcast(intent);
+		getAlbumUnreadCount();
 		Log.d(TAG,"生命周期:onCreate");
 	}
 
@@ -360,8 +368,8 @@ public class TabHostActivity extends TabActivity   {
 		if(isIntoBack)
 		{
 			isIntoBack=false;
-			Intent intentChat = new Intent("Campus_reloadNotice");
-			TabHostActivity.this.sendBroadcast(intentChat);
+			//Intent intentChat = new Intent("Campus_reloadNotice");
+			//TabHostActivity.this.sendBroadcast(intentChat);
 			//getNetLocation();
             Intent intent = new Intent(AppUtility.getContext(), Alarmreceiver.class);
             intent.setAction("getMsgList");
@@ -497,14 +505,29 @@ public class TabHostActivity extends TabActivity   {
 	 * 准备tab的内容Intent
 	 */
 	private void prepareIntent() {
-		myStatusIntent = new Intent(this, MyStatusActivity.class);
-		workIntent = new Intent(this, SubjectActivity.class);
-		messageIntent = new Intent(this, ChatFriendActivity.class);
-		communicationIntent = new Intent(this, ContactsActivity.class);
-		// summaryIntent = new Intent(this, SummaryActivity.class);
-		schoolIntent = new Intent(this, TabSchoolActivtiy.class);
-		albumIntent = new Intent(this, AlbumFlowActivity.class);
-		
+		if (user.getsStatus().equals("新生状态")) {
+			myStatusIntent = new Intent(this, MyStatusActivity.class);
+			schoolIntent = new Intent(this, TabSchoolActivtiy.class);
+			submitDataIntent = new Intent(this, SubmitDataActivity.class);
+			messageIntent = new Intent(this, ChatFriendActivity.class);
+			albumIntent = new Intent(this, AlbumFlowActivity.class);
+		}
+		else if(user.getsStatus().equals("迎新管理员") || user.getsStatus().equals("班主任"))
+		{
+			myStatusIntent = new Intent(this, MyStatusActivity.class);
+			schoolIntent = new Intent(this, TabSchoolActivtiy.class);
+			workIntent = new Intent(this, SubjectActivity.class);
+			messageIntent = new Intent(this, ChatFriendActivity.class);
+			communicationIntent = new Intent(this, ContactsActivity.class);
+		}
+		else {
+			workIntent = new Intent(this, SubjectActivity.class);
+			messageIntent = new Intent(this, ChatFriendActivity.class);
+			communicationIntent = new Intent(this, ContactsActivity.class);
+			// summaryIntent = new Intent(this, SummaryActivity.class);
+			schoolIntent = new Intent(this, TabSchoolActivtiy.class);
+			albumIntent = new Intent(this, AlbumFlowActivity.class);
+		}
 		
 		
 	}
@@ -512,20 +535,58 @@ public class TabHostActivity extends TabActivity   {
 	private void setupIntent() {
 		this.tabHost = getTabHost();
 		TabHost localTabHost = this.tabHost;
-		localTabHost.addTab(buildTabSpec(TAB_TAG_MYSTATUS, R.string.mystatus,
+		FrameLayout bottom_tab_myself=(FrameLayout)findViewById(R.id.bottom_tab_myself);
+		FrameLayout bottom_tab_finish=(FrameLayout)findViewById(R.id.bottom_tab_finish);
+		FrameLayout bottom_tab_work=(FrameLayout)findViewById(R.id.bottom_tab_work);
+		FrameLayout bottom_tab_communication=(FrameLayout)findViewById(R.id.bottom_tab_communication);
+		FrameLayout bottom_tab_album=(FrameLayout)findViewById(R.id.bottom_tab_album);
+		if (user.getsStatus().equals("新生状态"))
+		{
+			bottom_tab_work.setVisibility(View.GONE);
+			bottom_tab_communication.setVisibility(View.GONE);
+			localTabHost.addTab(buildTabSpec(TAB_TAG_MYSELF, R.string.mystatus,
+					R.drawable.ic_launcher, myStatusIntent));
+			localTabHost.addTab(buildTabSpec(TAB_TAG_SCHOOL, R.string.school,
 				R.drawable.ic_launcher, schoolIntent));
-		localTabHost.addTab(buildTabSpec(TAB_TAG_SCHOOL, R.string.school,
-				R.drawable.ic_launcher, schoolIntent));
-		localTabHost.addTab(buildTabSpec(TAB_TAG_WORK, R.string.study,
-				R.drawable.ic_launcher, workIntent));
-		localTabHost.addTab(buildTabSpec(TAB_TAG_MESSAGE, R.string.message,
-				R.drawable.ic_launcher, messageIntent));
-		localTabHost.addTab(buildTabSpec(TAB_TAG_COMMUNICATION,
-				R.string.curriculum, R.drawable.ic_launcher,
-				communicationIntent));
-		localTabHost.addTab(buildTabSpec(TAB_TAG_ALBUM,
-				R.string.album, R.drawable.ic_launcher,
-				albumIntent));
+			localTabHost.addTab(buildTabSpec(TAB_TAG_FINISH,
+					R.string.curriculum, R.drawable.ic_launcher,submitDataIntent));
+			localTabHost.addTab(buildTabSpec(TAB_TAG_MESSAGE, R.string.message,
+					R.drawable.ic_launcher, messageIntent));
+			localTabHost.addTab(buildTabSpec(TAB_TAG_ALBUM,	R.string.album, R.drawable.ic_launcher,
+					albumIntent));
+		}
+		else if(user.getsStatus().equals("迎新管理员") || user.getsStatus().equals("班主任"))
+		{
+			bottom_tab_album.setVisibility(View.GONE);
+			bottom_tab_finish.setVisibility(View.GONE);
+			localTabHost.addTab(buildTabSpec(TAB_TAG_MYSELF, R.string.mystatus,
+					R.drawable.ic_launcher, myStatusIntent));
+			localTabHost.addTab(buildTabSpec(TAB_TAG_SCHOOL, R.string.school,
+					R.drawable.ic_launcher, schoolIntent));
+			localTabHost.addTab(buildTabSpec(TAB_TAG_WORK, R.string.study,
+					R.drawable.ic_launcher, workIntent));
+			localTabHost.addTab(buildTabSpec(TAB_TAG_MESSAGE, R.string.message,
+					R.drawable.ic_launcher, messageIntent));
+			localTabHost.addTab(buildTabSpec(TAB_TAG_COMMUNICATION,
+					R.string.curriculum, R.drawable.ic_launcher,
+					communicationIntent));
+		}
+		else {
+			bottom_tab_myself.setVisibility(View.GONE);
+			bottom_tab_finish.setVisibility(View.GONE);
+			localTabHost.addTab(buildTabSpec(TAB_TAG_SCHOOL, R.string.school,
+					R.drawable.ic_launcher, schoolIntent));
+			localTabHost.addTab(buildTabSpec(TAB_TAG_WORK, R.string.study,
+					R.drawable.ic_launcher, workIntent));
+			localTabHost.addTab(buildTabSpec(TAB_TAG_MESSAGE, R.string.message,
+					R.drawable.ic_launcher, messageIntent));
+			localTabHost.addTab(buildTabSpec(TAB_TAG_COMMUNICATION,
+					R.string.curriculum, R.drawable.ic_launcher,
+					communicationIntent));
+			localTabHost.addTab(buildTabSpec(TAB_TAG_ALBUM,
+					R.string.album, R.drawable.ic_launcher,
+					albumIntent));
+		}
 		// localTabHost.addTab(buildTabSpec(TAB_TAG_SUMMARY, R.string.summary,
 		// R.drawable.ic_launcher, summaryIntent));
 
@@ -555,14 +616,24 @@ public class TabHostActivity extends TabActivity   {
 
 	// 设置默认选中项
 	private void findView() {
-		View nearBtn = mainTab.findViewById(R.id.bottom_tab_school);
-		nearBtn.setSelected(true);
+		if (user.getsStatus().equals("新生状态") || user.getsStatus().equals("迎新管理员") || user.getsStatus().equals("班主任")) {
+			View nearBtn = mainTab.findViewById(R.id.bottom_tab_myself);
+			nearBtn.setSelected(true);
+		}
+		else
+		{
+			View nearBtn = mainTab.findViewById(R.id.bottom_tab_school);
+			nearBtn.setSelected(true);
+		}
 	}
 
 	OnCheckedChangeListener changeListener = new OnCheckedChangeListener() {
 		@Override
 		public void OnCheckedChange(View checkview) {
 			switch (checkview.getId()) {
+			case R.id.bottom_tab_myself:
+					tabHost.setCurrentTabByTag(TAB_TAG_MYSELF);
+					break;
 			case R.id.bottom_tab_work:
 				tabHost.setCurrentTabByTag(TAB_TAG_WORK);
 				
@@ -585,7 +656,10 @@ public class TabHostActivity extends TabActivity   {
 				tabHost.setCurrentTabByTag(TAB_TAG_SCHOOL);
 				
 				break;
-			
+			case R.id.bottom_tab_finish:
+				tabHost.setCurrentTabByTag(TAB_TAG_FINISH);
+
+				break;
 			case R.id.bottom_tab_album:
 				tabHost.setCurrentTabByTag(TAB_TAG_ALBUM);
 				
@@ -608,7 +682,10 @@ public class TabHostActivity extends TabActivity   {
 
 		@Override
 		public void onClick(View v) {
-			menu.toggle();
+			if(user.getsStatus().equals("新生状态"))
+				((CampusApplication)getApplicationContext()).reLogin_newStudent();
+			else
+				menu.toggle();
 		}
 	}
 

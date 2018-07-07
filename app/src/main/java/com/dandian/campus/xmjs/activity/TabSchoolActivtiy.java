@@ -108,18 +108,17 @@ public class TabSchoolActivtiy extends FragmentActivity {
 							timer.schedule(new myTask(),0,10000);
 						}
 						*/
-						for(int i=0;i<schoolWorkItems.size();i++)
-						{
-							SchoolWorkItem item= schoolWorkItems.get(i);
-							if(item.getTemplateName().equals("浏览器"))
-							{
-								needCount=true;
-								break;
+						if(!user.getsStatus().equals("新生状态")) {
+							for (int i = 0; i < schoolWorkItems.size(); i++) {
+								SchoolWorkItem item = schoolWorkItems.get(i);
+								if (item.getTemplateName().equals("浏览器")) {
+									needCount = true;
+									break;
+								}
 							}
+							if (needCount)
+								getUnreadCount();
 						}
-						if(needCount)
-							getUnreadCount();
-						
 						for(SchoolWorkItem item:schoolWorkItems)
 						{
 							if(item.getTemplateName().equals("通知"))
@@ -163,7 +162,7 @@ public class TabSchoolActivtiy extends FragmentActivity {
 							
 							for(Notice item:notices)
 							{
-								//item.setIfread("0");
+
 								item.setNewsType(noticesItem.getTitle());
 								item.setUserNumber(user.getUserNumber());
 								Notice nt=noticeInfoDao.queryBuilder().where().eq("id",item.getId()).and().eq("newsType", item.getNewsType()).and().eq("userNumber",user.getUserNumber()).queryForFirst();
@@ -241,11 +240,15 @@ public class TabSchoolActivtiy extends FragmentActivity {
 		emptyLayout = (LinearLayout) findViewById(R.id.empty);
 		myGridView.setEmptyView(emptyLayout);
 		aq.id(R.id.tv_title).text("校内");
-		btnLeft.setBackgroundResource(R.drawable.bg_title_homepage_back);
+		String userStatus=PrefUtility.get(Constants.PREF_CHECK_USERSTATUS,"");
+		if(userStatus.equals("新生状态"))
+			btnLeft.setBackgroundResource(R.drawable.relogin);
+		else
+			btnLeft.setBackgroundResource(R.drawable.bg_title_homepage_back);
 		btnLeft.setVisibility(View.VISIBLE);
 		adapter=new SchoolWorkAdapter(TabSchoolActivtiy.this, schoolWorkItems);
 		myGridView.setAdapter(adapter);
-		//getSchool();
+
 		//重新加载
 		failedLayout.setOnClickListener(new OnClickListener() {
 			
@@ -269,7 +272,7 @@ public class TabSchoolActivtiy extends FragmentActivity {
 			e.printStackTrace();
 		}
 		user=((CampusApplication)getApplicationContext()).getLoginUserObj();
-		
+		getSchool();
 		registerBoradcastReceiver();
 		
 		layout_menu.setOnClickListener(TabHostActivity.menuListener);
@@ -357,6 +360,7 @@ public class TabSchoolActivtiy extends FragmentActivity {
 		JSONObject jo = new JSONObject();
 		try {
 			jo.put("用户较验码", checkCode);
+			jo.put("学生状态", user.getsStatus());
 			jo.put("DATETIME", datatime);
 		} catch (JSONException e1) {
 			e1.printStackTrace();
@@ -421,6 +425,7 @@ public class TabSchoolActivtiy extends FragmentActivity {
 			jo.put("用户较验码", checkCode);
 			jo.put("DATETIME", datatime);
 			jo.put("LASTID", lastId);
+			jo.put("发布对象", user.getRootDomain());
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -522,7 +527,7 @@ public class TabSchoolActivtiy extends FragmentActivity {
 	public void registerBoradcastReceiver() {
 		IntentFilter myIntentFilter = new IntentFilter();
 		myIntentFilter.addAction("refreshUnread");
-		myIntentFilter.addAction("Campus_reloadNotice");
+		//myIntentFilter.addAction("Campus_reloadNotice");
 		// 注册广播
 		registerReceiver(mBroadcastReceiver, myIntentFilter);
 	}
@@ -536,10 +541,10 @@ public class TabSchoolActivtiy extends FragmentActivity {
 				getUnreadByTitle(refreshTitle);
 				
 			}
-			else if(action.equals("Campus_reloadNotice"))
-			{
-				getSchool();
-			}
+			//else if(action.equals("Campus_reloadNotice"))
+			//{
+			//	getSchool();
+			//}
 		}
 	};
 }

@@ -20,7 +20,7 @@
             android:layout_height="fill_parent"
             android:layout_gravity="center_vertical"
             android:layout_weight="1.0"
-            android:visibility="gone">
+            >
 
             <TextView
                 style="@style/bottom_tab_tv"
@@ -65,7 +65,21 @@
                 android:textSize="@dimen/text_size_xmicro" />
         </FrameLayout>
 
-        
+        <FrameLayout
+            android:id="@+id/bottom_tab_finish"
+            android:layout_width="0.0dip"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1.0" >
+
+            <TextView
+                style="@style/bottom_tab_tv"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:drawableTop="@drawable/botton_finish_selector"
+                android:text="@string/submitInfo"
+                android:textSize="@dimen/text_size_xmicro" />
+        </FrameLayout>
         <!-- 消息 -->
 
         <FrameLayout

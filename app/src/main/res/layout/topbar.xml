@@ -89,6 +89,31 @@
         android:textColor="@color/black"
         android:textSize="@dimen/head_title_font_size" />
 
-   
+    <com.dandian.campus.xmjs.widget.SegmentedGroup
+        android:id="@+id/segmentedGroup3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="10dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <RadioButton
+            android:id="@+id/button21"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="全部"
+            style="@style/RadioButton" />
+
+        <RadioButton
+            android:id="@+id/button23"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="我的"
+            style="@style/RadioButton" />
+    </com.dandian.campus.xmjs.widget.SegmentedGroup>
 
 </RelativeLayout>

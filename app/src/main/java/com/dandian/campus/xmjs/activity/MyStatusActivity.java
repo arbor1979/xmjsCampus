@@ -89,14 +89,14 @@ public class MyStatusActivity extends Activity {
 		loadingLayout = (LinearLayout) findViewById(R.id.data_load);
 		contentLayout = (LinearLayout) findViewById(R.id.content_layout);
 		failedLayout = (LinearLayout) findViewById(R.id.empty_error);
-		
+		Button btn_back= (Button) findViewById(R.id.btn_back);
 		LinearLayout relogin = (LinearLayout) findViewById(R.id.layout_back);
 		relogin.setOnClickListener(new OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				((CampusApplication)getApplicationContext()).reLogin();
+				((CampusApplication)getApplicationContext()).reLogin_newStudent();
 			}
 			
 		});
@@ -104,7 +104,7 @@ public class MyStatusActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(MyStatusActivity.this,ChangePwdActivity.class);
+				Intent intent = new Intent(MyStatusActivity.this,ChangePwdNewStudentActivity.class);
 				startActivity(intent);
 			}
 			
@@ -140,8 +140,13 @@ public class MyStatusActivity extends Activity {
 		user=((CampusApplication)getApplicationContext()).getLoginUserObj();
 		if(user.getUserType()==null || user.getUserType().length()==0)
 		{
-			((CampusApplication)getApplicationContext()).reLogin();
+			((CampusApplication)getApplicationContext()).reLogin_newStudent();
 		}
+		if(user.getsStatus().equals("新生状态"))
+			btn_back.setBackgroundResource(R.drawable.relogin);
+		else
+			btn_back.setBackgroundResource(R.drawable.bg_title_homepage_back);
+		relogin.setOnClickListener(TabHostActivity.menuListener);
 		getStatus();
 	}
 	
@@ -175,7 +180,7 @@ public class MyStatusActivity extends Activity {
 
 		CampusParameters params = new CampusParameters();
 		params.add(Constants.PARAMS_DATA, dataResult);
-		CampusAPI.loginCheck(params, new RequestListener() {
+		CampusAPI.loginCheckNewStudent(params, new RequestListener() {
 
 			@Override
 			public void onIOException(IOException e) {
@@ -360,15 +365,23 @@ public class MyStatusActivity extends Activity {
 			}
 		}
 	};
-	private void initContent() {
+	private void initContent()  {
 		
 
 		ImageOptions options = new ImageOptions();
 		//options.round=40;
 		options.memCache=true;
 		options.fileCache=true;
-		
-		String userImage=user.getUserImage();
+		if(user.getUserType().equals("老师")) {
+			try {
+				userObject.putOpt("照片", user.getUserImage());
+			}
+			catch (JSONException e)
+			{
+
+			}
+		}
+		String userImage=userObject.optString("照片");
 		if(userImage!=null && userImage.length()>0)
 		{
 			aq.id(R.id.iv_pic).image(userImage,options);
@@ -379,6 +392,7 @@ public class MyStatusActivity extends Activity {
 		aq.id(R.id.user_type).text(user.getsStatus());
 		if(user.getUserType().equals("学生"))
 		{
+
 			bt_changepwd.setVisibility(View.VISIBLE);
 			bt_notice_confirm.setVisibility(View.VISIBLE);
 			if(userObject.optString("预报到").equals("是"))
@@ -427,7 +441,7 @@ public class MyStatusActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				DialogUtility.showImageDialog(MyStatusActivity.this,user.getUserImage());
+				DialogUtility.showImageDialog(MyStatusActivity.this,userObject.optString("照片"));
 				
 			}
 			
@@ -494,7 +508,7 @@ public class MyStatusActivity extends Activity {
 
 		CampusParameters params = new CampusParameters();
 		params.add(Constants.PARAMS_DATA, dataResult);
-		CampusAPI.loginCheck(params, new RequestListener() {
+		CampusAPI.loginCheckNewStudent(params, new RequestListener() {
 
 			@Override
 			public void onIOException(IOException e) {

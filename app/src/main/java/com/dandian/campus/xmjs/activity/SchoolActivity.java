@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dandian.campus.xmjs.fragment.SchoolAchievementFragment;
+import com.dandian.campus.xmjs.fragment.SchoolBlogFragment;
 import com.dandian.campus.xmjs.fragment.SchoolNoticeFragment;
 import com.dandian.campus.xmjs.fragment.SchoolQuestionnaireFragment;
 import com.dandian.campus.xmjs.fragment.SchoolWorkAttendanceFragment;
@@ -38,7 +39,7 @@ public class SchoolActivity extends FragmentActivity {
 		TemplateNameS.add("考勤");
 		TemplateNameS.add("成绩");
 		TemplateNameS.add("调查问卷");
-		
+		TemplateNameS.add("博客");
 	}
 
 	@Override
@@ -71,6 +72,9 @@ public class SchoolActivity extends FragmentActivity {
 			break;
 		case 3:
 			fragment = SchoolQuestionnaireFragment.newInstance(title,interfaceName);
+			break;
+		case 4:
+			fragment = SchoolBlogFragment.newInstance(title,interfaceName);
 			break;
 		}
 		if(getSupportFragmentManager().findFragmentById(

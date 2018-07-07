@@ -114,19 +114,9 @@ public class AlbumFlowActivity extends FragmentActivity  implements RadioGroup.O
 		layout_menu = (LinearLayout) findViewById(R.id.layout_btn_left);
 		unreadMsgCount=(TextView)findViewById(R.id.unreadMsgCount);
 		Button btnLeft = (Button) findViewById(R.id.btn_left);
-		btnLeft.setBackgroundResource(R.drawable.bg_title_homepage_back);
 		btnLeft.setVisibility(View.VISIBLE);
-		Button btnRight = (Button) findViewById(R.id.btn_right);
-		btnRight.setBackgroundResource(R.drawable.photograph);
-		btnRight.setVisibility(View.VISIBLE);
-		btnRight.setOnClickListener(new OnClickListener(){
 
-			@Override
-			public void onClick(View v) {
-				showGetPictureDiaLog();
-			}
-			
-		});
+
 		unreadMsgCount.setOnClickListener(new OnClickListener(){
 
 			@Override
@@ -162,7 +152,26 @@ public class AlbumFlowActivity extends FragmentActivity  implements RadioGroup.O
 
 		if(user.getUserType().equals("老师"))
 			btn22.setText("本部门");
-		
+
+		String userStatus=PrefUtility.get(Constants.PREF_CHECK_USERSTATUS,"");
+		if(user.getsStatus().equals("新生状态")) {
+			btnLeft.setBackgroundResource(R.drawable.relogin);
+			segmented2.setVisibility(View.GONE);
+		}
+		else {
+			btnLeft.setBackgroundResource(R.drawable.bg_title_homepage_back);
+			Button btnRight = (Button) findViewById(R.id.btn_right);
+			btnRight.setBackgroundResource(R.drawable.photograph);
+			btnRight.setVisibility(View.VISIBLE);
+			btnRight.setOnClickListener(new OnClickListener(){
+
+				@Override
+				public void onClick(View v) {
+					showGetPictureDiaLog();
+				}
+
+			});
+		}
 		if(user.getLatestAddress().isEmpty())
 		{
 			if (Build.VERSION.SDK_INT >= 23)
@@ -232,7 +241,8 @@ public class AlbumFlowActivity extends FragmentActivity  implements RadioGroup.O
 			}
 			else if(btn23.isChecked())
 				jo.put("范围","人气");
-
+			if(user.getsStatus().equals("新生状态"))
+				jo.put("范围","新生");
 			if(!showProg && isAddMore && imageList.size()>0)
 				jo.put("lastImageName", imageList.get(imageList.size()-1).getName());
 			else if(!showProg && imageList.size()>0)

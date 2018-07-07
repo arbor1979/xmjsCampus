@@ -1092,7 +1092,7 @@ public class ChatMsgActivity extends FragmentActivity implements IXListViewListe
 		    	{
 		    		String toid=toidArray[i];
 		    		ContactsMember contactsMember;
-		    		
+
 		    		contactsMember=((CampusApplication)getApplicationContext()).getLinkManDic().get(toid);
 		    		if(contactsMember!=null)
 		    		{
@@ -1299,7 +1299,10 @@ public class ChatMsgActivity extends FragmentActivity implements IXListViewListe
 	private void openLinkmanInfo(String toid,int flag)
 	{
 		String userType = user.getUserType();
-		ContactsMember contactsMember=((CampusApplication)getApplicationContext()).getLinkManDic().get(toid);
+		ContactsMember contactsMember=null;
+		String userStatus=PrefUtility.get(Constants.PREF_CHECK_USERSTATUS,"");
+		if(!userStatus.equals("新生状态"))
+			contactsMember=((CampusApplication)getApplicationContext()).getLinkManDic().get(toid);
 		if(userType.equals("老师") && contactsMember!=null && contactsMember.getUserType().equals("学生"))
 		{
 			Intent intent = new Intent(ChatMsgActivity.this,StudentInfoActivity.class);

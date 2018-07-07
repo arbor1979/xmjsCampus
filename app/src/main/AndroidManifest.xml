@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dandian.campus.xmjs"
-    android:versionCode="10"
-    android:versionName="1.0" >
+    android:versionCode="11"
+    android:versionName="1.1" >
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -27,8 +27,33 @@
         android:icon="@drawable/ic_logo1"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-       
 
+        <activity
+            android:name=".activity.BaodaoHandleActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_baodao_handle" >
+        </activity>
+        <activity
+            android:name="com.dandian.campus.xmjs.activity.ChangePwdNewStudentActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.MyStatusActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.SubmitDataActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.EmsTraceActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.DormBedActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.SelectStudentActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.dandian.campus.xmjs.activity.CutImageActivity"
             android:label="@string/app_name"
