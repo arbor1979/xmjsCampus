@@ -14,6 +14,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
@@ -30,11 +31,13 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieSyncManager;
 import android.webkit.DownloadListener;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.PluginState;
@@ -59,6 +62,7 @@ import com.dandian.campus.xmjs.util.AppUtility;
 import com.dandian.campus.xmjs.util.IntentUtility;
 import com.dandian.campus.xmjs.util.PrefUtility;
 import com.dandian.campus.xmjs.util.AppUtility.CallBackInterface;
+
 
 /**
  * 信息
@@ -89,13 +93,19 @@ public class WebSiteActivity extends Activity {
 	private String downloadUrl;
 	private File downloadFile;
 	private static boolean bOfficeInstall=false,bZipInstall=false;
+	private ValueCallback<Uri> uploadMessage;
+	private ValueCallback<Uri[]> uploadMessageAboveL;
+	private final static int FILE_CHOOSER_RESULT_CODE = 10000;
 	@SuppressLint({ "SetJavaScriptEnabled", "CutPasteId" })
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.web_site);
+
 		ExitApplication.getInstance().addActivity(this);
 		frameLayout = (LinearLayout)findViewById(R.id.mainLayout);
+
 		loading=(FrameLayout)findViewById(R.id.loading);
 		mWebView = (WebView) findViewById(R.id.website);
 		layoutHead = (RelativeLayout) findViewById(R.id.headerlayout);
@@ -301,9 +311,78 @@ public class WebSiteActivity extends Activity {
 			Log.d("ZR", consoleMessage.message()+" at "+consoleMessage.sourceId()+":"+consoleMessage.lineNumber());
 			return super.onConsoleMessage(consoleMessage);
 		}
+		// For Android < 3.0
+		public void openFileChooser(ValueCallback<Uri> valueCallback) {
+			uploadMessage = valueCallback;
+			openImageChooserActivity();
+		}
+
+		// For Android  >= 3.0
+		public void openFileChooser(ValueCallback valueCallback, String acceptType) {
+			uploadMessage = valueCallback;
+			openImageChooserActivity();
+		}
+
+		//For Android  >= 4.1
+		public void openFileChooser(ValueCallback<Uri> valueCallback, String acceptType, String capture) {
+			uploadMessage = valueCallback;
+			openImageChooserActivity();
+		}
+
+		// For Android >= 5.0
+		@Override
+		public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams) {
+			uploadMessageAboveL = filePathCallback;
+			openImageChooserActivity();
+			return true;
+		}
+
 	}
-	 
-	
+	private void openImageChooserActivity() {
+		Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+		i.addCategory(Intent.CATEGORY_OPENABLE);
+		i.setType("*/*");
+		startActivityForResult(Intent.createChooser(i, "文件选择"), FILE_CHOOSER_RESULT_CODE);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == FILE_CHOOSER_RESULT_CODE) {
+			if (null == uploadMessage && null == uploadMessageAboveL) return;
+			Uri result = data == null || resultCode != RESULT_OK ? null : data.getData();
+			if (uploadMessageAboveL != null) {
+				onActivityResultAboveL(requestCode, resultCode, data);
+			} else if (uploadMessage != null) {
+				uploadMessage.onReceiveValue(result);
+				uploadMessage = null;
+			}
+		}
+	}
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	private void onActivityResultAboveL(int requestCode, int resultCode, Intent intent) {
+		if (requestCode != FILE_CHOOSER_RESULT_CODE || uploadMessageAboveL == null)
+			return;
+		Uri[] results = null;
+		if (resultCode == Activity.RESULT_OK) {
+			if (intent != null) {
+				String dataString = intent.getDataString();
+				ClipData clipData = intent.getClipData();
+				if (clipData != null) {
+					results = new Uri[clipData.getItemCount()];
+					for (int i = 0; i < clipData.getItemCount(); i++) {
+						ClipData.Item item = clipData.getItemAt(i);
+						results[i] = item.getUri();
+					}
+				}
+				if (dataString != null)
+					results = new Uri[]{Uri.parse(dataString)};
+			}
+		}
+		uploadMessageAboveL.onReceiveValue(results);
+		uploadMessageAboveL = null;
+	}
+
 	private class MyWebClient extends WebViewClient
 	{
 		 @Override  
@@ -349,6 +428,12 @@ public class WebSiteActivity extends Activity {
 				needLoadHtml="";
 				loginDate=new Date();
 			}
+			/*
+			int navBarHeight=AppUtility.getDaoHangHeight(mWebView.getContext());
+			if(navBarHeight>0) {
+				mWebView.loadUrl("javascript:document.body.style.paddingBottom='"+navBarHeight+"px'; void 0");
+			}
+			*/
 			
 	    }
 		public void onPageStarted(WebView view, String url, Bitmap favicon) {

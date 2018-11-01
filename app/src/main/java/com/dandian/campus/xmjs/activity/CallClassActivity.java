@@ -42,6 +42,7 @@ import android.widget.TextView;
 
 import com.androidquery.AQuery;
 import com.androidquery.callback.ImageOptions;
+
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.dandian.campus.xmjs.CampusApplication;

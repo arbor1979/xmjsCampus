@@ -5,17 +5,22 @@ import java.util.List;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 
+import com.dandian.campus.xmjs.R;
 import com.dandian.campus.xmjs.fragment.SchoolAchievementDetailFragment;
 import com.dandian.campus.xmjs.fragment.SchoolNoticeDetailFragment;
 import com.dandian.campus.xmjs.fragment.SchoolQuestionnaireDetailFragment;
 import com.dandian.campus.xmjs.fragment.SchoolWorkAttendanceDetailFragment;
 import com.dandian.campus.xmjs.util.AppUtility;
+
 
 /**
  * 
@@ -33,7 +38,7 @@ import com.dandian.campus.xmjs.util.AppUtility;
  */
 public class SchoolDetailActivity extends FragmentActivity {
 	private String TAG = "SchoolDetailActivity";
-	
+
 	private static List<String> TemplateNameS = new ArrayList<String>();
 	private int templateType;
 	FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -51,6 +56,11 @@ public class SchoolDetailActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		//StatusBarCompat.setStatusBarColor(this, getResources().getColor(R.color.topbar_background), false);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			Window window = getWindow();
+			window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+		}
 		fragment = getSupportFragmentManager().findFragmentById(
 				android.R.id.content);
 		Intent intent = getIntent();

@@ -30,6 +30,7 @@ import android.widget.NumberPicker.OnValueChangeListener;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.dandian.campus.xmjs.R;
 import com.dandian.campus.xmjs.activity.TabHostActivity.MenuListener;
@@ -56,7 +57,7 @@ public class SubjectActivity extends FragmentActivity {
 	private TextView tvClose, tvOk, tvRight;
 	private NumberPicker nPicker1;
 	private PopupWindow popupWindow;
-	private final String ACTION_NAME = "refreshSubject";
+	private final String ACTION_NAME = "xmjs_refreshSubject";
 	private Dialog mLoadingDialog;
 	private SubjectFragment subjectFragment;
 	private DatabaseHelper database;
@@ -66,6 +67,7 @@ public class SubjectActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		Log.d(TAG, "----------------onCreate-----------------------");
 		setContentView(R.layout.activity_subject);
 		ExitApplication.getInstance().addActivity(this);

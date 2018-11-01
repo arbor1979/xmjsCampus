@@ -3,17 +3,27 @@ package com.dandian.campus.xmjs.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.dandian.campus.xmjs.R;
 import com.dandian.campus.xmjs.fragment.SchoolAchievementFragment;
 import com.dandian.campus.xmjs.fragment.SchoolBlogFragment;
 import com.dandian.campus.xmjs.fragment.SchoolNoticeFragment;
 import com.dandian.campus.xmjs.fragment.SchoolQuestionnaireFragment;
 import com.dandian.campus.xmjs.fragment.SchoolWorkAttendanceFragment;
+import com.dandian.campus.xmjs.util.AppUtility;
+
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 
 /**
  * 
@@ -45,6 +55,12 @@ public class SchoolActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			Window window = getWindow();
+			window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+		}
 
 		// Check what fragment is shown, replace if needed.
 		fragment = getSupportFragmentManager().findFragmentById(
@@ -104,4 +120,6 @@ public class SchoolActivity extends FragmentActivity {
         title = savedInstanceState.getString("title");
         interfaceName = savedInstanceState.getString("interfaceName");
     }
+
+
 }

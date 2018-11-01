@@ -37,7 +37,7 @@ import com.dandian.campus.xmjs.util.PrefUtility;
 
 public class SchoolService extends Service {
 	final String TAG = "SchoolService";
-	private final String ACTION_NAME = "refreshSubject";
+	private final String ACTION_NAME = "xmjs_refreshSubject";
 	private Context mContext = SchoolService.this;
 	/** 正在下载 */
 	private final int DOWN_LOADING = 0;
@@ -89,7 +89,7 @@ public class SchoolService extends Service {
 		if (!AppUtility.isInitContactData()) {
 			DatabaseHelper database = OpenHelperManager.getHelper(SchoolService.this, DatabaseHelper.class);
 			String checkCode = PrefUtility.get(Constants.PREF_CHECK_CODE, "");
-			InitData initData = new InitData(SchoolService.this,database, null,"refreshContact",checkCode);
+			InitData initData = new InitData(SchoolService.this,database, null,"xmjs_refreshContact",checkCode);
 			initData.initContactInfo();
 		}
 	}

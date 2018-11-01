@@ -84,6 +84,7 @@ import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxStatus;
 import com.androidquery.callback.BitmapAjaxCallback;
 import com.example.androidgifdemo.MyTextViewEx;
+
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.PreparedDelete;
@@ -169,7 +170,7 @@ public class ChatMsgActivity extends FragmentActivity implements IXListViewListe
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ExitApplication.getInstance().addActivity(this);
-		
+
 		user=((CampusApplication)getApplicationContext()).getLoginUserObj();
 		myHeadPic = user.getUserImage();
 		

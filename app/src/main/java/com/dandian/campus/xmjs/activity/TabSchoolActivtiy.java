@@ -228,6 +228,7 @@ public class TabSchoolActivtiy extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "----------------onCreate-----------------------");
+
 		setContentView(R.layout.tab_activity_school);
 		aq = new AQuery(this);
 		

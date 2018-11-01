@@ -25,6 +25,7 @@ import com.dandian.campus.xmjs.util.AppUtility.CallBackInterface;
 import com.dandian.campus.xmjs.widget.BottomTabLayout;
 import com.dandian.campus.xmjs.widget.BottomTabLayout.OnCheckedChangeListener;
 
+
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -53,6 +54,7 @@ public class ClassDetailActivity extends TabActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_tab_classdetail);
 		aq = new AQuery(this);
 

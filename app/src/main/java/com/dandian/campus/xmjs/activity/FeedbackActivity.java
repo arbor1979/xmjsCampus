@@ -33,6 +33,7 @@ import com.dandian.campus.xmjs.util.Base64;
 import com.dandian.campus.xmjs.util.DialogUtility;
 import com.dandian.campus.xmjs.util.PrefUtility;
 
+
 public class FeedbackActivity extends Activity implements OnClickListener {
 	private String TAG = "FeedbackActivity";
 	private Button back,send;
@@ -44,6 +45,7 @@ public class FeedbackActivity extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ExitApplication.getInstance().addActivity(this);
+
 		setContentView(R.layout.activity_feedback);
 		inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		initTitle();

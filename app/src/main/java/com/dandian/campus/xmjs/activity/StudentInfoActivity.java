@@ -23,6 +23,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.TextView;
 
+
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.dandian.campus.xmjs.R;
@@ -42,7 +43,7 @@ public class StudentInfoActivity extends FragmentActivity {
 	//private ArrayList<View> views;
 	//private View viewInfo, viewTable, viewScore, viewReinfo;
 	private TextView textViewPoint, textViewBlank, tv_title, bn_go;
-	 Button bn_back, menu, refresh;
+	 Button bn_back, refresh;
 	private TextView[] textViewPoints, textViewBlanks;
 	//private Intent intent;
 	//private Student studentInfo;
@@ -56,6 +57,7 @@ public class StudentInfoActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_stuinfo);
 		ExitApplication.getInstance().addActivity(this);
 		studentId = getIntent().getStringExtra("studentId");
@@ -98,7 +100,6 @@ public class StudentInfoActivity extends FragmentActivity {
 		bn_back = (Button) findViewById(R.id.back);
 
 		tv_title.setText("学生详情");
-		menu = (Button) findViewById(R.id.menu);
 		bn_back.setOnClickListener(new OnClickListener() {
 
 			@Override

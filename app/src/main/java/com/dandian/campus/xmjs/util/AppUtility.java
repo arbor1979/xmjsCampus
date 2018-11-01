@@ -7,6 +7,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
@@ -20,6 +21,7 @@ import org.apache.http.conn.util.InetAddressUtils;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
@@ -37,6 +39,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.ConnectivityManager;
@@ -51,18 +55,27 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.webkit.WebView;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.dandian.campus.xmjs.R;
 import com.dandian.campus.xmjs.activity.TabHostActivity;
 import com.dandian.campus.xmjs.base.Constants;
 import com.dandian.campus.xmjs.service.Alarmreceiver;
+import com.dandian.campus.xmjs.widget.XListView;
 
 import static android.content.Context.ALARM_SERVICE;
 
@@ -1036,4 +1049,132 @@ public class AppUtility {
 		Pattern pattern = Pattern.compile("[0-9]+");
 		return pattern.matcher(str).matches();
 	}
+
+	public static void setWindowState(Activity atx)
+	{
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			Window window = atx.getWindow();
+			window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+					| WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+			window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+					| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION  //该参数指布局能延伸到navigationbar，我们场景中不应加这个参数
+					| View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+			window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+			window.setStatusBarColor(Color.TRANSPARENT);
+			window.setNavigationBarColor(Color.TRANSPARENT); //设置navigationbar颜色为透明
+		}
+	}
+
+	public static void statusBarTintColor(Activity activity, int color) {
+		// 代表 5.0 及以上
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			activity.getWindow().setStatusBarColor(color);
+			return;
+		}
+
+		// versionCode > 4.4  and versionCode < 5.0
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+			//透明状态栏
+			activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+			ViewGroup androidContainer = (ViewGroup) activity.findViewById(android.R.id.content);
+			// 留出高度 setFitsSystemWindows  true代表会调整布局，会把状态栏的高度留出来
+			View contentView = androidContainer.getChildAt(0);
+			if (contentView != null) {
+				contentView.setFitsSystemWindows(true);
+			}
+			// 在原来的位置上添加一个状态栏
+			View statusBarView = createStatusBarView(activity);
+			androidContainer.addView(statusBarView, 0);
+			statusBarView.setBackgroundColor(color);
+		}
+	}
+
+	/**
+	 * 创建一个需要填充statusBarView
+	 */
+	private static View createStatusBarView(Activity activity) {
+		View statusBarView = new View(activity);
+		ViewGroup.LayoutParams statusBarParams = new ViewGroup.LayoutParams(
+				ViewGroup.LayoutParams.MATCH_PARENT, getStatusBarHeight(activity));
+		statusBarView.setLayoutParams(statusBarParams);
+		return statusBarView;
+	}
+
+	/**
+	 * 获取状态栏的高度
+	 */
+	public static int getStatusBarHeight(Context context) {
+		int result = 0;
+		int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+		if (resourceId > 0) {
+			result = context.getResources().getDimensionPixelSize(resourceId);
+		}
+		return result;
+	}
+	public static View getRootView(Activity context)
+	{
+		return ((ViewGroup)context.findViewById(android.R.id.content)).getChildAt(0);
+	}
+    public static void setRootViewPadding(View view)
+    {
+        int statusBarHeight=getStatusBarHeight(view.getContext());
+        view.setPadding(0, statusBarHeight, 0, 0);
+		List<View> viewList=getAllChildViews(view);
+		for(View subview : viewList)
+		{
+
+			if(subview instanceof ListView || subview instanceof XListView)
+			{
+				ListView mainview=(ListView)subview;
+				if(subview.getLayoutParams().height== -1)
+				{
+					int navBarHeight=getDaoHangHeight(subview.getContext());
+					if(navBarHeight>0) {
+						mainview.setClipToPadding(false);
+						mainview.setPadding(0, 0, 0, navBarHeight);
+					}
+                    break;
+				}
+			}
+			if(subview instanceof ScrollView){
+				ScrollView mainview=(ScrollView)subview;
+				if(subview.getLayoutParams().height== -1)
+				{
+					int navBarHeight=getDaoHangHeight(subview.getContext());
+					if(navBarHeight>0) {
+						mainview.setClipToPadding(false);
+						mainview.setPadding(0, 0, 0, navBarHeight);
+					}
+                    break;
+				}
+			}
+		}
+
+    }
+	public static int getDaoHangHeight(Context context) {
+		int result = 0;
+		int resourceId=0;
+		int rid = context.getResources().getIdentifier("config_showNavigationBar", "bool", "android");
+		if (rid!=0){
+			resourceId = context.getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+			return context.getResources().getDimensionPixelSize(resourceId);
+		}else
+			return 0;
+	}
+	public static List<View> getAllChildViews(View view) {
+		List<View> allchildren = new ArrayList<View>();
+		if (view instanceof ViewGroup) {
+			ViewGroup vp = (ViewGroup) view;
+			for (int i = 0; i < vp.getChildCount(); i++) {
+				View viewchild = vp.getChildAt(i);
+				allchildren.add(viewchild);
+				//再次 调用本身（递归）
+				allchildren.addAll(getAllChildViews(viewchild));
+			}
+		}
+		return allchildren;
+	}
+
+
+
 }

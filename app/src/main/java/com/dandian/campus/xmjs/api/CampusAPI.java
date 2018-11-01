@@ -13,7 +13,7 @@ public class CampusAPI {
 
 	public static String commonQuestionUrl = "http://www.dandian.net/company/ICampus-faq.php"; // 常见问题
 	public static String contractUrl = "http://www.dandian.net/company/ICampus-contract.php"; // 常见问题
-	public static String aboutusUrl = "http://www.dandian.net/company/ICampus-aboutus.php"; // 常见问题
+	public static String aboutusUrl = "http://laoshi.dandian.net/yingxin/aboutus.php"; // 常见问题
 
 	public static String DOWNLOAD_DONE = "http://laoshi.dandian.net/KeJianCounter.php";// 提交下载完成数据
 	public static String DOWNLOAD_DELETE = "http://laoshi.dandian.net/KeJianDelete.php";// 提交删除已下载文件数据

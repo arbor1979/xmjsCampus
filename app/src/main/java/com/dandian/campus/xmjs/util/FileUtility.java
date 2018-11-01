@@ -217,9 +217,15 @@ public class FileUtility {
         if(index>-1)
         {
         	fileName=fileName.substring(index+1);
-        	index=fileName.lastIndexOf("=");
-        	if(index>-1)
-        		fileName=fileName.substring(index+1);
+        	String [] queryParams=fileName.split("&");
+			for (String item:queryParams) {
+				String[] tmp=item.split("=");
+				index=tmp[1].indexOf(".");
+				if(index>-1) {
+					fileName = tmp[1];
+					break;
+				}
+			}
         }
 		try {
 				fileName=java.net.URLDecoder.decode(fileName,"utf-8");

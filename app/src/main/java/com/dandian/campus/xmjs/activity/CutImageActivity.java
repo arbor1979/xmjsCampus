@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 
 import com.dandian.campus.xmjs.R;
 import com.dandian.campus.xmjs.util.ImageUtility;
+
 import com.zhy.view.ClipImageLayout;
 
 import android.app.Activity;
@@ -31,6 +32,7 @@ public class CutImageActivity extends Activity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_cut_image);
 		picPath=getIntent().getStringExtra("picPath");
 		mClipImageLayout = (ClipImageLayout) findViewById(R.id.id_clipImageLayout);

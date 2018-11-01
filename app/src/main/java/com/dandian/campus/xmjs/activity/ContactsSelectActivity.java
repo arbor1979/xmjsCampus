@@ -41,6 +41,7 @@ import com.dandian.campus.xmjs.fragment.ContactsSelectSearchFragment;
 import com.dandian.campus.xmjs.fragment.ContactsSelectSearchFragment.MyListener;
 import com.dandian.campus.xmjs.util.DialogUtility;
 
+
 /**
  * 
  * #(c) ruanyun PocketCampus <br/>
@@ -79,6 +80,7 @@ public class ContactsSelectActivity extends FragmentActivity implements MyListen
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "----------------onCreate-----------------------");
 		dm = getResources().getDisplayMetrics();
+
 		setContentView(R.layout.activity_contacts_select);
 		
 		contacts = (LinearLayout) findViewById(R.id.content);

@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
@@ -29,7 +30,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -42,6 +45,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -53,6 +57,8 @@ import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.TableRow;
 import android.widget.TextView;
+
+
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.dandian.campus.xmjs.CampusApplication;
@@ -106,12 +112,18 @@ public class LoginActivity extends UmengNotifyClickActivity implements OnClickLi
 	private boolean flag1=false,flag2=false;
 	
 	/** Called when the activity is first created. */
+
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
 
 		setContentView(R.layout.activity_login);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			getWindow().setNavigationBarColor(getResources().getColor(R.color.topbar_background));
+		}
+
 		ExitApplication.getInstance().addActivity(this);
 		try {
 			accountInfoDao = getHelper().getAccountInfoDao();
@@ -147,6 +159,7 @@ public class LoginActivity extends UmengNotifyClickActivity implements OnClickLi
 			mPasswordView.setText(mPassword);
 			doLogin();
 		}
+
 		
 	}
 
@@ -160,19 +173,19 @@ public class LoginActivity extends UmengNotifyClickActivity implements OnClickLi
 		
 		PrefUtility.put(Constants.PREF_SELECTED_WEEK, 0);
 		String checkCode = PrefUtility.get(Constants.PREF_CHECK_CODE, "");
-		InitData initData = new InitData(LoginActivity.this,getHelper(), null,"refreshSubject",checkCode);
+		InitData initData = new InitData(LoginActivity.this,getHelper(), null,"xmjs_refreshSubject",checkCode);
 		initData.initAllInfo();
 		
 		initData = new InitData(LoginActivity.this,
-				getHelper(), null, "refreshContact", PrefUtility.get(Constants.PREF_CHECK_CODE, ""));
+				getHelper(), null, "xmjs_refreshContact", PrefUtility.get(Constants.PREF_CHECK_CODE, ""));
 		initData.initContactInfo();
 		
 		
 	}
 	public void registerBoradcastReceiver() {
 		IntentFilter myIntentFilter = new IntentFilter();
-		myIntentFilter.addAction("refreshSubject");
-		myIntentFilter.addAction("refreshContact");
+		myIntentFilter.addAction("xmjs_refreshSubject");
+		myIntentFilter.addAction("xmjs_refreshContact");
 		// 注册广播
 		registerReceiver(mBroadcastReceiver, myIntentFilter);
 	}
@@ -184,9 +197,9 @@ public class LoginActivity extends UmengNotifyClickActivity implements OnClickLi
 			
 			Log.d(TAG, "----------->BroadcastReceiver：" + action);
 		
-			if(action.equals("refreshSubject"))
+			if(action.equals("xmjs_refreshSubject"))
 				flag1=true;
-			if( action.equals("refreshContact"))
+			if( action.equals("xmjs_refreshContact"))
 				flag2=true;
 			
 			if(flag1 && flag2)
@@ -219,8 +232,15 @@ public class LoginActivity extends UmengNotifyClickActivity implements OnClickLi
 		login_choose = (ImageButton) findViewById(R.id.login_choose);
 		mLoadingDialog = DialogUtility.createLoadingDialog(this, "正在登录...");
 		if (lastLogin != null) {
-			mUsernameView.setText(lastLogin.getUserName());
-			mPasswordView.setText(lastLogin.getPassWord());
+			if(PrefUtility.getBoolean(Constants.PREF_LOGIN_REMEBER, false)) {
+				mUsernameView.setText(lastLogin.getUserName());
+				mPasswordView.setText(lastLogin.getPassWord());
+			}
+			else
+			{
+				mUsernameView.setText("");
+				mPasswordView.setText("");
+			}
 		}
 		// 注册按钮点击事件
 		loginButton.setOnClickListener(this);
@@ -254,6 +274,10 @@ public class LoginActivity extends UmengNotifyClickActivity implements OnClickLi
 			}
 		});
 		*/
+		String thisVersion = CampusApplication.getVersion();
+		TextView tv_copyright = (TextView) findViewById(R.id.tv_copyright);
+		tv_copyright.setText(tv_copyright.getText()+" v"+thisVersion);
+
 	}
 
 	@SuppressWarnings("deprecation")

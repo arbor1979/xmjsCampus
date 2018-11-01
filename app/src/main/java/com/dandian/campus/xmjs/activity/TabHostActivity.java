@@ -22,21 +22,29 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
+import android.widget.Toolbar;
+
+import com.dandian.campus.xmjs.util.TimeUtility;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
@@ -89,7 +97,7 @@ public class TabHostActivity extends TabActivity   {
 	private Intent myStatusIntent,submitDataIntent;
 	private TextView pageTime, pageName, departmentOrClassName;
 	private ImageView pagePhoto;
-	private Button pageMyInfo, pageMyAlbum,/* pageRecommend, */pageSetting, pageClearCache,
+	private Button pageMyInfo, pageMyAlbum,/* pageRecommend, */pageSetting,pageChangepwd,pageAboutus, pageClearCache,
 			pageFeedback, pageExit;
 	private Dao<User, Integer> userDao;
 	private Dao<ChatFriend,Integer> chatFriendDao;
@@ -316,14 +324,17 @@ public class TabHostActivity extends TabActivity   {
 			showDialog(contentText);
 		}
 		*/
+
 		setContentView(R.layout.activity_tabhost);
+
 		mainTab = (BottomTabLayout) findViewById(R.id.bottom_tab_layout);
 		mainTab.setOnCheckedChangeListener(changeListener);
+
 		menuListener=new MenuListener();
-		prepareIntent();
-		setupIntent();
 		showMenu();
-		
+        prepareIntent();
+        setupIntent();
+
 		clearCacheDialog = new Dialog(TabHostActivity.this, R.style.dialog);
 		//Intent intent = new Intent(TabHostActivity.this,SchoolService.class);
 		//bindService(intent, connection, Context.BIND_AUTO_CREATE);
@@ -358,6 +369,7 @@ public class TabHostActivity extends TabActivity   {
 		sendBroadcast(intent);
 		getAlbumUnreadCount();
 		Log.d(TAG,"生命周期:onCreate");
+
 	}
 
 	@Override
@@ -384,7 +396,7 @@ public class TabHostActivity extends TabActivity   {
 		{
 			PrefUtility.put(Constants.PREF_SELECTED_WEEK, 0);
 			String checkCode = PrefUtility.get(Constants.PREF_CHECK_CODE, "");
-			InitData initData = new InitData(TabHostActivity.this,getHelper(), null,"refreshSubject",checkCode);
+			InitData initData = new InitData(TabHostActivity.this,getHelper(), null,"xmjs_refreshSubject",checkCode);
 			initData.initAllInfo();
 		}
 		Log.d(TAG,"生命周期:onStart");
@@ -441,6 +453,8 @@ public class TabHostActivity extends TabActivity   {
 		pageMyInfo = (Button) view.findViewById(R.id.page_myinfo);
 		pageMyAlbum= (Button) view.findViewById(R.id.page_myalbum);
 		pageSetting = (Button) view.findViewById(R.id.page_setting);
+		pageChangepwd = (Button) view.findViewById(R.id.page_changepwd);
+		pageAboutus = (Button) view.findViewById(R.id.page_aboutus);
 		pageClearCache = (Button) view.findViewById(R.id.page_clear_cache);
 		pageFeedback = (Button) view.findViewById(R.id.page_feedback);
 		pageExit = (Button) view.findViewById(R.id.page_exit);
@@ -492,11 +506,11 @@ public class TabHostActivity extends TabActivity   {
 
 		pagePhoto.setOnClickListener(new MenuInfoListener());
 		pageSetting.setOnClickListener(new MenuInfoListener());
-		// pageMyCourse.setOnClickListener(new MenuInfoListener());
+		pageChangepwd.setOnClickListener(new MenuInfoListener());
 		pageMyInfo.setOnClickListener(new MenuInfoListener());
 		pageClearCache.setOnClickListener(new MenuInfoListener());
 		pageFeedback.setOnClickListener(new MenuInfoListener());
-		// pageRecommend.setOnClickListener(new MenuInfoListener());
+		pageAboutus.setOnClickListener(new MenuInfoListener());
 		pageExit.setOnClickListener(new MenuInfoListener());
 		pageMyAlbum.setOnClickListener(new MenuInfoListener());
 	}
@@ -544,10 +558,10 @@ public class TabHostActivity extends TabActivity   {
 		{
 			bottom_tab_work.setVisibility(View.GONE);
 			bottom_tab_communication.setVisibility(View.GONE);
+			localTabHost.addTab(buildTabSpec(TAB_TAG_SCHOOL, R.string.school,
+					R.drawable.ic_launcher, schoolIntent));
 			localTabHost.addTab(buildTabSpec(TAB_TAG_MYSELF, R.string.mystatus,
 					R.drawable.ic_launcher, myStatusIntent));
-			localTabHost.addTab(buildTabSpec(TAB_TAG_SCHOOL, R.string.school,
-				R.drawable.ic_launcher, schoolIntent));
 			localTabHost.addTab(buildTabSpec(TAB_TAG_FINISH,
 					R.string.curriculum, R.drawable.ic_launcher,submitDataIntent));
 			localTabHost.addTab(buildTabSpec(TAB_TAG_MESSAGE, R.string.message,
@@ -559,10 +573,10 @@ public class TabHostActivity extends TabActivity   {
 		{
 			bottom_tab_album.setVisibility(View.GONE);
 			bottom_tab_finish.setVisibility(View.GONE);
-			localTabHost.addTab(buildTabSpec(TAB_TAG_MYSELF, R.string.mystatus,
-					R.drawable.ic_launcher, myStatusIntent));
 			localTabHost.addTab(buildTabSpec(TAB_TAG_SCHOOL, R.string.school,
 					R.drawable.ic_launcher, schoolIntent));
+			localTabHost.addTab(buildTabSpec(TAB_TAG_MYSELF, R.string.mystatus,
+					R.drawable.ic_launcher, myStatusIntent));
 			localTabHost.addTab(buildTabSpec(TAB_TAG_WORK, R.string.study,
 					R.drawable.ic_launcher, workIntent));
 			localTabHost.addTab(buildTabSpec(TAB_TAG_MESSAGE, R.string.message,
@@ -616,15 +630,8 @@ public class TabHostActivity extends TabActivity   {
 
 	// 设置默认选中项
 	private void findView() {
-		if (user.getsStatus().equals("新生状态") || user.getsStatus().equals("迎新管理员") || user.getsStatus().equals("班主任")) {
-			View nearBtn = mainTab.findViewById(R.id.bottom_tab_myself);
-			nearBtn.setSelected(true);
-		}
-		else
-		{
-			View nearBtn = mainTab.findViewById(R.id.bottom_tab_school);
-			nearBtn.setSelected(true);
-		}
+		View nearBtn = mainTab.findViewById(R.id.bottom_tab_school);
+		nearBtn.setSelected(true);
 	}
 
 	OnCheckedChangeListener changeListener = new OnCheckedChangeListener() {
@@ -739,6 +746,45 @@ public class TabHostActivity extends TabActivity   {
 						AlbumPersonalActivity.class);
 				startActivity(albumIntent);
 				break;
+			case R.id.page_changepwd:
+			/*
+			Intent contractIntent = new Intent(SysSettingActivity.this,WebSiteActivity.class);
+			contractIntent.putExtra("url", CampusAPI.contractUrl);
+			contractIntent.putExtra("title", getResources().getString(R.string.settings_contract));
+			startActivity(contractIntent);
+			*/
+					//修改密码
+					final EditText et=new EditText(TabHostActivity.this);
+					new AlertDialog.Builder(TabHostActivity.this).setTitle("请输入旧密码").setView(et)
+							.setPositiveButton("确定", new DialogInterface.OnClickListener()
+							{
+
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									// TODO Auto-generated method stub
+									String oldpwd=et.getText().toString();
+									String mPassword=PrefUtility.get(Constants.PREF_LOGIN_PASS, "");
+									if(!oldpwd.equals(mPassword))
+									{
+										AppUtility.showToastMsg(TabHostActivity.this, "旧密码不正确！");
+									}
+									else
+									{
+										Intent intent = new Intent(TabHostActivity.this,ChangePwdActivity.class);
+										intent.putExtra("oldpwd", oldpwd);
+										startActivity(intent);
+									}
+								}
+
+							}).setNegativeButton("取消", null).show();
+					TimeUtility.popSoftKeyBoard(TabHostActivity.this,et);
+					break;
+				case R.id.page_aboutus:
+					Intent aboutusIntent = new Intent(TabHostActivity.this,WebSiteActivity.class);
+					aboutusIntent.putExtra("url", CampusAPI.aboutusUrl);
+					aboutusIntent.putExtra("title", getResources().getString(R.string.settings_aboutus));
+					startActivity(aboutusIntent);
+					break;
 			case R.id.page_clear_cache:
 				showClearCacheDialog();
 				break;

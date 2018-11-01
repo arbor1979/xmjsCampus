@@ -39,6 +39,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.dandian.campus.xmjs.R;
 import com.dandian.campus.xmjs.base.Constants;
@@ -94,6 +95,7 @@ public class ContactsActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "----------------onCreate-----------------------");
 		dm = getResources().getDisplayMetrics();
+
 		setContentView(R.layout.activity_contacts);
 		contacts = (LinearLayout) findViewById(R.id.content);
 		search = (EditText) findViewById(R.id.edit_search);
@@ -123,7 +125,7 @@ public class ContactsActivity extends FragmentActivity {
 	{
 		PrefUtility.put(Constants.PREF_INIT_CONTACT_FLAG, false);
 		InitData initData = new InitData(ContactsActivity.this,
-				getHelper(), dg, "refreshContact", PrefUtility.get(Constants.PREF_CHECK_CODE, ""));
+				getHelper(), dg, "xmjs_refreshContact", PrefUtility.get(Constants.PREF_CHECK_CODE, ""));
 		initData.initContactInfo();
 	}
 	
@@ -381,7 +383,7 @@ public class ContactsActivity extends FragmentActivity {
         public void onReceive(Context context, Intent intent) { 
             String action = intent.getAction(); 
          
-            if(action.equals("refreshContact")){ 
+            if(action.equals("xmjs_refreshContact")){
             	Log.d(TAG, "----------->BroadcastReceiver：refreshContact");
             	/*
             	search.setEnabled(true);
@@ -414,7 +416,7 @@ public class ContactsActivity extends FragmentActivity {
     
     public void registerBoradcastReceiver(){ 
         IntentFilter myIntentFilter = new IntentFilter(); 
-        myIntentFilter.addAction("refreshContact"); 
+        myIntentFilter.addAction("xmjs_refreshContact");
         myIntentFilter.addAction("getLastMsg"); 
         
         //注册广播       

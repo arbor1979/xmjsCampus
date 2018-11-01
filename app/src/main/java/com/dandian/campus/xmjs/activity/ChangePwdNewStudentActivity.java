@@ -27,6 +27,7 @@ import com.dandian.campus.xmjs.util.DialogUtility;
 import com.dandian.campus.xmjs.util.PrefUtility;
 import com.dandian.campus.xmjs.util.TimeUtility;
 
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,6 +46,7 @@ public class ChangePwdNewStudentActivity extends Activity implements OnClickList
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_change_newstudent_pwd);
 		inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		

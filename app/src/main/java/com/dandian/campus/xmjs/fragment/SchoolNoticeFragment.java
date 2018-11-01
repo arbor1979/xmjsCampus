@@ -15,6 +15,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -171,7 +172,9 @@ public class SchoolNoticeFragment extends Fragment implements IXListViewListener
 		this.inflater = inflater;
 		View view = inflater.inflate(R.layout.school_xlistview_fragment,
 				container, false);
+
 		myListview = (XListView) view.findViewById(R.id.my_listview);
+		AppUtility.setRootViewPadding(view);
 		myListview.setDivider(getResources().getDrawable(R.color.transparent));
 		btnLeft = (Button) view.findViewById(R.id.btn_left);
 		lyLeft = (LinearLayout) view.findViewById(R.id.layout_btn_left);

@@ -140,6 +140,7 @@ public class SchoolNoticeDetailFragment extends Fragment {
 		interfaceName=getArguments().getString("interfaceName");
 		View view = inflater.inflate(R.layout.school_notice_detail_fragment,
 				container, false);
+		AppUtility.setRootViewPadding(view);
 		aq = new AQuery(view);
 		btnLeft = (Button) view.findViewById(R.id.btn_left);
 		loadingLayout = (LinearLayout) view.findViewById(R.id.data_load);

@@ -26,6 +26,7 @@ import com.dandian.campus.xmjs.entity.EMSEntry;
 import com.dandian.campus.xmjs.entity.EMSEntry.EMSItemEntry;
 import com.dandian.campus.xmjs.util.AppUtility;
 
+
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -44,6 +45,7 @@ public class EmsTraceActivity extends Activity {
 	EMSEntry emsEntry;
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_ems_trace);
 		chat_msg_none = (TextView) findViewById(R.id.chat_msg_none);
 		listview=(ListView)findViewById(R.id.message_list);

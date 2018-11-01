@@ -132,7 +132,9 @@ public class SchoolQuestionnaireFragment extends Fragment {
 		this.inflater = inflater;
 		View view = inflater.inflate(R.layout.school_listview_fragment,
 				container, false);
+
 		myListview = (ListView) view.findViewById(R.id.my_listview);
+		AppUtility.setRootViewPadding(view);
 		btnLeft = (Button) view.findViewById(R.id.btn_left);
 		tvTitle = (TextView) view.findViewById(R.id.tv_title);
 		lyLeft = (LinearLayout) view.findViewById(R.id.layout_btn_left);

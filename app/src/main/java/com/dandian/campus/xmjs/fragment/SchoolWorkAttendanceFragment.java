@@ -179,6 +179,7 @@ public class SchoolWorkAttendanceFragment extends Fragment {
 		this.inflater = inflater;
 		view = inflater.inflate(R.layout.school_work_attendance_fragment,
 				container, false);
+		AppUtility.setRootViewPadding(view);
 		aq = new AQuery(view);
 		String number =((CampusApplication)getActivity().getApplicationContext()).getLoginUserObj().getId();
 		try {

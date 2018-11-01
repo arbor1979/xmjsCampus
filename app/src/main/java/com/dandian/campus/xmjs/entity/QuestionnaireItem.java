@@ -28,9 +28,11 @@ public class QuestionnaireItem {
 		title=jo.optString("标题显示");
 		questions=new ArrayList<Question>();
 		JSONArray joq=jo.optJSONArray("调查问卷数值");
-		for (int i = 0; i < joq.length(); i++) {
-			Question q=new Question(joq.optJSONObject(i));
-			questions.add(q);
+		if(joq!=null) {
+			for (int i = 0; i < joq.length(); i++) {
+				Question q = new Question(joq.optJSONObject(i));
+				questions.add(q);
+			}
 		}
 	}
 	public class Question {

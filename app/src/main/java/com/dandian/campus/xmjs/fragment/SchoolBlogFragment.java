@@ -234,9 +234,11 @@ public class SchoolBlogFragment extends Fragment implements IXListViewListener,R
 		this.inflater = inflater;
 		View view = inflater.inflate(R.layout.school_xlistview_fragment,
 				container, false);
+
 		user=((CampusApplication)getActivity().getApplicationContext()).getLoginUserObj();
 		aq= new AQuery(view);
 		myListview = (XListView) view.findViewById(R.id.my_listview);
+		AppUtility.setRootViewPadding(view);
 		myListview.setDivider(getResources().getDrawable(R.color.transparent));
 		btnLeft = (Button) view.findViewById(R.id.btn_left);
 		lyLeft = (LinearLayout) view.findViewById(R.id.layout_btn_left);

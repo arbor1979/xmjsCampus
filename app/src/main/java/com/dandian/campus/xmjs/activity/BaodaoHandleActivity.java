@@ -56,6 +56,7 @@ import com.dandian.campus.xmjs.util.Base64;
 import com.dandian.campus.xmjs.util.DateHelper;
 import com.dandian.campus.xmjs.util.DialogUtility;
 
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -81,6 +82,7 @@ public class BaodaoHandleActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_baodao_handle);
 		ll_studentinfo=(LinearLayout)this.findViewById(R.id.ll_studentinfo);
 		loadingLayout = (LinearLayout) findViewById(R.id.data_load);
@@ -430,7 +432,7 @@ public class BaodaoHandleActivity extends Activity {
 			                final boolean checked = ((CheckBox) v).isChecked();
 			                if(!checked)
 			                {
-			                	if(completeResult.optInt("领取校园卡")==1 || completeResult.optInt("分配宿舍")==1 || completeResult.optInt("领宿舍钥匙")==1 || completeResult.optInt("缴费")==1)
+			                	if(completeResult.optInt("领取校园卡")==1 || completeResult.optInt("分配宿舍")==1 || completeResult.optInt("领宿舍钥匙")==1 )
 			                	{
 			                		AppUtility.showErrorToast(BaodaoHandleActivity.this,
 			            					"已有后续步骤已完成，本步骤无法取消");

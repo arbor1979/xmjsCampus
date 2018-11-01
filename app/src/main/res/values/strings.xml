@@ -91,7 +91,7 @@
     <string name="uploading">上传</string>
 
     <!-- 登录 -->
-    <string name="login_title">掌上校园</string>
+    <string name="login_title">厦门技师</string>
     <string name="error_username_required">请输入用户名</string>
     <string name="first_experience">进入演示</string>
     <string name="summary_discipline">授课纪律评价</string>
@@ -143,6 +143,8 @@
     <string name="page_myinfo">我的资料</string>
     <string name="page_myalbum">我的相册</string>
     <string name="page_setting">系统设置</string>
+    <string name="page_changepwd">修改密码</string>
+    <string name="page_aboutus">关于我们</string>
     <string name="page_feedback">意见反馈</string>
     <string name="clear_cache">清除缓存</string>
     <string name="app_version">软件版本：</string>

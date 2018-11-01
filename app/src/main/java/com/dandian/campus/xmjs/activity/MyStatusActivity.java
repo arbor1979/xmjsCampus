@@ -39,6 +39,7 @@ import com.dandian.campus.xmjs.util.DateHelper;
 import com.dandian.campus.xmjs.util.DialogUtility;
 import com.dandian.campus.xmjs.util.PrefUtility;
 
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,6 +76,7 @@ public class MyStatusActivity extends Activity {
 	private String ID;
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_my_info);
 		TextView title = (TextView) findViewById(R.id.tv_title);
 		bt_changepwd=(Button)findViewById(R.id.bt_changepwd);

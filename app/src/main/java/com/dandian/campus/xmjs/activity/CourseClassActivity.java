@@ -59,6 +59,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.androidquery.AQuery;
+
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.dandian.campus.xmjs.BuildConfig;
 import com.dandian.campus.xmjs.CampusApplication;
@@ -401,6 +402,7 @@ public class CourseClassActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		userType = PrefUtility.get(Constants.PREF_CHECK_USERTYPE,"");
 		setContentView(R.layout.activity_view_classroom_course);
 		Log.d(TAG, "--------------onCreate is running----------");

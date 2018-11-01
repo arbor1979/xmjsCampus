@@ -25,6 +25,7 @@ import com.dandian.campus.xmjs.fragment.GroupChatFragment;
 import com.dandian.campus.xmjs.fragment.MemberChatFragment;
 import com.dandian.campus.xmjs.fragment.MessageChatFragment;
 import com.dandian.campus.xmjs.fragment.NoticeChatFragment;
+
 //import com.dandian.campus.xmjs.fragment.MemberInfoFragment;
 
 public class CommunicationActivity extends FragmentActivity {
@@ -45,6 +46,7 @@ public class CommunicationActivity extends FragmentActivity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		ExitApplication.getInstance().addActivity(this);
+
 		setContentView(R.layout.activity_communication);
 		mViewPager = (ViewPager) findViewById(R.id.chat_pager);
 		mChatPagerAdapter = new ChatPagerAdapter(getSupportFragmentManager());

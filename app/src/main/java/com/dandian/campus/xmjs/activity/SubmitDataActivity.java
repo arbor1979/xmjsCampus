@@ -71,6 +71,7 @@ public class SubmitDataActivity extends Activity implements OnItemClickListener 
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.d(TAG, "----------------onCreate-----------------------");
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_submit);
 		TextView title = (TextView) findViewById(R.id.tv_title);
 		title.setVisibility(View.VISIBLE);

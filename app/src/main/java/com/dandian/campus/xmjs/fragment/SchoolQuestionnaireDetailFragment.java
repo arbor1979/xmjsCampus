@@ -406,6 +406,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 		View view = inflater.inflate(R.layout.school_listview_fragment,
 				container, false);
 		myListview = (ListView) view.findViewById(R.id.my_listview);
+		AppUtility.setRootViewPadding(view);
 		btnLeft = (Button) view.findViewById(R.id.btn_left);
 		tvTitle = (TextView) view.findViewById(R.id.tv_title);
 		tvRight = (TextView) view.findViewById(R.id.tv_right);
@@ -979,6 +980,12 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 						e.printStackTrace();
 					}
 				}
+				String isRequired = questions.get(i).getIsRequired();//是否必填
+				if(isRequired.equals("是") && joimages.length()==0){
+					AppUtility.showToastMsg(getActivity(),"请完成问卷再提交");
+					myListview.setSelection(i);
+					return null;
+				}
 				joarr.put(joimages);
 			}
 			else if(mStatus.equals("附件"))
@@ -1007,11 +1014,23 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 						e.printStackTrace();
 					}
 				}
+				String isRequired = questions.get(i).getIsRequired();//是否必填
+				if(isRequired.equals("是") && fujianArray.length()==0){
+					AppUtility.showToastMsg(getActivity(),"请完成问卷再提交");
+					myListview.setSelection(i);
+					return null;
+				}
 				joarr.put(fujianArray);
 			}
 			else if(mStatus.equals("弹出列表"))
 			{
 				JSONArray fujianArray=questions.get(i).getFujianArray();
+				String isRequired = questions.get(i).getIsRequired();//是否必填
+				if(isRequired.equals("是") && fujianArray.length()==0){
+					AppUtility.showToastMsg(getActivity(),"请完成问卷再提交");
+					myListview.setSelection(i);
+					return null;
+				}
 				joarr.put(fujianArray);
 			}
 			else
@@ -1233,12 +1252,14 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 					if(remark.length()>7 && (remark.substring(0, 7).equals("答题状态:错误") || remark.indexOf("error")>0)){
 						holder.tvRemark.setTextColor(getActivity().getResources().getColor(R.color.red_color));
 					}else if(remark.length()>7 && (remark.substring(0, 7).equals("答题状态:正确") || remark.indexOf("right")>0)){
-						holder.tvRemark.setTextColor(getActivity().getResources().getColor(R.color.title_nor));
+						holder.tvRemark.setTextColor(getActivity().getResources().getColor(R.color.subject_current));
 					}
 					else
 						holder.tvRemark.setTextColor(Color.BLUE);
 				}
 			}
+			else
+				holder.tvRemark.setVisibility(View.GONE);
 			if (mStatus.equals("单选")) {
 				holder.imageGridView.setVisibility(View.GONE);
 				holder.radioGroup.setVisibility(View.VISIBLE);

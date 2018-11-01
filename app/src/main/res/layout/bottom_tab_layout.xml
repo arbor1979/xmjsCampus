@@ -15,6 +15,22 @@
         android:orientation="horizontal" >
 
         <FrameLayout
+            android:id="@+id/bottom_tab_school"
+            android:layout_width="0.0dip"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1.0" >
+
+            <TextView
+                style="@style/bottom_tab_tv"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:drawableTop="@drawable/botton_school_selector"
+                android:text="@string/school"
+                android:textSize="@dimen/text_size_xmicro" />
+        </FrameLayout>
+        <!-- 工作 -->
+        <FrameLayout
             android:id="@+id/bottom_tab_myself"
             android:layout_width="0.0dip"
             android:layout_height="fill_parent"
@@ -31,24 +47,6 @@
                 android:textSize="@dimen/text_size_xmicro" />
         </FrameLayout>
         <!-- 校园 -->
-
-        <FrameLayout
-            android:id="@+id/bottom_tab_school"
-            android:layout_width="0.0dip"
-            android:layout_height="fill_parent"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1.0" >
-
-            <TextView
-                style="@style/bottom_tab_tv"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:drawableTop="@drawable/botton_school_selector"
-                android:text="@string/school"
-                android:textSize="@dimen/text_size_xmicro" />
-        </FrameLayout>
-        <!-- 工作 -->
-
         <FrameLayout
             android:id="@+id/bottom_tab_work"
             android:layout_width="0.0dip"

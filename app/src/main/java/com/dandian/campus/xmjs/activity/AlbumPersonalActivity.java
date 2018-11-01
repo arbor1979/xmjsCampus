@@ -54,6 +54,7 @@ import android.widget.TextView;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxStatus;
 import com.androidquery.callback.BitmapAjaxCallback;
+
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.dandian.campus.xmjs.BuildConfig;
@@ -99,6 +100,7 @@ public class AlbumPersonalActivity extends FragmentActivity implements SwipeRefr
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+
 		setContentView(R.layout.activity_album_personal);
 		TextView title=(TextView)findViewById(R.id.setting_tv_title);
 		

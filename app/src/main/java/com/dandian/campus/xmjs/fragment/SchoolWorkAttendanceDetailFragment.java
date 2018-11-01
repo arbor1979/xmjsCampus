@@ -125,9 +125,11 @@ public class SchoolWorkAttendanceDetailFragment extends Fragment {
 		this.inflater = inflater;
 		View view = inflater.inflate(R.layout.school_listview_fragment, container,
 				false);
+
 		aq = new AQuery(view);
 		btnLeft = (Button) view.findViewById(R.id.btn_left);
 		myListview = (ListView) view.findViewById(R.id.my_listview);
+		AppUtility.setRootViewPadding(view);
 		loadingLayout = (LinearLayout) view.findViewById(R.id.data_load);
 		contentLayout = (LinearLayout) view.findViewById(R.id.content_layout);
 		failedLayout = (LinearLayout) view.findViewById(R.id.empty_error);

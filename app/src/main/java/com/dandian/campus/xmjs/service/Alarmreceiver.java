@@ -119,10 +119,10 @@ public class Alarmreceiver extends BroadcastReceiver {
 			downloadSubjectDao = database.getDownloadSubjectDao();
 
 			if ("initBaseData".equals(actionName)) {
-				InitData initData = new InitData(context, database, null, "refreshSubject", checkCode);
+				InitData initData = new InitData(context, database, null, "xmjs_refreshSubject", checkCode);
 				initData.initAllInfo();
 			} else if ("initContactData".equals(actionName)) {
-				InitData initData = new InitData(context, database, null, "refreshContact", checkCode);
+				InitData initData = new InitData(context, database, null, "xmjs_refreshContact", checkCode);
 				initData.initContactInfo();
 			} else if (actionName.equals(Intent.ACTION_BOOT_COMPLETED) ||
 					actionName.equals(Intent.ACTION_USER_PRESENT)) {

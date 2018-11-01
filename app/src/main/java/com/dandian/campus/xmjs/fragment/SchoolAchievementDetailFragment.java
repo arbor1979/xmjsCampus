@@ -295,6 +295,7 @@ public class SchoolAchievementDetailFragment extends Fragment {
 		View view = inflater.inflate(R.layout.school_listview_fragment,
 				container, false);
 		myListview = (ListView) view.findViewById(R.id.my_listview);
+		AppUtility.setRootViewPadding(view);
 		btnLeft = (Button) view.findViewById(R.id.btn_left);
 		tvRight = (TextView) view.findViewById(R.id.tv_right);
 		tvTitle = (TextView) view.findViewById(R.id.tv_title);

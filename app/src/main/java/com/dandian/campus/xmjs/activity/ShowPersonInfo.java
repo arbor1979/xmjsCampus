@@ -56,6 +56,7 @@ import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxStatus;
 import com.androidquery.callback.BitmapAjaxCallback;
 import com.androidquery.callback.ImageOptions;
+
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -103,6 +104,7 @@ public class ShowPersonInfo extends Activity {
 	ImageView headImgView;
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_person_info);
         headImgView=(ImageView)findViewById(R.id.iv_pic);
 		ExitApplication.getInstance().addActivity(this);

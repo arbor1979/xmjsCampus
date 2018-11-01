@@ -34,6 +34,7 @@ import com.dandian.campus.xmjs.util.DialogUtility;
 import com.dandian.campus.xmjs.util.PrefUtility;
 import com.dandian.campus.xmjs.util.TimeUtility;
 
+
 public class ChangePwdActivity extends Activity implements OnClickListener{
 
 	private Dialog mLoadingDialog;
@@ -45,6 +46,7 @@ public class ChangePwdActivity extends Activity implements OnClickListener{
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_change_pwd);
 		inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		oldpwd=getIntent().getStringExtra("oldpwd");

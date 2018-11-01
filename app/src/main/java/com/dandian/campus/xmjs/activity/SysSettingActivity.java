@@ -50,6 +50,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.dandian.campus.xmjs.CampusApplication;
 import com.dandian.campus.xmjs.R;
@@ -100,7 +101,7 @@ public class SysSettingActivity extends FragmentActivity implements
 	private ViewGroup /*time, initInfo,*/ schedule, alertTime;
 	private String setTime;
 	private SwitchButton dayAlert;
-	private RelativeLayout contract,aboutus,versionDetection;
+	private RelativeLayout versionDetection;
 	private RadioGroup weekfirstday;
 	private static final int PIC_Select_CODE_ImageFromLoacal = 3;
 	
@@ -157,6 +158,7 @@ public class SysSettingActivity extends FragmentActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setTitle(R.string.settings_option);
+
 		setContentView(R.layout.activity_setting);
 		ExitApplication.getInstance().addActivity(this);
 		initView();
@@ -197,9 +199,6 @@ public class SysSettingActivity extends FragmentActivity implements
 		}
 		
 		dayAlert.setChecked(PrefUtility.getBoolean("booleanReminderDayClass", true));
-		
-		contract = (RelativeLayout) findViewById(R.id.contract);
-		aboutus = (RelativeLayout) findViewById(R.id.aboutus);
 		//commonQuestions = (RelativeLayout) findViewById(R.id.common_questions);
 		versionDetection = (RelativeLayout) findViewById(R.id.version_detection);
 		weekfirstday=(RadioGroup)findViewById(R.id.weekfirstday);
@@ -217,8 +216,6 @@ public class SysSettingActivity extends FragmentActivity implements
 		bn_back.setOnClickListener(this);
 		schedule.setOnClickListener(this);	
 		alertTime.setOnClickListener(this);
-		contract.setOnClickListener(this);
-		aboutus.setOnClickListener(this);
 		//commonQuestions.setOnClickListener(this);
 		versionDetection.setOnClickListener(this);
 		
@@ -236,7 +233,7 @@ public class SysSettingActivity extends FragmentActivity implements
 					PrefUtility.put("weekFirstDay", 1);
 				String checkCode = PrefUtility.get(Constants.PREF_CHECK_CODE,"");
 				InitData initData = new InitData(SysSettingActivity.this,
-						getHelper(), mLoadingDialog, "refreshSubject", checkCode);
+						getHelper(), mLoadingDialog, "xmjs_refreshSubject", checkCode);
 				initData.initAllInfo();
 			}
 		});
@@ -296,46 +293,7 @@ public class SysSettingActivity extends FragmentActivity implements
 			}
 			break;
 		
-		case R.id.contract:
-			/*
-			Intent contractIntent = new Intent(SysSettingActivity.this,WebSiteActivity.class);
-			contractIntent.putExtra("url", CampusAPI.contractUrl);
-			contractIntent.putExtra("title", getResources().getString(R.string.settings_contract));
-			startActivity(contractIntent);
-			*/
-			//修改密码
-			final EditText et=new EditText(this);
-			new AlertDialog.Builder(this).setTitle("请输入旧密码").setView(et)
-			.setPositiveButton("确定", new DialogInterface.OnClickListener()
-			{
 
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					// TODO Auto-generated method stub
-					String oldpwd=et.getText().toString();
-					String mPassword=PrefUtility.get(Constants.PREF_LOGIN_PASS, "");
-					if(!oldpwd.equals(mPassword))
-					{
-						AppUtility.showToastMsg(SysSettingActivity.this, "旧密码不正确！");
-					}
-					else
-					{
-						Intent intent = new Intent(SysSettingActivity.this,ChangePwdActivity.class);
-						intent.putExtra("oldpwd", oldpwd);
-						startActivity(intent);
-					}
-				}
-				
-			}).setNegativeButton("取消", null).show();
-			TimeUtility.popSoftKeyBoard(SysSettingActivity.this,et);
-			break;
-		
-		case R.id.aboutus:
-			Intent aboutusIntent = new Intent(SysSettingActivity.this,WebSiteActivity.class);
-			aboutusIntent.putExtra("url", CampusAPI.aboutusUrl);
-			aboutusIntent.putExtra("title", getResources().getString(R.string.settings_aboutus));
-			startActivity(aboutusIntent);
-			break;
 		/*
 		case R.id.common_questions:
 			Intent questionsIntent = new Intent(SysSettingActivity.this,

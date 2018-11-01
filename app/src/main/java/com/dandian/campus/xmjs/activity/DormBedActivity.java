@@ -36,6 +36,7 @@ import com.dandian.campus.xmjs.entity.User;
 import com.dandian.campus.xmjs.util.AppUtility;
 import com.dandian.campus.xmjs.util.Base64;
 
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,6 +65,7 @@ public class DormBedActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		user=((CampusApplication)getApplicationContext()).getLoginUserObj();
 		setContentView(R.layout.view_dorms);
 		expandableListView = (ExpandableListView)findViewById(R.id.contacts);

@@ -24,6 +24,7 @@ import com.androidquery.AQuery;
 import com.dandian.campus.xmjs.R;
 import com.dandian.campus.xmjs.adapter.AlbumGridViewAdapter;
 
+
 public class AlbumActivity extends Activity {
 	private String TAG = "AlbumActivity";
 	private AQuery aq;
@@ -36,6 +37,7 @@ public class AlbumActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_album);
 	
 		// 刷新媒体库

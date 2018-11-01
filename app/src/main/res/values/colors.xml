@@ -4,7 +4,7 @@
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="gray">#6c6c6c</color>
-    <color name="login_background">#0054A5</color>
+    <color name="login_background">#0366cb</color>
     <color name="background">#27ae62</color>
     <color name="background_gray">#EDEDED</color>
     <color name="transparent">#00000000</color>
@@ -49,7 +49,8 @@
     <color name="topbar_bg">#00000000</color>
     <color name="topbar_btn_sel">#55ffffff</color>
     <!--<color name="topbar_background">#ff27ae62</color>-->
-    <color name="topbar_background">#ff0054A5</color>
+    <color name="topbar_background">#0366CB</color>
+    <color name="topbar_background_trans">#880366CB</color>
         <!--<color name="topbar_background_light">#8827ae62</color>-->
     <color name="topbar_background_light">#880054A5</color>
     <!-- school -->
@@ -72,12 +73,12 @@
      <color name="dialog_textColor">#444444</color>
      <color name="dialog_textColorHint">#c2d2c9</color>
 	
-     <color name="moban_color_blueviolet">#8A2BE2</color>
+     <color name="moban_color_blueviolet">#8a2be2</color>
      <color name="moban_color_goldenrod">#DAA520</color>
      <color name="moban_color_blue">#2831AF</color>
      <color name="moban_color_red">#AF2831</color>
      <color name="moban_color_brown">#AF6228</color>
-     <color name="moban_color_pink">#D44094</color>
+     <color name="moban_color_pink">#d44094</color>
     <color name="holo_blue_light">#ff33b5e5</color>
      <color name="child_item_diveder">#D6D6D5</color>
      <color name="child_item_bg">#E5E5E5</color>
@@ -86,5 +87,6 @@
       <color name="list_item_text_pressed_bg">#FF822E</color>
      <color name="tab_text_color">#787878</color>
     <color name="green_dark">#0F8A0B</color>
-
+    <color name="colorPrimary">#0366cb</color>
+    <color name="colorPrimaryDark">#0366cb</color>
 </resources>

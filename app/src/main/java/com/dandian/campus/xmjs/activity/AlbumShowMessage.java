@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.androidquery.AQuery;
 import com.androidquery.callback.ImageOptions;
 import com.example.androidgifdemo.MyTextViewEx;
+
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.dandian.campus.xmjs.R;
@@ -47,6 +48,7 @@ public class AlbumShowMessage extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_album_unread_msg);
 		ifRead=getIntent().getIntExtra("ifRead",0);
 		getMsgList(ifRead);

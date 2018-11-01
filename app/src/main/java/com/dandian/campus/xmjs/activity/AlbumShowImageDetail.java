@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.androidquery.AQuery;
 import com.androidquery.callback.ImageOptions;
 import com.example.androidgifdemo.MyTextViewEx;
+
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.dandian.campus.xmjs.R;
 import com.dandian.campus.xmjs.entity.AlbumMsgInfo;
@@ -36,6 +37,7 @@ public class AlbumShowImageDetail extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_album_praise_detail);
 		userList=(ArrayList<AlbumMsgInfo>)getIntent().getSerializableExtra("userList");
 		type= getIntent().getStringExtra("type");

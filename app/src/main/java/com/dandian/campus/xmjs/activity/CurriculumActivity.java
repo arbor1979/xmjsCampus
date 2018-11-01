@@ -40,6 +40,7 @@ import com.dandian.campus.xmjs.util.DialogUtility;
 import com.dandian.campus.xmjs.util.PrefUtility;
 import com.dandian.campus.xmjs.widget.NonScrollableGridView;
 
+
 public class CurriculumActivity extends Activity {
 	private String TAG = "CurriculumActivity";
 	private Curriculum curriculum;
