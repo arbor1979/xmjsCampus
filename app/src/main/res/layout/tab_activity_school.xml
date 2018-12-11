@@ -9,9 +9,15 @@
         android:id="@+id/content_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/list_background"
+        android:background="@color/white"
         android:orientation="vertical">
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+        <!--
         <GridView
             android:id="@+id/mygridview"
             android:layout_width="match_parent"
@@ -23,7 +29,7 @@
             android:paddingTop="20dp"
             android:scrollbars="none"
             android:verticalSpacing="20dp" />
-
+        -->
         <include layout="@layout/list_empty" />
     </LinearLayout>
 

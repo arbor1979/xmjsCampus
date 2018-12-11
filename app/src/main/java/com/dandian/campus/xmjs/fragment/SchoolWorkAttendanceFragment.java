@@ -14,6 +14,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -179,7 +180,8 @@ public class SchoolWorkAttendanceFragment extends Fragment {
 		this.inflater = inflater;
 		view = inflater.inflate(R.layout.school_work_attendance_fragment,
 				container, false);
-		AppUtility.setRootViewPadding(view);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+			AppUtility.setRootViewPadding(view);
 		aq = new AQuery(view);
 		String number =((CampusApplication)getActivity().getApplicationContext()).getLoginUserObj().getId();
 		try {

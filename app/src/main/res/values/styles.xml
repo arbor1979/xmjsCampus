@@ -21,15 +21,12 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     </style>
-    <style name="ImageTranslucentTheme" parent="AppTheme">
-
-
-    </style>
 
     <style name="Tab" parent="AppTheme">
 
                 <item name="android:windowContentOverlay">@null</item><!-- 这行是关键 -->
                 <item name="android:windowNoTitle">true</item>
+                      <item name="android:windowBackground">@color/topbar_background</item>
          </style>
 
 

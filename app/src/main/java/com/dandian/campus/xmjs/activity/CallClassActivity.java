@@ -397,7 +397,7 @@ public class CallClassActivity extends Activity {
 	/**
 	 * 为ListView填充数据
 	 * 
-	 * @param date
+	 * @param
 	 * @return
 	 */
 	private List<Student> filledData(List<Student> students) {

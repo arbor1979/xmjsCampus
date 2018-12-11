@@ -22,6 +22,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,6 +32,8 @@ import android.widget.GridView;
 import android.widget.LinearLayout;
 
 import com.androidquery.AQuery;
+import com.dandian.campus.xmjs.adapter.SchoolWorkGroupAdapter;
+import com.dandian.campus.xmjs.adapter.SectionedSpanSizeLookup;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.dandian.campus.xmjs.CampusApplication;
@@ -58,8 +62,8 @@ public class TabSchoolActivtiy extends FragmentActivity {
 	private LinearLayout emptyLayout;
 	private Button btnLeft;
 	private AQuery aq;
-	private GridView myGridView;
-	private SchoolWorkAdapter adapter;
+	private RecyclerView myGridView;
+	private SchoolWorkGroupAdapter adapter;
 	private List<SchoolWorkItem> schoolWorkItems = new ArrayList<SchoolWorkItem>();
 	private List<Notice> notices = new ArrayList<Notice>();
 	private Dao<Notice, Integer> noticeInfoDao;
@@ -99,7 +103,7 @@ public class TabSchoolActivtiy extends FragmentActivity {
 							schoolWorkItems.add(swItem);
 						}
 						adapter.setSchoolWorkItems(schoolWorkItems);
-						adapter.notifyDataSetChanged();
+
 						
 						/*
 						if(timer==null)
@@ -209,7 +213,7 @@ public class TabSchoolActivtiy extends FragmentActivity {
 										item.setUnread(jo.optInt(item.getWorkText()));
 									
 								}
-								adapter.notifyDataSetChanged();
+								adapter.setSchoolWorkItems(schoolWorkItems);
 							
 						}
 					} catch (JSONException e) {
@@ -232,14 +236,14 @@ public class TabSchoolActivtiy extends FragmentActivity {
 		setContentView(R.layout.tab_activity_school);
 		aq = new AQuery(this);
 		
-		myGridView = (GridView) findViewById(R.id.mygridview);
+		myGridView = (RecyclerView) findViewById(R.id.recyclerView);
 		btnLeft = (Button) findViewById(R.id.btn_left);
 		layout_menu = (LinearLayout) findViewById(R.id.layout_btn_left);
 		loadingLayout = (LinearLayout) findViewById(R.id.data_load);
 		contentLayout = (LinearLayout) findViewById(R.id.content_layout);
 		failedLayout = (LinearLayout) findViewById(R.id.empty_error);
 		emptyLayout = (LinearLayout) findViewById(R.id.empty);
-		myGridView.setEmptyView(emptyLayout);
+
 		aq.id(R.id.tv_title).text("校内");
 		String userStatus=PrefUtility.get(Constants.PREF_CHECK_USERSTATUS,"");
 		if(userStatus.equals("新生状态"))
@@ -247,7 +251,13 @@ public class TabSchoolActivtiy extends FragmentActivity {
 		else
 			btnLeft.setBackgroundResource(R.drawable.bg_title_homepage_back);
 		btnLeft.setVisibility(View.VISIBLE);
-		adapter=new SchoolWorkAdapter(TabSchoolActivtiy.this, schoolWorkItems);
+		adapter=new SchoolWorkGroupAdapter(TabSchoolActivtiy.this, schoolWorkItems);
+        int screenWidth=AppUtility.getAndroiodScreenProperty(this);
+		int spancount= (int) Math.floor(screenWidth / 68);
+		GridLayoutManager manager = new GridLayoutManager(this,spancount);
+		//设置header
+		manager.setSpanSizeLookup(new SectionedSpanSizeLookup(adapter,manager));
+		myGridView.setLayoutManager(manager);
 		myGridView.setAdapter(adapter);
 
 		//重新加载
@@ -320,7 +330,7 @@ public class TabSchoolActivtiy extends FragmentActivity {
 			}
 		}
 		if(flag)
-			adapter.notifyDataSetChanged();
+			adapter.setSchoolWorkItems(schoolWorkItems);
 		return flag;
 	}
 	private DatabaseHelper getHelper() {

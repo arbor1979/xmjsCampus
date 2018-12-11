@@ -406,7 +406,8 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 		View view = inflater.inflate(R.layout.school_listview_fragment,
 				container, false);
 		myListview = (ListView) view.findViewById(R.id.my_listview);
-		AppUtility.setRootViewPadding(view);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+			AppUtility.setRootViewPadding(view);
 		btnLeft = (Button) view.findViewById(R.id.btn_left);
 		tvTitle = (TextView) view.findViewById(R.id.tv_title);
 		tvRight = (TextView) view.findViewById(R.id.tv_right);
@@ -791,7 +792,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 			jo.put("选项记录集", joarr);
 			if(questionnaireList.getNeedLocation().equals("是")) {
 				User user = ((CampusApplication) getActivity().getApplicationContext()).getLoginUserObj();
-				jo.put("GPS定位", user.getLatestAddress());
+				jo.put("GPS定位", user.getLatestGps()+"\n"+user.getLatestAddress());
 			}
 			jo.put("DATETIME", datatime);
 			jo.put("language", language);
@@ -982,7 +983,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				}
 				String isRequired = questions.get(i).getIsRequired();//是否必填
 				if(isRequired.equals("是") && joimages.length()==0){
-					AppUtility.showToastMsg(getActivity(),"请完成问卷再提交");
+					AppUtility.showToastMsg(getActivity(),"请填写所有必填项");
 					myListview.setSelection(i);
 					return null;
 				}
@@ -1016,7 +1017,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				}
 				String isRequired = questions.get(i).getIsRequired();//是否必填
 				if(isRequired.equals("是") && fujianArray.length()==0){
-					AppUtility.showToastMsg(getActivity(),"请完成问卷再提交");
+					AppUtility.showToastMsg(getActivity(),"请填写所有必填项");
 					myListview.setSelection(i);
 					return null;
 				}
@@ -1027,7 +1028,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				JSONArray fujianArray=questions.get(i).getFujianArray();
 				String isRequired = questions.get(i).getIsRequired();//是否必填
 				if(isRequired.equals("是") && fujianArray.length()==0){
-					AppUtility.showToastMsg(getActivity(),"请完成问卷再提交");
+					AppUtility.showToastMsg(getActivity(),"请填写所有必填项");
 					myListview.setSelection(i);
 					return null;
 				}
@@ -1039,8 +1040,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				String usersAnswer = questions.get(i).getUsersAnswer();
 				String isRequired = questions.get(i).getIsRequired();//是否必填
 				String validate=questions.get(i).getValidate();
-				if(AppUtility.isNotEmpty(isRequired)){
-					if(isRequired.equals("是")){
+				if(AppUtility.isNotEmpty(isRequired) && isRequired.equals("是")){
 						if(AppUtility.isNotEmpty(usersAnswer)){
 							joarr.put(usersAnswer);
 						}else{
@@ -1049,20 +1049,10 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 							
 							return null;
 						}
-					}else{
-						joarr.put(usersAnswer);
-					}
 				}else{
-					if(AppUtility.isNotEmpty(usersAnswer)){
-						joarr.put(usersAnswer);
-					}else{
-						Log.d(TAG, "222"+questions.get(i).getTitle());
-						AppUtility.showToastMsg(getActivity(),"请完成问卷再提交");
-						myListview.setSelection(i);
-						return null;
-					}
+					joarr.put(usersAnswer);
 				}
-				if(AppUtility.isNotEmpty(validate)){
+				if(AppUtility.isNotEmpty(validate)  && AppUtility.isNotEmpty(usersAnswer)){
 					if(validate.equals("手机号") && !AppUtility.checkPhone(usersAnswer))
 					{
 						AppUtility.showToastMsg(getActivity(),title+",格式不正确");

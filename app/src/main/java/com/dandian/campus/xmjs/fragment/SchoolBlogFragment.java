@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -238,7 +239,8 @@ public class SchoolBlogFragment extends Fragment implements IXListViewListener,R
 		user=((CampusApplication)getActivity().getApplicationContext()).getLoginUserObj();
 		aq= new AQuery(view);
 		myListview = (XListView) view.findViewById(R.id.my_listview);
-		AppUtility.setRootViewPadding(view);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+			AppUtility.setRootViewPadding(view);
 		myListview.setDivider(getResources().getDrawable(R.color.transparent));
 		btnLeft = (Button) view.findViewById(R.id.btn_left);
 		lyLeft = (LinearLayout) view.findViewById(R.id.layout_btn_left);

@@ -936,8 +936,10 @@ public class Alarmreceiver extends BroadcastReceiver {
 							if (user_type.equals("学生"))
 								postGPS(cityStr, addressStr, lat, lon);
 							User user = ((CampusApplication) context.getApplicationContext()).getLoginUserObj();
-							if (user != null)
+							if (user != null) {
 								user.setLatestAddress(addressStr);
+								user.setLatestGps("lat="+lat+";lon="+lon);
+							}
 						}
 
 					} catch (JSONException e) {

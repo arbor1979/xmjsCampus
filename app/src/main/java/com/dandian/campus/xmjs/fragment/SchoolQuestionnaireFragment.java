@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -134,7 +135,8 @@ public class SchoolQuestionnaireFragment extends Fragment {
 				container, false);
 
 		myListview = (ListView) view.findViewById(R.id.my_listview);
-		AppUtility.setRootViewPadding(view);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+			AppUtility.setRootViewPadding(view);
 		btnLeft = (Button) view.findViewById(R.id.btn_left);
 		tvTitle = (TextView) view.findViewById(R.id.tv_title);
 		lyLeft = (LinearLayout) view.findViewById(R.id.layout_btn_left);

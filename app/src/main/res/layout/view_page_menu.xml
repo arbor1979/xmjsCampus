@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_stuinfo1"
     android:orientation="vertical"
-    android:fitsSystemWindows="true">
+    >
 
     <LinearLayout
         android:id="@+id/page_title"

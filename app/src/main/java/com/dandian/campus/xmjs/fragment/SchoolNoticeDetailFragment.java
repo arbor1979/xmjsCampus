@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -140,7 +141,8 @@ public class SchoolNoticeDetailFragment extends Fragment {
 		interfaceName=getArguments().getString("interfaceName");
 		View view = inflater.inflate(R.layout.school_notice_detail_fragment,
 				container, false);
-		AppUtility.setRootViewPadding(view);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+			AppUtility.setRootViewPadding(view);
 		aq = new AQuery(view);
 		btnLeft = (Button) view.findViewById(R.id.btn_left);
 		loadingLayout = (LinearLayout) view.findViewById(R.id.data_load);

@@ -27,6 +27,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -37,6 +38,7 @@ import android.view.View.OnClickListener;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieSyncManager;
 import android.webkit.DownloadListener;
+import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -51,6 +53,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.dandian.campus.xmjs.CampusApplication;
+import com.dandian.campus.xmjs.entity.User;
+import com.dandian.campus.xmjs.service.Alarmreceiver;
 import com.dandian.campus.xmjs.util.DateHelper;
 import com.dandian.campus.xmjs.activity.TabHostActivity;
 import com.dandian.campus.xmjs.activity.WebSiteActivity;
@@ -96,6 +101,7 @@ public class WebSiteActivity extends Activity {
 	private ValueCallback<Uri> uploadMessage;
 	private ValueCallback<Uri[]> uploadMessageAboveL;
 	private final static int FILE_CHOOSER_RESULT_CODE = 10000;
+	private int iGpsTimes=0;
 	@SuppressLint({ "SetJavaScriptEnabled", "CutPasteId" })
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -176,16 +182,14 @@ public class WebSiteActivity extends Activity {
 		else if(moodleText!=null && moodleText.length()>0)
 		{
 			Date now=new Date();
-			if(loginDate==null || DateHelper.getMinutesDiff(now,loginDate)>20)
+			String loginUrl =  getIntent().getStringExtra("loginUrl");
+			if(loginUrl!=null && (loginDate==null || DateHelper.getMinutesDiff(now,loginDate)>20))
 			{
-
-				String loginUrl =  getIntent().getStringExtra("loginUrl");
 				String username=PrefUtility.get(Constants.PREF_LOGIN_NAME, "");
 				username=username.split("@")[0];
 				String password=PrefUtility.get(Constants.PREF_LOGIN_PASS, "");
 				String postDate = "username="+username+"&password="+password;
 				mWebView.postUrl(loginUrl, EncodingUtils.getBytes(postDate, "BASE64"));
-				
 				needLoadHtml=moodleText;
 			}
 			else
@@ -336,7 +340,36 @@ public class WebSiteActivity extends Activity {
 			openImageChooserActivity();
 			return true;
 		}
+		@JavascriptInterface
+		public String GetGPS() {
+			User user = ((CampusApplication) getApplicationContext()).getLoginUserObj();
+			if(user.getLatestAddress()==null || user.getLatestAddress().length()==0) {
+				if(iGpsTimes>2)
+					return "GPS获取位置失败";
+				if (Build.VERSION.SDK_INT >= 23) {
+					if (AppUtility.checkPermission(WebSiteActivity.this, 5, Manifest.permission.ACCESS_FINE_LOCATION))
+						getLocation();
+				} else
+					getLocation();
+				new Handler().postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						GetGPS();
+						iGpsTimes++;
+					}
+				}, 3000);    //延时3s执行
+				return "";
+			}
+			else
+				return user.getLatestGps()+"\n"+user.getLatestAddress();
+		}
 
+	}
+	private void getLocation()
+	{
+		Intent intent = new Intent(WebSiteActivity.this, Alarmreceiver.class);
+		intent.setAction("reportLocation");
+		sendBroadcast(intent);
 	}
 	private void openImageChooserActivity() {
 		Intent i = new Intent(Intent.ACTION_GET_CONTENT);
@@ -639,8 +672,7 @@ public class WebSiteActivity extends Activity {
 
 			@Override
 			public void getLocation1() {
-				// TODO Auto-generated method stub
-			
+				getLocation();
 			}
 
 			@Override
