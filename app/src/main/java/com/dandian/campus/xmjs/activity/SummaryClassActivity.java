@@ -863,6 +863,15 @@ public class SummaryClassActivity extends Activity {
 				}
 			}
 		}
+		if(studentSummary.getTeacherkaoqin().length()>0 && !studentSummary.getTeacherkaoqin().equals("正常"))
+		{
+			AppUtility.showToastMsg(this, studentSummary.getTeacherkaoqin(),1);
+			aq.id(R.id.layout_btn_right).visibility(View.GONE);
+			et1.setHint(studentSummary.getTeacherkaoqin());
+			et1.setEnabled(false);
+			et2.setEnabled(false);
+			et3.setEnabled(false);
+		}
 	}
 	/**
 	 * 功能描述:清除缓存
@@ -1170,13 +1179,13 @@ public class SummaryClassActivity extends Activity {
 	{
 
 		@Override
-		public void getLocation1() {
+		public void getLocation1(int rqcode) {
 			// TODO Auto-generated method stub
 		
 		}
 
 		@Override
-		public void getPictureByCamera1() {
+		public void getPictureByCamera1(int rqcode) {
 			// TODO Auto-generated method stub
 			getPictureByCamera();
 		}

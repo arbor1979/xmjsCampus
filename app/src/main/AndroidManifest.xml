@@ -238,6 +238,13 @@
 			android:exported="false"
 			android:screenOrientation="behind" >
 		</activity>
+        <activity
+            android:configChanges="orientation|keyboardHidden"
+            android:name="com.dandian.campus.xmjs.activity.CaptureActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+        </activity>
 
         <receiver
             android:name="com.dandian.campus.xmjs.service.Alarmreceiver" android:exported="true">

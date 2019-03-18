@@ -312,6 +312,8 @@ public class InitData {
 
 			if (PrefUtility.getInt("weekFirstDay", 0) == 0)
 				jsonObj.put("周日为第一天", "1");
+			String banjiname=PrefUtility.get(Constants.PREF_CLASSES_BANZHUREN_VIEW,"");
+			jsonObj.put("banjiname",banjiname);
 			dataResult = Base64.encode(jsonObj.toString().getBytes());
 		} catch (JSONException e) {
 			e.printStackTrace();

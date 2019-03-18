@@ -540,6 +540,20 @@ public class CallClassActivity extends Activity {
 			usedIcon.add(R.drawable.class_call_chat);
 			usedIcon.add(R.drawable.class_call_eat);
 			usedIcon.add(R.drawable.class_call_read);
+
+			while (holder.radio_group.getChildCount()<workAttendArray.length)
+			{
+				CheckBox cbdemo=(CheckBox)holder.radio_group.getChildAt(0);
+				CheckBox cb=new CheckBox(convertView.getContext());
+				cb.setMinWidth(cbdemo.getMinWidth());
+				cb.setLayoutParams(cbdemo.getLayoutParams());
+				cb.setBackground(null);
+				cb.setButtonDrawable(null);
+				cb.setTextColor(getResources().getColor(R.color.classroom_call_status));
+				cb.setTextSize(12);
+				holder.radio_group.addView(cb);
+			}
+
 			for(int m=0;m<holder.radio_group.getChildCount();m++)
 			{
 				CheckBox rdbtn=(CheckBox)holder.radio_group.getChildAt(m);
@@ -813,7 +827,7 @@ public class CallClassActivity extends Activity {
 	 * 
 	 * @author yanzy 2013-12-3 下午2:51:37
 	 * 
-	 * @param subjectIdList
+	 *
 	 * @throws JSONException
 	 */
 	public String getChangekaoqininfo(TeacherInfo teacherInfo)
@@ -911,7 +925,8 @@ public class CallClassActivity extends Activity {
 			Bundle bundle = new Bundle();
 			switch (msg.what) {
 			case -1:
-				mLoadingDialog.dismiss();
+                if (mLoadingDialog != null)
+				    mLoadingDialog.dismiss();
 				AppUtility.showErrorToast(CallClassActivity.this, msg.obj.toString());
 				break;
 			case 0:
@@ -981,7 +996,7 @@ public class CallClassActivity extends Activity {
 							teacherInfoDao.update(teacherInfo);
 						}
 						JSONArray joa = jo.getJSONArray("结果");
-						if (joa!=null && joa.length()>0) 
+						if (joa!=null)
 						{
 							teacherInfo.setAbsenceJson(joa.toString());
 							teacherInfoDao.update(teacherInfo);

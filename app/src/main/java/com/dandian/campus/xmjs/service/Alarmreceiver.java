@@ -94,10 +94,13 @@ public class Alarmreceiver extends BroadcastReceiver {
 	private Context context;
 	private Location myLocation;
 	private LocationManager locationManager;
-
+	public static BRInteraction brInteraction;
 	public static NotificationManager mNotificationManager;
 
-
+	public interface BRInteraction {
+		public void callbackGPSXY(Location loc);
+		public void callbackRealAddress(String realAddress);
+	}
 	@Override
 	public void onReceive(Context context1, Intent intent) {
 		this.context = context1;
@@ -138,6 +141,10 @@ public class Alarmreceiver extends BroadcastReceiver {
 			} else if ("reportLocation".equals(actionName)) {
 				locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 				getNetLocation();
+			}
+			else if ("reportGPSLocation".equals(actionName)) {
+				locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+				getGPSLocation();
 			}
 			else if ("getMsgList".equals(actionName)) {
 				getMsgFromServer();
@@ -940,6 +947,8 @@ public class Alarmreceiver extends BroadcastReceiver {
 								user.setLatestAddress(addressStr);
 								user.setLatestGps("lat="+lat+";lon="+lon);
 							}
+							if(brInteraction!=null)
+								brInteraction.callbackRealAddress(addressStr);
 						}
 
 					} catch (JSONException e) {
@@ -1073,6 +1082,11 @@ public class Alarmreceiver extends BroadcastReceiver {
 						myLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 						if (myLocation != null)
 							getRealAddress();
+						else
+						{
+							if(brInteraction!=null)
+								brInteraction.callbackGPSXY(null);
+						}
 					}
 
 				}
@@ -1155,10 +1169,11 @@ public class Alarmreceiver extends BroadcastReceiver {
 	private void getRealAddress()
 	{
 		if(myLocation==null) return;
-		
+
 		final double latitude=myLocation.getLatitude();
 		final double longitude=myLocation.getLongitude();
-		
+		if(brInteraction!=null)
+			brInteraction.callbackGPSXY(myLocation);
 		CampusAPI.getAddressFromBaidu(latitude,longitude, new RequestListener() {
 			@Override
 			public void onComplete(String response) {

@@ -23,10 +23,8 @@ public class IntentUtility {
 	
 	public static Intent openUrl(Context context,String url) {
 		/* 取得扩展名 */
-		String end = url.substring(url.lastIndexOf(".") + 1,url.length()).toLowerCase();
-		if(end.split("&").length>0)
-			end=end.split("&")[0];
-		if (end==null || end.length()==0)
+		String end=FileUtility.getUrlExtName(url).toLowerCase();
+		if (end==null || end.length()==0 || end.length()>4)
 			return null;
 		String fileType=null;
 		/* 依扩展名的类型决定MimeType */

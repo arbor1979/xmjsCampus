@@ -12,9 +12,11 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
@@ -39,6 +41,7 @@ import android.widget.TextView;
 import com.androidquery.AQuery;
 import com.androidquery.callback.ImageOptions;
 
+import com.dandian.campus.xmjs.entity.ChatMsg;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.dandian.campus.xmjs.CampusApplication;
@@ -58,6 +61,7 @@ import com.dandian.campus.xmjs.util.DateHelper;
 import com.dandian.campus.xmjs.util.ExpressionUtil;
 import com.dandian.campus.xmjs.util.ImageUtility;
 import com.dandian.campus.xmjs.util.PrefUtility;
+import com.j256.ormlite.stmt.PreparedDelete;
 
 /**
  * 
@@ -82,6 +86,7 @@ public class ChatFriendActivity extends Activity implements OnItemClickListener 
 	private TextView title,content_none;
 	private DatabaseHelper database;
 	private Dao<ChatFriend, Integer> chatFriendDao;
+	private Dao<ChatMsg, Integer> chatMsgDao;
 	private String ACTION_NAME = "ChatInteract";
 
 	private List<ChatFriend> chatFriendList;
@@ -98,6 +103,40 @@ public class ChatFriendActivity extends Activity implements OnItemClickListener 
 		registerBoradcastReceiver();
 		initTitle();
 		initContent();
+		mList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+										   final int position, long id) {
+				//定义AlertDialog.Builder对象，当长按列表项的时候弹出确认删除对话框
+				AlertDialog.Builder builder=new AlertDialog.Builder(ChatFriendActivity.this);
+				builder.setMessage("确定删除此消息?");
+				builder.setTitle("提示");
+				//添加AlertDialog.Builder对象的setPositiveButton()方法
+				builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						ChatFriend item=chatFriendList.get(position);
+						try {
+							chatMsgDao.delete((PreparedDelete<ChatMsg>)chatMsgDao.deleteBuilder().where().eq("toid", item.getToid()).prepare());
+							chatFriendDao.delete((PreparedDelete<ChatFriend>)chatFriendDao.deleteBuilder().where().eq("id", item.getId()).prepare());
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+						chatFriendList.remove(position);
+						mAdapter.notifyDataSetChanged();
+					}
+				});
+				//添加AlertDialog.Builder对象的setNegativeButton()方法
+				builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+
+					}
+				});
+				builder.create().show();
+				return true;
+			}
+		});
 	}
 
 	private void initTitle() {
@@ -159,6 +198,7 @@ public class ChatFriendActivity extends Activity implements OnItemClickListener 
 		mList = (ListView) findViewById(R.id.message_list);
 		content_none = (TextView)findViewById(R.id.chat_msg_none);
 		try {
+			chatMsgDao = getHelper().getChatMsgDao();
 			chatFriendDao = getHelper().getChatFriendDao();
 			String hostid = PrefUtility.get(Constants.PREF_CHECK_HOSTID, "");
 			chatFriendList=chatFriendDao.queryBuilder().orderBy("lastTime", false).where().eq("hostid", hostid).query();

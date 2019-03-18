@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-	<include layout="@layout/setting_head" />
+	<include layout="@layout/topbar" />
 	
 	<FrameLayout
 	    android:layout_width="match_parent"

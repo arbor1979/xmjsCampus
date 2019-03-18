@@ -41,9 +41,11 @@ public class AchievementDetail {
 		loginUrl=jo.optString("登录地址");
 		achievements = new ArrayList<Achievement>();
 		JSONArray joa = jo.optJSONArray("成绩数值");
-		for (int i = 0; i < joa.length(); i++) {
-			Achievement a = new Achievement(joa.optJSONObject(i));
-			achievements.add(a);
+		if(joa!=null) {
+			for (int i = 0; i < joa.length(); i++) {
+				Achievement a = new Achievement(joa.optJSONObject(i));
+				achievements.add(a);
+			}
 		}
 		if(jo.optString("底部按钮")!=null && jo.optString("底部按钮").length()>0)
 		{

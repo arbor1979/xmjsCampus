@@ -163,6 +163,7 @@ public class ClassDetailActivity extends TabActivity {
 	 */
 	private void prepareIntent() {
 		curriculumIntent = new Intent(this, CurriculumActivity.class);
+		curriculumIntent.putExtra("subjectid", subjectid);
 		rollCallIntent = new Intent(this, CallClassActivity.class);
 		classroomCourseIntent = new Intent(this, CourseClassActivity.class);
 		classroomTestIntent = new Intent(this, TestClassActivity.class);

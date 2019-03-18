@@ -542,13 +542,13 @@ public class SysSettingActivity extends FragmentActivity implements
 	{
 
 		@Override
-		public void getLocation1() {
+		public void getLocation1(int rqcode) {
 			// TODO Auto-generated method stub
 		
 		}
 
 		@Override
-		public void getPictureByCamera1() {
+		public void getPictureByCamera1(int rqcode) {
 			// TODO Auto-generated method stub
 			
 		}

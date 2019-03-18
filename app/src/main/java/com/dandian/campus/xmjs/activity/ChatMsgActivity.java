@@ -625,6 +625,7 @@ public class ChatMsgActivity extends FragmentActivity implements IXListViewListe
         	try {
 				chatMsgDao = getHelper().getChatMsgDao();
 				chatMsgDao.delete((PreparedDelete<ChatMsg>)chatMsgDao.deleteBuilder().where().eq("toid", toid).prepare());
+				chatFriendDao.delete((PreparedDelete<ChatFriend>)chatFriendDao.deleteBuilder().where().eq("toid", toid).prepare());
 				Toast.makeText(ChatMsgActivity.this, "聊天记录已清除", Toast.LENGTH_LONG).show();
 				mAdapter.coll.clear();
 				mAdapter.notifyDataSetChanged();
@@ -1699,12 +1700,12 @@ public class ChatMsgActivity extends FragmentActivity implements IXListViewListe
 	{
 
 		@Override
-		public void getLocation1() {
+		public void getLocation1(int rqcode) {
 			// TODO Auto-generated method stub
 		}
 
 		@Override
-		public void getPictureByCamera1() {
+		public void getPictureByCamera1(int rqcode) {
 			// TODO Auto-generated method stub
 			getPicByCamera();
 		}

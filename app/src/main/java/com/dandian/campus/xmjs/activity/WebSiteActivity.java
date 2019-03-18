@@ -1,12 +1,16 @@
 package com.dandian.campus.xmjs.activity;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import org.apache.http.util.EncodingUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -22,12 +26,14 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.location.Location;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -47,6 +53,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -54,8 +61,10 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.dandian.campus.xmjs.CampusApplication;
+import com.dandian.campus.xmjs.entity.ImageItem;
 import com.dandian.campus.xmjs.entity.User;
 import com.dandian.campus.xmjs.service.Alarmreceiver;
+import com.dandian.campus.xmjs.util.Base64;
 import com.dandian.campus.xmjs.util.DateHelper;
 import com.dandian.campus.xmjs.activity.TabHostActivity;
 import com.dandian.campus.xmjs.activity.WebSiteActivity;
@@ -82,7 +91,7 @@ import com.dandian.campus.xmjs.util.AppUtility.CallBackInterface;
  */
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-public class WebSiteActivity extends Activity {
+public class WebSiteActivity extends Activity implements Alarmreceiver.BRInteraction{
 	private static final String TAG = "WebSiteActivity";
 	public static Date loginDate;
 	private WebView mWebView; 
@@ -92,7 +101,8 @@ public class WebSiteActivity extends Activity {
 	private LinearLayout frameLayout = null,webNavBar;
 	private FrameLayout loading=null;
 	private RelativeLayout layoutHead;
-	private Button back,forward;
+	private Button btnLeft;
+	private ImageButton btn_close;
 	private String needLoadHtml="";
 	private String moodleText="";
 	private String downloadUrl;
@@ -101,8 +111,43 @@ public class WebSiteActivity extends Activity {
 	private ValueCallback<Uri> uploadMessage;
 	private ValueCallback<Uri[]> uploadMessageAboveL;
 	private final static int FILE_CHOOSER_RESULT_CODE = 10000;
-	private int iGpsTimes=0;
+	private final static int REQUEST_CODE_TAKE_CAMERA = 1;// //设置拍照操作的标志
+	private final static int SCANNIN_GREQUEST_CODE = 2;
+	private String cameraPicPath,cameraPicType;
 	@SuppressLint({ "SetJavaScriptEnabled", "CutPasteId" })
+
+	@Override
+	public void callbackGPSXY(Location loc) {
+		double lat=0;
+		double lon=0;
+		String datestr="";
+		double accu=0;
+		if(loc!=null)
+		{
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			datestr=format.format(loc.getTime());
+			lat=loc.getLatitude();
+			lon=loc.getLongitude();
+			accu=loc.getAccuracy();
+		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			mWebView.evaluateJavascript("javascript:callbackGPSXY("+lat+","+lon+",'"+datestr+"',"+accu+")",null);
+		}
+		else
+			mWebView.loadUrl("javascript:callbackGPSXY("+lat+","+lon+",'"+datestr+"',"+accu+")");
+		Log.d(TAG,"lat="+lat+",lon="+lon);
+	}
+	public void callbackRealAddress(String realAddress)
+	{
+		realAddress=realAddress.replace("\n","\\n");
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			mWebView.evaluateJavascript("javascript:callbackRealAddress('"+realAddress+"')",null);
+		}
+		else
+			mWebView.loadUrl("javascript:callbackRealAddress('\"+realAddress+\"')");
+		Alarmreceiver.brInteraction=null;
+		Log.d(TAG,realAddress);
+	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -111,31 +156,15 @@ public class WebSiteActivity extends Activity {
 
 		ExitApplication.getInstance().addActivity(this);
 		frameLayout = (LinearLayout)findViewById(R.id.mainLayout);
-
+		btnLeft = (Button) findViewById(R.id.btn_left);
+		btnLeft.setVisibility(View.VISIBLE);
+		btnLeft.setCompoundDrawablesWithIntrinsicBounds(
+				R.drawable.bg_btn_left_nor, 0, 0, 0);
 		loading=(FrameLayout)findViewById(R.id.loading);
 		mWebView = (WebView) findViewById(R.id.website);
 		layoutHead = (RelativeLayout) findViewById(R.id.headerlayout);
-		webNavBar=(LinearLayout)findViewById(R.id.webNavBar);
-		back=(Button)findViewById(R.id.navBack);
-		forward=(Button)findViewById(R.id.navForword);
-		back.setOnClickListener(new OnClickListener(){
+		//webNavBar=(LinearLayout)findViewById(R.id.webNavBar);
 
-			@Override
-			public void onClick(View v) {
-				
-				mWebView.goBack();
-			}
-			
-		});
-		forward.setOnClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				
-				mWebView.goForward();
-			}
-			
-		});
 		mWebView.getSettings().setAllowFileAccess(true);
 		mWebView.getSettings().setJavaScriptEnabled(true);   
 		mWebView.getSettings().setDomStorageEnabled(true);
@@ -147,8 +176,7 @@ public class WebSiteActivity extends Activity {
 		mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);   
 		//mWebView.getSettings().setPluginState(PluginState.ON);
 		mWebView.getSettings().setDefaultTextEncodingName("GBK");
-		Button back=(Button) findViewById(R.id.back);
-		back.setText("关闭");
+		btn_close=(ImageButton) findViewById(R.id.btn_close);
 		/*
 		mWebView.getSettings().setDatabaseEnabled(true);
 		mWebView.getSettings().setAppCacheEnabled(true);
@@ -159,7 +187,7 @@ public class WebSiteActivity extends Activity {
 		String title = getIntent().getStringExtra("title");
 		Log.d(TAG, "url：" + url);
 		Log.d(TAG, "title：" + title);
-		TextView tv_title = (TextView) findViewById(R.id.setting_tv_title);
+		TextView tv_title = (TextView) findViewById(R.id.tv_title);
 		if(title.length()>10)
 		{
 			tv_title.setTextSize(18);
@@ -197,34 +225,26 @@ public class WebSiteActivity extends Activity {
 				mWebView.getSettings().setDefaultTextEncodingName("UTF-8");//设置默认为utf-8
 				mWebView.loadData(moodleText, "text/html; charset=UTF-8", null);
 			}
-			webNavBar.setVisibility(View.VISIBLE);
+			//webNavBar.setVisibility(View.VISIBLE);
 		}
-		
-		Button btn_back = (Button) findViewById(R.id.back);
-
-		btn_back.setOnClickListener(new OnClickListener() {
+		LinearLayout lyLeft = (LinearLayout) findViewById(R.id.layout_btn_left);
+		lyLeft.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(mWebView.canGoBack())
+					mWebView.goBack();
+				else
+					finish();
+			}
+		});
+		btn_close.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				finish();
 			}
 		});
 	}
-	
-	final class DemoJavaScriptInterface {
 
-        DemoJavaScriptInterface() {
-        }
-
-        /**
-         * This is not called on the UI thread. Post a runnable to invoke
-         * loadUrl on the UI thread.
-         */
-        public void clickOnAndroid() {
-           
-
-        }
-    }
-	
 	public class MyChromeClient extends WebChromeClient implements OnCompletionListener {
 		
 		@Override
@@ -341,34 +361,57 @@ public class WebSiteActivity extends Activity {
 			return true;
 		}
 		@JavascriptInterface
+		public void GetScanCode() {
+			if (Build.VERSION.SDK_INT >= 23) {
+				if (AppUtility.checkPermission(WebSiteActivity.this, 12, Manifest.permission.CAMERA))
+					openScanCode();
+			} else
+				openScanCode();
+		}
+		@JavascriptInterface
+		public void GetCamera(String type) {
+			cameraPicType=type;
+			if (Build.VERSION.SDK_INT >= 23) {
+				if (AppUtility.checkPermission(WebSiteActivity.this, 6, Manifest.permission.CAMERA))
+					cameraPicPath=AppUtility.getPictureByCamera(WebSiteActivity.this,REQUEST_CODE_TAKE_CAMERA);
+			} else
+				cameraPicPath=AppUtility.getPictureByCamera(WebSiteActivity.this,REQUEST_CODE_TAKE_CAMERA);
+		}
+		@JavascriptInterface
+		public void GetGPSNew(int mode) {
+			int code=5;
+			if(mode==1)
+				code=11;
+			if (Build.VERSION.SDK_INT >= 23) {
+				if (AppUtility.checkPermission(WebSiteActivity.this, code, Manifest.permission.ACCESS_FINE_LOCATION))
+					getLocation(mode);
+			} else
+				getLocation(mode);
+		}
+		@JavascriptInterface
 		public String GetGPS() {
+
+			if (Build.VERSION.SDK_INT >= 23) {
+				if (AppUtility.checkPermission(WebSiteActivity.this, 5, Manifest.permission.ACCESS_FINE_LOCATION))
+					getLocation(0);
+			} else
+				getLocation(0);
 			User user = ((CampusApplication) getApplicationContext()).getLoginUserObj();
-			if(user.getLatestAddress()==null || user.getLatestAddress().length()==0) {
-				if(iGpsTimes>2)
-					return "GPS获取位置失败";
-				if (Build.VERSION.SDK_INT >= 23) {
-					if (AppUtility.checkPermission(WebSiteActivity.this, 5, Manifest.permission.ACCESS_FINE_LOCATION))
-						getLocation();
-				} else
-					getLocation();
-				new Handler().postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						GetGPS();
-						iGpsTimes++;
-					}
-				}, 3000);    //延时3s执行
+			if(user.getLatestAddress()==null || user.getLatestAddress().length()==0)
 				return "";
-			}
 			else
 				return user.getLatestGps()+"\n"+user.getLatestAddress();
 		}
 
 	}
-	private void getLocation()
+	private void getLocation(int mode)
 	{
 		Intent intent = new Intent(WebSiteActivity.this, Alarmreceiver.class);
-		intent.setAction("reportLocation");
+		if(mode==1)
+			intent.setAction("reportGPSLocation");
+		else
+			intent.setAction("reportLocation");
+		Alarmreceiver.brInteraction=this;
 		sendBroadcast(intent);
 	}
 	private void openImageChooserActivity() {
@@ -389,6 +432,30 @@ public class WebSiteActivity extends Activity {
 			} else if (uploadMessage != null) {
 				uploadMessage.onReceiveValue(result);
 				uploadMessage = null;
+			}
+		}
+		else if (requestCode ==  REQUEST_CODE_TAKE_CAMERA) {// 拍照返回
+			if (resultCode == RESULT_OK && cameraPicPath!=null && cameraPicPath.length()>0) {
+				AppUtility.fileUploadWay(new File(cameraPicPath),cameraPicType,this.mHandler);
+			}
+		}
+		else if (requestCode ==  SCANNIN_GREQUEST_CODE){
+			if(resultCode == RESULT_OK){
+				Bundle bundle = data.getExtras();
+				String result = bundle.getString("result");
+				/*
+				try {
+					result = new String(Base64.decode(result.getBytes("GBK")));
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+				*/
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+					mWebView.evaluateJavascript("javascript:callbackScanCode('"+result+"')",null);
+				}
+				else
+					mWebView.loadUrl("javascript:callbackScanCode('"+result+"')");
+				Log.d(TAG,result);
 			}
 		}
 	}
@@ -420,16 +487,7 @@ public class WebSiteActivity extends Activity {
 	{
 		 @Override  
 	    public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {  
-	            back.setEnabled(mWebView.canGoBack());  
-	            forward.setEnabled(mWebView.canGoForward());  
-	            if(back.isEnabled())
-	            	back.setBackgroundResource(R.drawable.bg_title_bar_btn_back_enable);
-	            else
-	            	back.setBackgroundResource(R.drawable.bg_title_bar_btn_back);
-	            if(forward.isEnabled())
-	            	forward.setBackgroundResource(R.drawable.bg_title_bar_btn_forword_enable);
-	            else
-	            	forward.setBackgroundResource(R.drawable.bg_title_bar_btn_forword);
+
 	    } 
 		public void onPageFinished(WebView view, String url) {
 			super.onPageFinished(view, url);
@@ -461,6 +519,12 @@ public class WebSiteActivity extends Activity {
 				needLoadHtml="";
 				loginDate=new Date();
 			}
+			if(mWebView.canGoBack()) {
+				btn_close.setVisibility(View.VISIBLE);
+			}
+			else {
+				btn_close.setVisibility(View.GONE);
+			}
 			/*
 			int navBarHeight=AppUtility.getDaoHangHeight(mWebView.getContext());
 			if(navBarHeight>0) {
@@ -476,7 +540,7 @@ public class WebSiteActivity extends Activity {
 	    }  
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
-			
+			Uri uri = Uri.parse(url);
 		    if (url.startsWith("tel:")) {
 		        startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse(url)));
 		        return true;
@@ -492,6 +556,31 @@ public class WebSiteActivity extends Activity {
 		        startActivity(searchAddress); 
 		        return true;
 		    }
+			else if ( uri.getScheme().equals("js")) {
+				if (uri.getAuthority().equals("PersonInfo")) {
+					Intent intent = new Intent(WebSiteActivity.this,
+							ShowPersonInfo.class);
+					intent.putExtra("studentId", uri.getQueryParameter("weiyima"));
+					startActivity(intent);
+				}
+				else if(uri.getAuthority().equals("OpenTemplateMain"))
+				{
+					Intent intent = new Intent(WebSiteActivity.this, SchoolActivity.class);
+					intent.putExtra("title", uri.getQueryParameter("title"));
+					intent.putExtra("interfaceName",uri.getQueryParameter("interfaceName"));
+					intent.putExtra("templateName",uri.getQueryParameter("templateName"));
+					startActivity(intent);
+				}
+				else if(uri.getAuthority().equals("OpenTemplateDetail"))
+				{
+					Intent intent = new Intent(WebSiteActivity.this, SchoolDetailActivity.class);
+					intent.putExtra("title", uri.getQueryParameter("title"));
+					intent.putExtra("interfaceName",uri.getQueryParameter("interfaceName"));
+					intent.putExtra("templateName",uri.getQueryParameter("templateName"));
+					startActivity(intent);
+				}
+				return true;
+			}
 		    /*
 		    else if(url.toLowerCase(Locale.getDefault()).endsWith(".swf"))
 		    {
@@ -530,7 +619,10 @@ public class WebSiteActivity extends Activity {
 		        if(file.exists() && file.isFile())
 		        {
 		        	intent=IntentUtility.openUrl(WebSiteActivity.this,filePath);
-		        	IntentUtility.openIntent(WebSiteActivity.this, intent,true);
+		        	if(intent==null)
+						view.loadUrl(url);
+		        	else
+		        		IntentUtility.openIntent(WebSiteActivity.this, intent,true);
 		        }
 		        else
 		        {
@@ -643,7 +735,16 @@ public class WebSiteActivity extends Activity {
 				 return true;
 			 }
 			 else
-				 return super.onKeyDown(keyCode, event); 
+			 {
+				 if(mWebView.canGoBack()){
+					 mWebView.goBack();
+					 return true;
+				 }
+				 else {
+					 finish();
+					 return true;
+				 }
+			 }
 		 }
 		 else
 			 return super.onKeyDown(keyCode, event); 
@@ -661,48 +762,104 @@ public class WebSiteActivity extends Activity {
 			return false;
 	}*/
 	 @TargetApi(23)
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+	{
+		AppUtility.permissionResult(requestCode,grantResults,this,callBack);
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+	}
+	public CallBackInterface callBack=new CallBackInterface()
+	{
+
 		@Override
-		public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+		public void getLocation1(int rqcode)
 		{
-			AppUtility.permissionResult(requestCode,grantResults,this,callBack);
-			super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+			if(rqcode==11)
+				getLocation(1);
+			else
+				getLocation(0);
 		}
-		public CallBackInterface callBack=new CallBackInterface()
-		{
 
-			@Override
-			public void getLocation1() {
-				getLocation();
-			}
+		@Override
+		public void getPictureByCamera1(int rqcode) {
+			if(rqcode==12)
+				openScanCode();
+			else
+				cameraPicPath=AppUtility.getPictureByCamera(WebSiteActivity.this,REQUEST_CODE_TAKE_CAMERA);
+		}
 
-			@Override
-			public void getPictureByCamera1() {
-				// TODO Auto-generated method stub
-				
-			}
+		@Override
+		public void getPictureFromLocation1() {
+			// TODO Auto-generated method stub
+			beginDownload(downloadUrl,downloadFile);
+		}
 
-			@Override
-			public void getPictureFromLocation1() {
-				// TODO Auto-generated method stub
-				beginDownload(downloadUrl,downloadFile);
-			}
+		@Override
+		public void sendCall1() {
+			// TODO Auto-generated method stub
 
-			@Override
-			public void sendCall1() {
-				// TODO Auto-generated method stub
-				
-			}
+		}
 
-			@Override
-			public void sendMsg1() {
-				// TODO Auto-generated method stub
-				
+		@Override
+		public void sendMsg1() {
+			// TODO Auto-generated method stub
+
+		}
+		@Override
+		public void getFujian1() {
+			// TODO Auto-generated method stub
+		}
+
+	};
+	private Handler mHandler = new Handler() {
+		public void handleMessage(Message msg) {
+			String result = "";
+			String resultStr = "";
+			switch (msg.what) {
+				case -1:
+					AppUtility.showErrorToast(WebSiteActivity.this,
+							msg.obj.toString());
+					break;
+				case 3:// 图片上传
+					result = msg.obj.toString();
+					resultStr = "";
+					Bundle data = msg.getData();
+					String oldFileName = data.getString("oldFileName");
+					if (AppUtility.isNotEmpty(result)) {
+						try {
+							resultStr = new String(Base64.decode(result
+									.getBytes("GBK")));
+							Log.d(TAG, resultStr);
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+						}
+					}
+					try {
+						JSONObject jo = new JSONObject(resultStr);
+						if ("OK".equals(jo.optString("STATUS"))) {
+							String newFileName = jo.getString("文件名");
+							FileUtility.fileRename(oldFileName, newFileName);
+							ImageItem ds = new ImageItem(jo);
+							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+								mWebView.evaluateJavascript("javascript:callbackCamera('" + ds.getDownAddress() + "')", null);
+							}
+							else
+								mWebView.loadUrl("javascript:callbackCamera('" + ds.getDownAddress() + "')");
+							Log.d(TAG, ds.getDownAddress());
+						}
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+					break;
 			}
-			@Override
-			public void getFujian1() {
-				// TODO Auto-generated method stub
-			}
-			
-		};
+		}
+	};
+	private void openScanCode()
+	{
+		Intent intent = new Intent();
+		intent.setClass(WebSiteActivity.this, CaptureActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivityForResult(intent, SCANNIN_GREQUEST_CODE);
+	}
 }
 

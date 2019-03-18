@@ -819,13 +819,12 @@ public class AlbumPersonalActivity extends FragmentActivity implements SwipeRefr
 		{
 
 			@Override
-			public void getLocation1() {
+			public void getLocation1(int rqcode) {
 				// TODO Auto-generated method stub
 				getLocation();
 			}
-
 			@Override
-			public void getPictureByCamera1() {
+			public void getPictureByCamera1(int rqcode) {
 				// TODO Auto-generated method stub
 				getPictureByCamera();
 			}

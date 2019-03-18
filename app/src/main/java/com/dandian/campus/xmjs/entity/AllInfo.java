@@ -48,9 +48,9 @@ public class AllInfo {
 
 	// List<Map> childList;
 	int[] array;
-
+	private String classesStrBanzhuren;// 班主任所带班级
 	private String curriculums;// 所带课程
-	private String classesStr;// 所带班级
+	private String classesStr;// 任课教师所带班级
 	private String companyName;// 单位名称
 	private String workAttendances;// 考勤名称
 	private String workAttendanceValues;// 考勤分值
@@ -72,6 +72,7 @@ public class AllInfo {
 	// private Teacher
 	@SuppressWarnings("unchecked")
 	public AllInfo(JSONObject jo) {
+		classesStrBanzhuren = jo.optString("管辖班级");
 		curriculums = jo.optString("所带课程");
 		companyName = jo.optString("单位名称");
 		workAttendances = jo.optString("考勤名称");
@@ -87,6 +88,23 @@ public class AllInfo {
 		xueqiBeginDate=jo.optString("DAY");
 		PrefUtility.put(Constants.PREF_CURRICULUMS, curriculums);
 		PrefUtility.put(Constants.PREF_CLASSES, classesStr);
+		PrefUtility.put(Constants.PREF_CLASSES_BANZHUREN, classesStrBanzhuren);
+		if(PrefUtility.get(Constants.PREF_CLASSES_BANZHUREN_VIEW,"").length()>0)
+		{
+			String curbanji=PrefUtility.get(Constants.PREF_CLASSES_BANZHUREN_VIEW,"");
+			String [] mybanji=classesStrBanzhuren.split(",");
+			boolean flag=false;
+			for (String banji:mybanji)
+			{
+				if(banji.equals(curbanji))
+				{
+					flag=true;
+					break;
+				}
+			}
+			if(!flag)
+				PrefUtility.put(Constants.PREF_CLASSES_BANZHUREN_VIEW,"");
+		}
 		PrefUtility.put(Constants.PREF_COMPANY_NAME, companyName);
 		PrefUtility.put(Constants.PREF_WORK_ATTENDANCES, workAttendances);
 		PrefUtility.put(Constants.PREF_WORK_ATTENDANCE_VALUES,
@@ -358,6 +376,8 @@ public class AllInfo {
 	}
 
 	public AllInfo(net.minidev.json.JSONObject jo) {
+
+		classesStrBanzhuren= (jo.get("管辖班级")==null?"":jo.get("管辖班级").toString());
 		curriculums = (jo.get("所带课程")==null?"":jo.get("所带课程").toString());
 		companyName = jo.get("单位名称").toString();
 		workAttendances = jo.get("考勤名称").toString();
@@ -373,6 +393,23 @@ public class AllInfo {
 		xueqiBeginDate=jo.get("DAY").toString();
 		PrefUtility.put(Constants.PREF_CURRICULUMS, curriculums);
 		PrefUtility.put(Constants.PREF_CLASSES, classesStr);
+		PrefUtility.put(Constants.PREF_CLASSES_BANZHUREN, classesStrBanzhuren);
+		if(PrefUtility.get(Constants.PREF_CLASSES_BANZHUREN_VIEW,"").length()>0)
+		{
+			String curbanji=PrefUtility.get(Constants.PREF_CLASSES_BANZHUREN_VIEW,"");
+			String [] mybanji=classesStrBanzhuren.split(",");
+			boolean flag=false;
+			for (String banji:mybanji)
+			{
+				if(banji.equals(curbanji))
+				{
+					flag=true;
+					break;
+				}
+			}
+			if(!flag)
+				PrefUtility.put(Constants.PREF_CLASSES_BANZHUREN_VIEW,"");
+		}
 		PrefUtility.put(Constants.PREF_COMPANY_NAME, companyName);
 		PrefUtility.put(Constants.PREF_WORK_ATTENDANCES, workAttendances);
 		PrefUtility.put(Constants.PREF_WORK_ATTENDANCE_VALUES,

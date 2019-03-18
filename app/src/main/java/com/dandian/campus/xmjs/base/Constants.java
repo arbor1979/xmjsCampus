@@ -71,6 +71,8 @@ public class Constants {
 	 * 所带班级
 	 */
 	public static final String PREF_CLASSES = "pref.classes";
+	public static final String PREF_CLASSES_BANZHUREN = "pref.classes.banzhuren";
+	public static final String PREF_CLASSES_BANZHUREN_VIEW = "pref.classes.banzhuren.view";
 	/**
 	 * 单位名称
 	 */

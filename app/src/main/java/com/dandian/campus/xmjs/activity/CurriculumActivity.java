@@ -146,12 +146,8 @@ public class CurriculumActivity extends Activity {
 	}
 	private void initData() {
 
-		if (ClassDetailActivity.userType.equals("教师")) {
-			aq.id(R.id.tv_title).text(curriculum.getClassRoom());
-		} else {
-			aq.id(R.id.tv_title).text(curriculum.getKecheng());
-		}
-
+		String userType = PrefUtility.get(Constants.PREF_CHECK_USERTYPE,"");
+		aq.id(R.id.tv_title).text(curriculum.getKecheng());
 		rbTeacherRank.setRating(Float.valueOf(curriculum.getTeacherRank()));
 		rbCourserating.setRating(Float.valueOf(curriculum.getCourseRating()));
 		aq.id(R.id.tv_teacher_pingjiashu).text(curriculum.getTeacherpingjiashu()+"人评");
@@ -171,7 +167,12 @@ public class CurriculumActivity extends Activity {
 		aq.id(R.id.tv_classroot_sitiation).text(curriculum.getClassroomSitiation());
 		aq.id(R.id.course_date).text(curriculum.getShangkeriqi()+" "+curriculum.getJieci()+"节");
 		aq.id(R.id.class_room).text(curriculum.getClassRoom());
-		String attendanceName =((CampusApplication)getApplicationContext()).getLoginUserObj().getName().replace("[家长]","")+ "的出勤";
+		String attendanceName="";
+		if (userType.equals("老师")) {
+			attendanceName="学生出勤";
+		}
+		else
+			attendanceName =((CampusApplication)getApplicationContext()).getLoginUserObj().getName().replace("[家长]","")+ "的出勤";
 		aq.id(R.id.tv_attendance_name).text(attendanceName);
 		aq.id(R.id.tv_attendance_values).text(curriculum.getAttendanceValues());
 		aq.id(R.id.tv_ketangjilv).text(curriculum.getKetangjilv());
@@ -265,7 +266,7 @@ public class CurriculumActivity extends Activity {
 		Log.d(TAG, "----------checkCode:" + checkCode + "++");
 		JSONObject jo = new JSONObject();
 		try {
-			jo.put("老师上课记录编号", ClassDetailActivity.teacherInfo.getId());
+			jo.put("老师上课记录编号", getIntent().getStringExtra("subjectid"));
 			jo.put("用户较验码", checkCode);
 			jo.put("DATETIME", datatime);
 		} catch (JSONException e1) {

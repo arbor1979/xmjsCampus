@@ -51,6 +51,7 @@ import com.dandian.campus.xmjs.util.Base64;
 import com.dandian.campus.xmjs.util.FileUtility;
 import com.dandian.campus.xmjs.util.PrefUtility;
 import com.dandian.campus.xmjs.util.ZLibUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.message.IUmengRegisterCallback;
@@ -224,6 +225,7 @@ public class CampusApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		CrashReport.initCrashReport(getApplicationContext(), "1ab9cb8d60", false);
 		AppUtility.setContext(this);
 		String state = Environment.getExternalStorageState();
     	if (Environment.MEDIA_MOUNTED.equals(state)) {

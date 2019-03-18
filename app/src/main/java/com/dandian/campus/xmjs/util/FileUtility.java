@@ -211,22 +211,27 @@ public class FileUtility {
         return  fileName;
     } 
     public static String getUrlRealName(String path) {  
-        int index = path.lastIndexOf("/");  
-        String fileName=path.substring(index + 1); 
-        index=fileName.indexOf("?");
-        if(index>-1)
-        {
-        	fileName=fileName.substring(index+1);
-        	String [] queryParams=fileName.split("&");
-			for (String item:queryParams) {
-				String[] tmp=item.split("=");
-				index=tmp[1].indexOf(".");
-				if(index>-1) {
-					fileName = tmp[1];
-					break;
+        int index = path.lastIndexOf("/");
+		String fileName=path;
+        if(index>-1 && (index+1)<path.length()) {
+			fileName = path.substring(index + 1);
+			index = fileName.indexOf("?");
+			if (index > -1 && (index + 1) < fileName.length()) {
+				fileName = fileName.substring(index + 1);
+				String[] params = fileName.split("&");
+				for (String item : params) {
+					if (item.indexOf(".") > 0) {
+						String tempStr[] = item.split("=");
+						if (tempStr.length == 2)
+							return tempStr[1];
+
+					}
 				}
+				index = fileName.lastIndexOf("=");
+				if (index > -1 && (index + 1) < fileName.length())
+					fileName = fileName.substring(index + 1);
 			}
-        }
+		}
 		try {
 				fileName=java.net.URLDecoder.decode(fileName,"utf-8");
 			} catch (UnsupportedEncodingException e) {
@@ -247,12 +252,28 @@ public class FileUtility {
     	String filename=getFileRealName(path);
     	int index=filename.lastIndexOf(".");
         String extName;
-        if(index>-1)
-        	extName=filename.substring(index+1);
+        if(index>-1) {
+			extName = filename.substring(index + 1);
+		}
         else
         	extName="";
         return  extName;
     }
+	public static String getUrlExtName(String path)
+	{
+		int index=path.lastIndexOf(".");
+		String extName="";
+		if(index>-1) {
+			extName = path.substring(index + 1);
+			String tempstr[]=extName.split("&");
+			if(tempstr.length>1)
+				extName=tempstr[0];
+			index=extName.lastIndexOf("\\?");
+			if(index>-1)
+				extName = extName.substring(0,index);
+		}
+		return  extName;
+	}
     public static String getFileDir(String path)
     {
     	

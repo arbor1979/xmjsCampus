@@ -67,7 +67,7 @@
     <color name="field_text_color">#33a7ff</color>
     <color name="button_ok">#078347</color>
 	<!--radio_button-->
-	 <color name="radio_button_selected_color">#27ae62</color>
+	 <color name="radio_button_selected_color">#0366CB</color>
     <!-- <color name="radio_button_selected_color">#ff33b5e5</color> -->
     <color name="radio_button_unselected_color">@android:color/transparent</color>
      <color name="dialog_textColor">#444444</color>
@@ -89,4 +89,9 @@
     <color name="green_dark">#0F8A0B</color>
     <color name="colorPrimary">#0366cb</color>
     <color name="colorPrimaryDark">#0366cb</color>
+    <color name="result_view">#b0000000</color>
+    <color name="viewfinder_mask">#60000000</color>
+    <color name="possible_result_points">#c0ffff00</color>
+    <color name="viewfinder_frame">#ff000000</color>
+    <color name="viewfinder_laser">#ffff0000</color>
 </resources>

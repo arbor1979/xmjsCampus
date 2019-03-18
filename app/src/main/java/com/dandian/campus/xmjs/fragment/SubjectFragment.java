@@ -35,6 +35,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.dandian.campus.xmjs.activity.CurriculumActivity;
+import com.dandian.campus.xmjs.base.Constants;
+import com.dandian.campus.xmjs.util.AppUtility;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.PreparedQuery;
@@ -310,7 +313,8 @@ public class SubjectFragment extends Fragment {
 			}
 			TextView tv = (TextView) convertView.findViewById(R.id.tv_section);
 			SpannableString builder = new SpannableString(sections[row]);
-            builder.setSpan(new AbsoluteSizeSpan(10,true), 0, 5, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			if(sections[row]!=null && sections[row].length()>5)
+            	builder.setSpan(new AbsoluteSizeSpan(10,true), 0, 5, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
             tv.setText(builder);
 			
 			/*
@@ -367,21 +371,15 @@ public class SubjectFragment extends Fragment {
 				if (teacherInfo != null) {
 					int color =0;
 					bn.setTag(teacherInfo);
-					String teacherInfoStr = teacherInfo.getCourseName();
-                    if(teacherInfo.getClassroom()!=null && teacherInfo.getClassroom().length()>0)
-                        teacherInfoStr=teacherInfoStr + "("
-                                + teacherInfo.getClassroom() + ")";
-					if (userType.equals("老师"))
+					String teacherInfoStr = "";
+					if (userType.equals("老师") && PrefUtility.get(Constants.PREF_CLASSES_BANZHUREN_VIEW,"").length()==0)
 					{
-						teacherInfoStr+=teacherInfo.getClassGrade();
 						color = Color.parseColor(getColor(teacherInfo.getClassGrade()));
 					}
 					else
 					{
-						teacherInfoStr+=teacherInfo.getName();
 						color = Color.parseColor(getColor(teacherInfo.getCourseName()));
 					}
-					bn.setText(teacherInfoStr);
 					TeacherInfo lastInfo = null;
 					TeacherInfo nextInfo = null;
 					if (row - 1 >= 0 && row - 1 <= table.length) {
@@ -392,21 +390,25 @@ public class SubjectFragment extends Fragment {
 					}
 					if (nextInfo == null && lastInfo == null) {
 						teacherInfoStr = teacherInfo.getCourseName();
+                        teacherInfoStr=AppUtility.cutStringToLength(teacherInfoStr,12);
 						if(teacherInfo.getClassroom()!=null && teacherInfo.getClassroom().length()>0)
-                            teacherInfoStr=teacherInfoStr + "("
-								+ teacherInfo.getClassroom() + ")";
-                        teacherInfoStr=teacherInfoStr+ teacherInfo.getClassGrade();
+							teacherInfoStr=teacherInfoStr + "("
+									+ teacherInfo.getClassroom()+")" ;
+						if (userType.equals("老师") && PrefUtility.get(Constants.PREF_CLASSES_BANZHUREN_VIEW,"").length()==0)
+							teacherInfoStr=teacherInfoStr+ teacherInfo.getClassGrade();
+						else
+							teacherInfoStr=teacherInfoStr+ teacherInfo.getName();
 						bn.setText(teacherInfoStr);
 					} else {
 						if (nextInfo != null) {
 							if (teacherInfo.getSection().equals(
 									nextInfo.getSection())) {
 								showButtons.put(teacherInfo.getId() + "up", bn);
-								
 								teacherInfoStr = teacherInfo.getCourseName();
+                                teacherInfoStr=AppUtility.cutStringToLength(teacherInfoStr,12);
                                 if(teacherInfo.getClassroom()!=null && teacherInfo.getClassroom().length()>0)
-                                    teacherInfoStr=teacherInfoStr + "("
-                                            + teacherInfo.getClassroom() + ")";
+                                    teacherInfoStr=teacherInfoStr + "\n"
+                                            + teacherInfo.getClassroom();
 								bn.setText(teacherInfoStr);
 								bn.setGravity(Gravity.BOTTOM);
 								MarginLayoutParams  layoutParams=(ViewGroup.MarginLayoutParams)bn.getLayoutParams();
@@ -420,8 +422,8 @@ public class SubjectFragment extends Fragment {
 									lastInfo.getSection())) {
 								showButtons.put(teacherInfo.getId() + "down",
 										bn);
-								
-								if (userType.equals("老师"))
+
+								if (userType.equals("老师") && PrefUtility.get(Constants.PREF_CLASSES_BANZHUREN_VIEW,"").length()==0)
 									bn.setText(teacherInfo.getClassGrade());
 								else
 									bn.setText(teacherInfo.getName());
@@ -498,10 +500,19 @@ public class SubjectFragment extends Fragment {
 						}
 						else
 						{
-							Intent intent = new Intent(getActivity(),
-									ClassDetailActivity.class);
-							intent.putExtra("teacherInfo", ti);
-							startActivity(intent);
+							if (userType.equals("老师") && PrefUtility.get(Constants.PREF_CLASSES_BANZHUREN_VIEW,"").length()>0)
+							{
+								Intent intent = new Intent(getActivity(),
+										CurriculumActivity.class);
+								intent.putExtra("subjectid", ti.getId());
+								startActivity(intent);
+							}
+							else {
+								Intent intent = new Intent(getActivity(),
+										ClassDetailActivity.class);
+								intent.putExtra("teacherInfo", ti);
+								startActivity(intent);
+							}
 						}
 					}
 				});

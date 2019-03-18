@@ -1,6 +1,7 @@
 package com.dandian.campus.xmjs.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -47,13 +48,19 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.provider.Browser;
+import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -72,9 +79,15 @@ import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.dandian.campus.xmjs.BuildConfig;
 import com.dandian.campus.xmjs.R;
 import com.dandian.campus.xmjs.activity.TabHostActivity;
+import com.dandian.campus.xmjs.api.CampusAPI;
+import com.dandian.campus.xmjs.api.CampusException;
+import com.dandian.campus.xmjs.api.CampusParameters;
+import com.dandian.campus.xmjs.api.RequestListener;
 import com.dandian.campus.xmjs.base.Constants;
+import com.dandian.campus.xmjs.entity.DownloadSubject;
 import com.dandian.campus.xmjs.service.Alarmreceiver;
 import com.dandian.campus.xmjs.widget.XListView;
 
@@ -378,28 +391,6 @@ public class AppUtility {
 			b_size = Integer.parseInt(length_display.substring(0, length_display.indexOf("B")));
 			return b_size;
 		}
-
-	/**
-	 * 保持屏幕唤醒状态（即背景灯不熄灭）
-	 * 
-	 * @param context
-	 * @param on
-	 *            是否唤醒
-	 */
-	@SuppressLint("Wakelock")
-	@SuppressWarnings({ "deprecation" })
-	public static void keepScreenOn(Context context, boolean on) {
-		PowerManager pm = (PowerManager) context
-				.getSystemService(Context.POWER_SERVICE);
-		WakeLock wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK
-				| PowerManager.ON_AFTER_RELEASE, "==KeepScreenOn==");
-		if (on) {
-			wl.acquire();
-		} else {
-			wl.release();
-			wl = null;
-		}
-	}
 
 	/**
 	 * Check if the network is available. <br/>
@@ -855,25 +846,26 @@ public class AppUtility {
 	
 	public static void permissionResult(int requestCode,int[] grantResults,Activity act,CallBackInterface callBack)
 	{
-		if (requestCode == 5)
+		if (requestCode == 5 || requestCode == 11) //11为精确定位
 		{
 			if (grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
 			{
-				callBack.getLocation1();
+				callBack.getLocation1(requestCode);
 				//Toast.makeText(act, "授权成功", Toast.LENGTH_SHORT).show();
 	
 			} else
 			{
 				// Permission Denied
 				Toast.makeText(act, "权限被拒绝", Toast.LENGTH_SHORT).show();
+				goIntentSetting();
 			}
 	
 		}
-		if (requestCode == 6)
+		if (requestCode == 6 || requestCode == 12) //12为扫描二维码
 		{
 			if (grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
 			{
-				callBack.getPictureByCamera1();
+				callBack.getPictureByCamera1(requestCode);
 				//Toast.makeText(context, "授权成功", Toast.LENGTH_SHORT).show();
 	
 			} else
@@ -959,9 +951,9 @@ public class AppUtility {
 		}
 	}
 	public interface CallBackInterface {
-		 
-	    void getLocation1();
-	    void getPictureByCamera1();
+
+		void getLocation1(int rqcode);
+		void getPictureByCamera1(int rqcode);
 	    void getPictureFromLocation1();
 	    void sendCall1();
 	    void sendMsg1();
@@ -1187,6 +1179,118 @@ public class AppUtility {
 		int screenWidth = (int) (width / density);  // 屏幕宽度(dp)
 		return screenWidth;
 	}
+	public static synchronized String getPictureByCamera(Activity theAct,int REQUEST_CODE_TAKE_CAMERA) {
+		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);// 调用android自带的照相机
+		String sdStatus = Environment.getExternalStorageState();
+		if (!sdStatus.equals(Environment.MEDIA_MOUNTED)) { // 检测sd是否可用
+			AppUtility.showToastMsg(context, "没有安装SD卡，无法使用相机功能");
+			return "";
+		}
+		String picturePath = FileUtility.getRandomSDFileName("jpg");
 
+		File mCurrentPhotoFile = new File(picturePath);
 
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+			intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(theAct, BuildConfig.APPLICATION_ID + ".fileProvider", mCurrentPhotoFile)); //Uri.fromFile(tempFile)
+		else {
+			Uri uri = Uri.fromFile(mCurrentPhotoFile);
+			intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+		}
+		theAct.startActivityForResult(intent, REQUEST_CODE_TAKE_CAMERA);
+		return picturePath;
+	}
+	public static void fileUploadWay(File file,String imagetype, Handler handler) {
+		if(!file.exists()) return;
+		if(AppUtility.formetFileSize(file.length()) > 5242880*2){
+			AppUtility.showToastMsg(context, "对不起，您上传的文件太大了，请选择小于10M的文件！");
+		}else{
+
+			ImageUtility.rotatingImageIfNeed(file.getAbsolutePath());
+			DownloadSubject downloadSubject = new DownloadSubject();
+			String filebase64Str = FileUtility.fileupload(file);
+			downloadSubject.setFilecontent(filebase64Str);
+			String filename = file.getName();
+			downloadSubject.setFileName(filename);
+			downloadSubject.setLocalfile(file.getAbsolutePath());
+			downloadSubject.setFilesize(file.length());
+			uploadFile(downloadSubject,imagetype,handler);
+
+		}
+	}
+
+	public static void uploadFile(DownloadSubject downloadSubject, String imagetype,final Handler mHandler) {
+		final CampusParameters params = new CampusParameters();
+		String checkCode = PrefUtility.get(Constants.PREF_CHECK_CODE, "");// 获取用户校验码
+		params.add("用户较验码", checkCode);
+		params.add("课程名称", imagetype);
+		params.add("老师上课记录编号", "0");
+		params.add("图片类别", "问卷调查");
+		params.add("文件名称", downloadSubject.getFileName());
+		params.add("文件内容", downloadSubject.getFilecontent());
+		CampusAPI.uploadFiles(params, new RequestListener() {
+
+			@Override
+			public void onComplete(String response) {
+				Log.d(TAG, "------------------response" + response);
+
+				Message msg = new Message();
+				msg.what = 3;
+				msg.obj = response;
+				Bundle data=new Bundle();
+				data.putString("oldFileName", params.getValue("文件名称"));
+				msg.setData(data);
+				mHandler.sendMessage(msg);
+
+			}
+
+			@Override
+			public void onIOException(IOException e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onError(CampusException e) {
+				Log.d(TAG, "图片上传失败");
+				Message msg = new Message();
+				msg.what = -1;
+				msg.obj = e.getMessage();
+				mHandler.sendMessage(msg);
+			}
+		});
+	}
+	public static void goIntentSetting() {
+		Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+		Uri uri = Uri.fromParts("package", context.getPackageName(), null);
+		intent.setData(uri);
+		try {
+			context.startActivity(intent);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	public static int chineseLength(String value) {
+		int valueLength = 0;
+		String chinese = "[\u0391-\uFFE5]";
+		/* 获取字段值的长度，如果含中文字符，则每个中文字符长度为2，否则为1 */
+		for (int i = 0; i < value.length(); i++) {
+			/* 获取一个字符 */
+			String temp = value.substring(i, i + 1);
+			/* 判断是否为中文字符 */
+			if (temp.matches(chinese)) {
+				/* 中文字符长度为2 */
+				valueLength += 2;
+			} else {
+				/* 其他字符长度为1 */
+				valueLength += 1;
+			}
+		}
+		return valueLength;
+	}
+	public static String cutStringToLength(String s,int length)
+	{
+		while(chineseLength(s)>length)
+			s=s.substring(0,s.length()-1);
+		return s;
+	}
 }

@@ -12,6 +12,8 @@ import android.net.Uri;
 import android.app.DownloadManager.Query;
 import android.os.Build;
 
+import java.io.File;
+
 public class CompleteReceiver extends BroadcastReceiver {
 
 	private DownloadManager downloadManager; 
@@ -43,9 +45,13 @@ public class CompleteReceiver extends BroadcastReceiver {
             cursor.close();  
 
             if(local_filename!=null) {
-                Intent aintent = IntentUtility.openUrl(context,Uri.decode(local_filename).replace("file://", ""));
+                File file = new File(Uri.decode(local_filename));
+                if(file.exists())
+                    local_filename=Uri.decode(local_filename);
+                Intent aintent = IntentUtility.openUrl(context,local_filename.replace("file://", ""));
                 if (aintent != null)
                     IntentUtility.openIntent(context, aintent, true);
+
             }
               
         }else if(action.equals(DownloadManager.ACTION_NOTIFICATION_CLICKED)) {  

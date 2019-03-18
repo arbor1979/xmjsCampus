@@ -257,10 +257,10 @@ public class SchoolNoticeDetailFragment extends Fragment {
 
 //		String html = "有问题：\n";
 //		html+="<a href='http://www.baidu.com'>百度一下 </a> www.baidu.com";//注意这里必须加上协议号，即http://。
-
-		Spanned spanned = Html.fromHtml(content, new MyImageGetter(getActivity(),contentview), new MyTagHandler(getActivity()));
-		contentview.setText(spanned);
-		contentview.setText(spanned);
+		if(getActivity()!=null) {
+			Spanned spanned = Html.fromHtml(content, new MyImageGetter(getActivity(), contentview), new MyTagHandler(getActivity()));
+			contentview.setText(spanned);
+		}
 		contentview.setAutoLinkMask(0);
 		contentview.setMovementMethod(LinkMovementMethod.getInstance());
 

@@ -300,7 +300,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 									}
 								}
 								questions.get(curIndex).setFujianArray(fujianArray);
-								View view= myListview.getChildAt(curIndex);
+								View view= myListview.getChildAt(curIndex-myListview.getFirstVisiblePosition());
 								NonScrollableListView listview=(NonScrollableListView) view.findViewById(R.id.lv_choose);
 								SimpleAdapter fujianAdapter=setupFujianAdpter(questions.get(curIndex));
 								listview.setAdapter(fujianAdapter);
@@ -1228,20 +1228,19 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 			holder.etAnswer.setTag(position);
 			
 			String mStatus = question.getStatus();
-			
-			holder.title.setText(position+1+"."+question.getTitle());
-			if(!isEnable){
-				String remark = question.getRemark();
-				Log.d(TAG, "-----------remark:"+remark);
-				
-				holder.tvRemark.setVisibility(View.INVISIBLE);
-				if(AppUtility.isNotEmpty(remark) && !mStatus.equals("单行文本输入框") && !mStatus.equals("图片")){
-					holder.tvRemark.setText(remark);
-					holder.tvRemark.setVisibility(View.VISIBLE);
-					
-					if(remark.length()>7 && (remark.substring(0, 7).equals("答题状态:错误") || remark.indexOf("error")>0)){
+			String addstr="";
+			if(question.getIsRequired().equals("是") && !question.getTitle().endsWith("*"))
+				addstr="*";
+			holder.title.setText(position+1+"."+question.getTitle()+addstr);
+			String remark = question.getRemark();
+			if(AppUtility.isNotEmpty(remark) && remark.trim().length()>0){
+				holder.tvRemark.setText(remark);
+				holder.tvRemark.setVisibility(View.VISIBLE);
+				if(status.equals("已结束") && !mStatus.equals("单行文本输入框") && !mStatus.equals("图片") && !mStatus.equals("日期")){
+
+					if(remark.length()>=7 && (remark.substring(0, 7).equals("答题状态:错误") || remark.indexOf("error")>0)){
 						holder.tvRemark.setTextColor(getActivity().getResources().getColor(R.color.red_color));
-					}else if(remark.length()>7 && (remark.substring(0, 7).equals("答题状态:正确") || remark.indexOf("right")>0)){
+					}else if(remark.length()>=7 && (remark.substring(0, 7).equals("答题状态:正确") || remark.indexOf("right")>0)){
 						holder.tvRemark.setTextColor(getActivity().getResources().getColor(R.color.subject_current));
 					}
 					else
@@ -1880,13 +1879,12 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 	{
 
 		@Override
-		public void getLocation1() {
+		public void getLocation1(int rqcode) {
 			getLocation();
 		}
 
 		@Override
-		public void getPictureByCamera1() {
-			// TODO Auto-generated method stub
+		public void getPictureByCamera1(int rqcode) {
 			getPictureByCamera();
 		}
 

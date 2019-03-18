@@ -34,7 +34,7 @@ public class StudentSummary {
 	private String curriculumEvaluate;
 	private String mySuggestion;
 	private String classNotes;
-	
+	private String teacherkaoqin;
 	private List<ImageItem> classNoteImages;
 	private List<ImageItem> classAssignImages;
 	private List<ImageItem> classSiduationImages;
@@ -44,6 +44,7 @@ public class StudentSummary {
 		curriculumEvaluate = jo.optString("课程评价");
 		mySuggestion = jo.optString("我的建议");
 		classNotes = jo.optString("课堂笔记");
+		teacherkaoqin=jo.optString("教师考勤情况");
 		classNoteImages=new ArrayList<ImageItem>();
 		JSONArray joii = jo.optJSONArray("课堂笔记图片");
 		for (int i = 0; i < joii.length(); i++) {
@@ -63,7 +64,13 @@ public class StudentSummary {
 			classSiduationImages.add(imageInfo);
 		}
 	}
-	
+	public String getTeacherkaoqin() {
+		return teacherkaoqin;
+	}
+
+	public void setTeacherkaoqin(String teacherkaoqin) {
+		this.teacherkaoqin = teacherkaoqin;
+	}
 	public List<ImageItem> getClassSiduationImages() {
 		return classSiduationImages;
 	}

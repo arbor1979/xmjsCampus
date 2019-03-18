@@ -78,6 +78,7 @@ import com.dandian.campus.xmjs.util.FileUtility;
 import com.dandian.campus.xmjs.util.PrefUtility;
 import com.dandian.campus.xmjs.widget.BottomTabLayout;
 import com.dandian.campus.xmjs.widget.BottomTabLayout.OnCheckedChangeListener;
+import com.tencent.bugly.crashreport.CrashReport;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.message.PushAgent;
 
@@ -289,8 +290,6 @@ public class TabHostActivity extends TabActivity   {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-
 		PushAgent.getInstance(context).onAppStart();
 		
 		iniImageLoader();
@@ -781,7 +780,8 @@ public class TabHostActivity extends TabActivity   {
 					break;
 				case R.id.page_aboutus:
 					Intent aboutusIntent = new Intent(TabHostActivity.this,WebSiteActivity.class);
-					aboutusIntent.putExtra("url", CampusAPI.aboutusUrl);
+					String check=PrefUtility.get(Constants.PREF_CHECK_CODE, "");
+					aboutusIntent.putExtra("url", CampusAPI.aboutusUrl+"?school="+check);
 					aboutusIntent.putExtra("title", getResources().getString(R.string.settings_aboutus));
 					startActivity(aboutusIntent);
 					break;
@@ -937,6 +937,7 @@ public class TabHostActivity extends TabActivity   {
 						PrefUtility.put(Constants.PREF_LOGIN_PASS, "");
 						PrefUtility.put(Constants.PREF_INIT_CONTACT_STR, "");
 						PrefUtility.put(Constants.PREF_INIT_DATA_STR, "");
+						PrefUtility.put(Constants.PREF_CLASSES_BANZHUREN_VIEW,"");
 						Intent intent = new Intent(TabHostActivity.this,
 								LoginActivity.class);
 						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
