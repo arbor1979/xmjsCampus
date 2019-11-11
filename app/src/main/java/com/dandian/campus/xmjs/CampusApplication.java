@@ -25,6 +25,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -61,7 +62,7 @@ import com.umeng.message.UmengMessageHandler;
 import com.umeng.message.UmengNotificationClickHandler;
 import com.umeng.message.entity.UMessage;
 
-public class CampusApplication extends Application {
+public class CampusApplication extends MultiDexApplication {
 	private HttpClient httpClient;
 	private Map<String,ContactsMember> linkManDic;//所有联系人
 	private List<ContactsFriends>  linkGroupList;//联系人组
@@ -245,7 +246,7 @@ public class CampusApplication extends Application {
 
 		//UMConfigure.init(this, UMConfigure.DEVICE_TYPE_PHONE, "2125a30891e11a84849dceff9ec03c42");
 		UMConfigure.init(this, "5b358e38f43e486e2300002c", "XMJS", UMConfigure.DEVICE_TYPE_PHONE, "84defba4ddb55cfc520d9a5ddb65ab13");
-		MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType.E_UM_NORMAL);
+		//MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType.E_UM_NORMAL);
 		PushAgent mPushAgent = PushAgent.getInstance(this);
 		//注册推送服务，每次调用register方法都会回调该接口
 		mPushAgent.register(new IUmengRegisterCallback() {
@@ -327,6 +328,7 @@ public class CampusApplication extends Application {
 		updateColumn(getHelper().getWritableDatabase(), "Student", "zuohao", "varchar", "''");
 		updateColumn(getHelper().getWritableDatabase(), "User", "officeTel", "varchar", "''");
 		updateColumn(getHelper().getWritableDatabase(), "User", "privName", "varchar", "''");
+		updateColumn(getHelper().getWritableDatabase(), "ChatMsg", "linkUrl", "varchar", "''");
 		/*
 		try {
 			TableUtils.createTable(getHelper().getConnectionSource(), ChatMsgDetail.class);

@@ -35,6 +35,8 @@ public class QuestionnaireList implements Serializable {
 	private String status;
 	private String autoClose;
 	private String needLocation;
+	private String rightBtn;
+	private String rightBtnUrl;
 	public String getAutoClose() {
 		return autoClose;
 	}
@@ -55,6 +57,14 @@ public class QuestionnaireList implements Serializable {
 		this.needLocation = needLocation;
 	}
 
+	public String getRightBtn() {
+		return rightBtn;
+	}
+
+	public String getRightBtnUrl() {
+		return rightBtnUrl;
+	}
+
 	public QuestionnaireList(JSONObject jo) {
 		title = jo.optString("标题显示");
 		submitTo = jo.optString("提交地址");
@@ -67,6 +77,8 @@ public class QuestionnaireList implements Serializable {
 			Question q = new Question(joq.optJSONObject(i));
 			questions.add(q);
 		}
+		rightBtn=jo.optString("结束后右上按钮");
+		rightBtnUrl=jo.optString("结束后右上按钮地址");
 	}
 	
 
@@ -119,6 +131,7 @@ public class QuestionnaireList implements Serializable {
 		private String status;
 		private String usersAnswer;
 		private String usersAnswerOne;
+		private String usersAnswerTwo;
 		private String remark;
 		private int lines;
 		public int getLines() {
@@ -130,6 +143,7 @@ public class QuestionnaireList implements Serializable {
 		}
 
 		private String options[];
+		private List<JSONObject> optionsJson;
 		private JSONObject subOptions;
 		private List<ImageItem> images; 
 		private String isRequired;
@@ -141,6 +155,12 @@ public class QuestionnaireList implements Serializable {
 		private String delcallback;
 		private int maxLetter;
 		private String validate;
+		private boolean ifRead;
+		private String imageSource;
+
+		public String getImageSource() {
+			return imageSource;
+		}
 
 		public String getNeedCut() {
 			return needCut;
@@ -182,17 +202,33 @@ public class QuestionnaireList implements Serializable {
 			this.validate = validate;
 		}
 
+		public boolean isIfRead() {
+			return ifRead;
+		}
+
 		public Question(JSONObject jo) {
 			title = jo.optString("题目");
 			status = jo.optString("类型");
 			remark = jo.optString("备注");
 			Log.d("-----", jo.toString());
+			optionsJson=new ArrayList<JSONObject>();
 			JSONArray ja = jo.optJSONArray("选项");
-			if(ja!=null){
-				options = new String[ja.length()];
-				for (int i = 0; i < ja.length(); i++) {
-					options[i] = ja.optString(i);
+			options = new String[0];
+			try {
+				if(ja!=null) {
+
+					for (int i = 0; i < ja.length(); i++) {
+						if (ja.get(i) instanceof String) {
+							if(i==0)
+								options = new String[ja.length()];
+							options[i] = ja.optString(i);
+						}
+						else if(ja.get(i) instanceof JSONObject)
+							optionsJson.add((JSONObject)ja.get(i));
+					}
 				}
+			} catch (JSONException e) {
+				e.printStackTrace();
 			}
 			subOptions= jo.optJSONObject("子选项");
 			isRequired = jo.optString("是否必填");
@@ -208,23 +244,35 @@ public class QuestionnaireList implements Serializable {
 					setImages(new ArrayList<ImageItem>());
 				}
 			}
-			else if(status.equals("附件") || status.equals("弹出列表"))
+			else if(status.equals("附件") || status.equals("弹出列表") || status.equals("弹出多选"))
 			{
 				fujianArray=jo.optJSONArray("用户答案");
 			}
 			else{
 				usersAnswer = jo.optString("用户答案");
 				usersAnswerOne=jo.optString("用户答案一级");
+				usersAnswerTwo=jo.optString("用户答案二级");
 			}
 			filterObj=jo.optJSONObject("Json过滤");
 			linkUpdate=jo.optInt("关联更新");
 			maxLetter=jo.optInt("字符数");
 			validate=jo.optString("校验");
-
-			
+			if(jo.optString("只读").equals("是"))
+				ifRead=true;
+			else
+				ifRead=false;
+			imageSource=jo.optString("图片来源");
+		}
+		public String getUsersAnswerTwo() {
+			return usersAnswerTwo;
 		}
 
-
+		public void setUsersAnswerTwo(String usersAnswerTwo) {
+			this.usersAnswerTwo = usersAnswerTwo;
+		}
+		public List<JSONObject> getOptionsJson() {
+			return optionsJson;
+		}
 		public JSONObject getSubOptions() {
 			return subOptions;
 		}

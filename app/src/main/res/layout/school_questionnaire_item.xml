@@ -41,8 +41,8 @@
             android:background="@drawable/edittext_bg"
             android:gravity="left|top"
             android:inputType="textMultiLine"
-            android:minLines="6"
-            android:textSize="@dimen/text_size_micro"
+            android:padding="10px"
+            android:textSize="@dimen/text_size_normal"
             android:visibility="gone" />
 
         <Spinner
@@ -55,7 +55,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone" />
-
+        <Spinner
+            android:id="@+id/sp_select2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
         <Button
             android:id="@+id/bt_date"
             android:layout_width="match_parent"

@@ -7,6 +7,7 @@
     android:padding="8.0dip" >
 
     <TextView
+        android:id="@+id/dialogtitle"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8.0dip"

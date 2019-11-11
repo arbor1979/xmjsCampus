@@ -29,6 +29,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.androidquery.AQuery;
+import com.dandian.campus.xmjs.CampusApplication;
 import com.dandian.campus.xmjs.R;
 import com.dandian.campus.xmjs.activity.SchoolDetailActivity;
 import com.dandian.campus.xmjs.api.CampusAPI;
@@ -213,6 +214,7 @@ public class SchoolQuestionnaireFragment extends Fragment {
 		try {
 			jo.put("用户较验码", checkCode);
 			jo.put("DATETIME", datatime);
+			jo.put("version", CampusApplication.getVersion());
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

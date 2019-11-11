@@ -305,6 +305,11 @@ public class LoginActivity extends UmengNotifyClickActivity implements OnClickLi
 				popupWindow.showAsDropDown(table_item);
 				login_choose.setImageResource(R.drawable.login_btn_bg_sel);
 			} else {
+				if(popupWindow.isShowing())
+				{
+					popupWindow.dismiss();
+					return;
+				}
 				adapter.notifyDataSetChanged();
 				popupWindow = new PopupWindow(listView, table_item.getWidth(),
 						LayoutParams.WRAP_CONTENT);

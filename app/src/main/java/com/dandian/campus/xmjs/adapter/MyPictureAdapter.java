@@ -39,8 +39,17 @@ public class MyPictureAdapter extends BaseAdapter implements Serializable{
 	private String from;
 	private String imagetype;
 	private int curIndex;
-	
-	public MyPictureAdapter(Context context,boolean flag, List<String> picPaths,int size,String imagetype) {
+	private String imageSource;
+
+	public String getImageSource() {
+		return imageSource;
+	}
+
+	public void setImageSource(String imageSource) {
+		this.imageSource = imageSource;
+	}
+
+	public MyPictureAdapter(Context context, boolean flag, List<String> picPaths, int size, String imagetype) {
 		this.mContext = context;
 		this.picPaths = picPaths;
 		this.isCanAdd= flag;
@@ -65,6 +74,8 @@ public class MyPictureAdapter extends BaseAdapter implements Serializable{
 	}
 
 	private void initData() {
+		if(picPaths != null && picPaths.size() >size && picPaths.contains(""))
+			picPaths.remove("");
 		if(picPaths != null && picPaths.size() < size && !picPaths.contains("loading")){
 			picPaths.remove("");
 			picPaths.add("");
@@ -179,6 +190,7 @@ public class MyPictureAdapter extends BaseAdapter implements Serializable{
 					intent.putExtra("TAG", from);
 					intent.putExtra("imagetype", imagetype);
 					intent.putExtra("position",curIndex);
+					intent.putExtra("imageSource",imageSource);
 					mContext.sendBroadcast(intent);
 				} else {
 					Log.d(TAG, "---------------------------------");

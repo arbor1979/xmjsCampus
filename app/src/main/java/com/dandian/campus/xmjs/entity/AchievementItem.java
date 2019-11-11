@@ -26,6 +26,13 @@ public class AchievementItem {
 	private String rightButton;
 	private String rightButtonURL;
 	private String submitTarget;
+	private int page;
+	private int allnum;
+	private JSONArray filterArr;
+
+	public JSONArray getFilterArr() {
+		return filterArr;
+	}
 
 	public AchievementItem(JSONObject jo) {
 		templateName = jo.optString("适用模板");
@@ -42,8 +49,16 @@ public class AchievementItem {
 		rightButton=jo.optString("右上按钮");
 		rightButtonURL=jo.optString("右上按钮URL");
 		submitTarget=jo.optString("右上按钮Submit");
+		page=jo.optInt("page");
+		allnum=jo.optInt("allnum");
+		filterArr=jo.optJSONArray("过滤条件");
 	}
-
+	public int getPage() {
+		return page;
+	}
+	public int getAllnum() {
+		return allnum;
+	}
 	public String getSubmitTarget() {
 		return submitTarget;
 	}
@@ -78,6 +93,7 @@ public class AchievementItem {
 		private String thecolor;//总分颜色
 		private String templateName;
 	    private String templateGrade;
+		private JSONObject extraMenu;
 	    
 		public String getTemplateName() {
 			return templateName;
@@ -87,12 +103,16 @@ public class AchievementItem {
 			this.templateName = templateName;
 		}
 
-		public String getTemplateGrade() {
+			public String getTemplateGrade() {
 			return templateGrade;
 		}
 
 		public void setTemplateGrade(String templateGrade) {
 			this.templateGrade = templateGrade;
+		}
+
+		public JSONObject getExtraMenu() {
+			return extraMenu;
 		}
 
 		public Achievement(JSONObject jo) {
@@ -105,7 +125,7 @@ public class AchievementItem {
 			thecolor=jo.optString("颜色");
 			templateName = jo.optString("模板");
 			templateGrade = jo.optString("模板级别");
-			
+			extraMenu= jo.optJSONObject("附加菜单");
 		}
 
 		public String getThecolor() {

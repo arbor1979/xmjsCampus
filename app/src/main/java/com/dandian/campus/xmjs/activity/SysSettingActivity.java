@@ -205,7 +205,7 @@ public class SysSettingActivity extends FragmentActivity implements
 		tv_reset_bg=(TextView)findViewById(R.id.tv_reset_bg);
 		tv_change_bg=(TextView)findViewById(R.id.tv_select_bg);
 		RadioButton rdbtn=null;
-		if(PrefUtility.getInt("weekFirstDay", 0)==0)
+		if(PrefUtility.getInt("weekFirstDay", 1)==0)
 			rdbtn=(RadioButton)weekfirstday.getChildAt(0);
 		else
 			rdbtn=(RadioButton)weekfirstday.getChildAt(1);

@@ -75,7 +75,9 @@ import com.dandian.campus.xmjs.R;
 import com.dandian.campus.xmjs.activity.ClassDetailActivity;
 import com.dandian.campus.xmjs.activity.ImagesActivity;
 import com.dandian.campus.xmjs.activity.SchoolDetailActivity;
+import com.dandian.campus.xmjs.activity.StudentSelectActivity;
 import com.dandian.campus.xmjs.adapter.ListOfBillAdapter;
+import com.dandian.campus.xmjs.adapter.ListViewImageAdapter;
 import com.dandian.campus.xmjs.adapter.MyPictureAdapter;
 import com.dandian.campus.xmjs.api.CampusAPI;
 import com.dandian.campus.xmjs.api.CampusException;
@@ -120,6 +122,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 	private static final int REQUEST_CODE_TAKE_PICTURE = 2;// //设置图片操作的标志
 	private static final int REQUEST_CODE_TAKE_CAMERA = 1;// //设置拍照操作的标志
 	private static final int REQUEST_CODE_TAKE_DOCUMENT = 3;// //设置图片操作的标志
+	private static final int REQUEST_CODE_SelectMuti = 4;// //设置图片操作的标志
 	//private int size = 5;//已提交图片数量;size:图片最大数量
 	private int curIndex;
 	private ProgressDialog progressDlg;
@@ -130,247 +133,254 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 			String result = "";
 			String resultStr = "";
 			switch (msg.what) {
-			case -1:
-				if(dialog != null){
-					dialog.dismiss();
-				}
-				if(progressDlg!=null)
-					progressDlg.dismiss();
-				AppUtility.showErrorToast(getActivity(), msg.obj.toString());
-				
-				break;
-			case 0://获取数据
-				showProgress(false);
-				result = msg.obj.toString();
-				resultStr = "";
-				if (AppUtility.isNotEmpty(result)) {
-					try {
-						resultStr = new String(Base64.decode(result
-								.getBytes("GBK")));
-						Log.d(TAG, resultStr);
-					} catch (UnsupportedEncodingException e) {
-						showFetchFailedView();
-						e.printStackTrace();
+				case -1:
+					if (dialog != null) {
+						dialog.dismiss();
 					}
-				}
+					if (progressDlg != null)
+						progressDlg.dismiss();
+					AppUtility.showErrorToast(getActivity(), msg.obj.toString());
 
-				if (AppUtility.isNotEmpty(resultStr)) {
-					try {
-						JSONObject jo = new JSONObject(resultStr);
-						String res = jo.optString("结果");
-						if (AppUtility.isNotEmpty(res)) {
-							AppUtility.showToastMsg(getActivity(), res);
-						} else {
-							questionnaireList = new QuestionnaireList(jo);
-							
-							tvTitle.setText(questionnaireList.getTitle());
-							questions = questionnaireList.getQuestions();
-							status=questionnaireList.getStatus();
-							autoClose=questionnaireList.getAutoClose();
-							if (status.equals("进行中")) {
-								tvRight.setVisibility(View.VISIBLE);
-								isEnable = true;
+					break;
+				case 0://获取数据
+					showProgress(false);
+					result = msg.obj.toString();
+					resultStr = "";
+					if (AppUtility.isNotEmpty(result)) {
+						try {
+							resultStr = new String(Base64.decode(result
+									.getBytes("GBK")));
+							Log.d(TAG, resultStr);
+						} catch (UnsupportedEncodingException e) {
+							showFetchFailedView();
+							e.printStackTrace();
+						}
+					}
 
+					if (AppUtility.isNotEmpty(resultStr)) {
+						try {
+							JSONObject jo = new JSONObject(resultStr);
+							String res = jo.optString("结果");
+							if (AppUtility.isNotEmpty(res)) {
+								AppUtility.showToastMsg(getActivity(), res);
 							} else {
-								lyRight.setVisibility(View.INVISIBLE);
-								isEnable = false;
-							}
-							for(int i=0;i<questions.size();i++)
-							{
-								Question item=questions.get(i);
-								if(item.getLinkUpdate()>0)
-								{
-									Question guanlianItem=questions.get(item.getLinkUpdate());
-									JSONObject obj=guanlianItem.getFilterObj();
-									if(item.getUsersAnswer().length()==0 && item.getOptions().length>0)
-										item.setUsersAnswer(item.getOptions()[0]);
-									JSONArray ja=obj.optJSONArray(item.getUsersAnswer());
-									if(ja!=null)
-									{
-										String [] options = new String[ja.length()];
-										for (int j = 0; j < ja.length(); j++) {
-											options[j] = ja.optString(j);
-										}
-										guanlianItem.setOptions(options);
-										questions.set(item.getLinkUpdate(), guanlianItem);
+								questionnaireList = new QuestionnaireList(jo);
+
+								tvTitle.setText(questionnaireList.getTitle());
+								questions = questionnaireList.getQuestions();
+								status = questionnaireList.getStatus();
+								autoClose = questionnaireList.getAutoClose();
+								if (status.equals("进行中")) {
+									tvRight.setVisibility(View.VISIBLE);
+									isEnable = true;
+
+								} else {
+									tvRight.setVisibility(View.INVISIBLE);
+									isEnable = false;
+									if (questionnaireList.getRightBtn().length() > 0) {
+										tvRight.setVisibility(View.VISIBLE);
+										tvRight.setText(questionnaireList.getRightBtn());
+										lyRight.setOnClickListener(new OnClickListener() {
+											@Override
+											public void onClick(View v) {
+												new AlertDialog.Builder(getActivity())
+														.setIcon(android.R.drawable.ic_dialog_alert)
+														.setTitle("确认对话框")
+														.setMessage("是否确认" + questionnaireList.getRightBtn() + "?")
+														.setPositiveButton("是", new DialogInterface.OnClickListener() {
+															@Override
+															public void onClick(DialogInterface dialog, int which) {
+
+																String url = AppUtility.removeURLQuery(interfaceName) + questionnaireList.getRightBtnUrl();
+																CampusAPI.httpPost(url, new JSONObject(), mHandler, 1);
+															}
+														})
+														.setNegativeButton("否", null)
+														.show();
+											}
+										});
 									}
-									
 								}
-							}
-							
-							adapter.notifyDataSetChanged();
-							if(questionnaireList.getNeedLocation().equals("是"))
-							{
-								if (Build.VERSION.SDK_INT >= 23)
-								{
-									if(AppUtility.checkPermission(getActivity(), 5,Manifest.permission.ACCESS_FINE_LOCATION))
+								for (int i = 0; i < questions.size(); i++) {
+									Question item = questions.get(i);
+									if (item.getLinkUpdate() > 0) {
+										Question guanlianItem = questions.get(item.getLinkUpdate());
+										JSONObject obj = guanlianItem.getFilterObj();
+										if (item.getUsersAnswer().length() == 0 && item.getOptions().length > 0)
+											item.setUsersAnswer(item.getOptions()[0]);
+										JSONArray ja = obj.optJSONArray(item.getUsersAnswer());
+										if (ja != null) {
+											String[] options = new String[ja.length()];
+											for (int j = 0; j < ja.length(); j++) {
+												options[j] = ja.optString(j);
+											}
+											guanlianItem.setOptions(options);
+											questions.set(item.getLinkUpdate(), guanlianItem);
+										}
+
+									}
+								}
+
+								adapter.notifyDataSetChanged();
+								if (questionnaireList.getNeedLocation().equals("是")) {
+									if (Build.VERSION.SDK_INT >= 23) {
+										if (AppUtility.checkPermission(getActivity(), 5, Manifest.permission.ACCESS_FINE_LOCATION))
+											getLocation();
+									} else
 										getLocation();
 								}
-								else
-									getLocation();
 							}
+						} catch (JSONException e) {
+							showFetchFailedView();
+							e.printStackTrace();
 						}
-					} catch (JSONException e) {
+					} else {
 						showFetchFailedView();
-						e.printStackTrace();
 					}
-				}else{
-					showFetchFailedView();
-				}
-				break;
-			case 1://保存成功
-				
-				result = msg.obj.toString();
-				resultStr = "";
-				if (AppUtility.isNotEmpty(result)) {
-					try {
-						resultStr = new String(Base64.decode(result
-								.getBytes("GBK")));
-						
-						JSONObject jo = new JSONObject(resultStr);
-						String res = jo.optString("结果");
-						if(!AppUtility.isNotEmpty(res))
-							res=jo.optString("状态");
-						if(res.equals("成功"))
-						{
-							AppUtility.showToastMsg(getActivity(), "保存成功！");
-							if(jo.optString("自动关闭").length()>0)
-								autoClose=jo.optString("自动关闭");
-							if(autoClose!=null && autoClose.equals("是"))
-							{
-								
-								Intent aintent = new Intent();
-								getActivity().setResult(1,aintent); 
-								getActivity().finish();
-							}
+					break;
+				case 1://保存成功
+
+					result = msg.obj.toString();
+					resultStr = "";
+					if (AppUtility.isNotEmpty(result)) {
+						try {
+							resultStr = new String(Base64.decode(result
+									.getBytes("GBK")));
+
+							JSONObject jo = new JSONObject(resultStr);
+							String res = jo.optString("结果");
+							if (!AppUtility.isNotEmpty(res))
+								res = jo.optString("状态");
+							if (res.equals("成功")) {
+								AppUtility.showToastMsg(getActivity(), "执行成功！");
+								if (jo.optString("自动关闭").length() > 0)
+									autoClose = jo.optString("自动关闭");
+								if (autoClose != null && autoClose.equals("是")) {
+
+									Intent aintent = new Intent();
+									getActivity().setResult(1, aintent);
+									getActivity().finish();
+								}
+							} else
+								AppUtility.showErrorToast(getActivity(), "失败:" + res);
+
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+							AppUtility.showErrorToast(getActivity(), "失败:" + e.getMessage());
+
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							AppUtility.showErrorToast(getActivity(), "失败:" + e.getMessage());
+
 						}
-						else
-							AppUtility.showErrorToast(getActivity(), "失败:"+res);
-							
-					} catch (UnsupportedEncodingException e) {
-						e.printStackTrace();
-						AppUtility.showErrorToast(getActivity(), "失败:"+e.getMessage());
-						
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						AppUtility.showErrorToast(getActivity(), "失败:"+e.getMessage());
-						
+
 					}
-					
-				}
-				tvRight.setText("保存");
-				break;
-			case 2://删除图片
-				result = msg.obj.toString();
-				int type=msg.getData().getInt("type");
-				resultStr = "";
-				if (AppUtility.isNotEmpty(result)) {
-					try {
-						resultStr = new String(Base64.decode(result
-								.getBytes("GBK")));
-						Log.d(TAG, resultStr);
-					} catch (UnsupportedEncodingException e) {
-						e.printStackTrace();
-					}
-					try {
-						JSONObject	jo = new JSONObject(resultStr);
-						if("成功".equals(jo.optString("STATUS"))){
-							if(type==1)
-							{
-								List<ImageItem> images=questions.get(curIndex).getImages();
-								for (int i = 0; i < images.size(); i++) {
-									if(images.get(i).getDownAddress().equals(delImagePath)){
-										images.remove(i);
+					//tvRight.setText("保存");
+					break;
+				case 2://删除图片
+					result = msg.obj.toString();
+					int type = msg.getData().getInt("type");
+					resultStr = "";
+					if (AppUtility.isNotEmpty(result)) {
+						try {
+							resultStr = new String(Base64.decode(result
+									.getBytes("GBK")));
+							Log.d(TAG, resultStr);
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+						}
+						try {
+							JSONObject jo = new JSONObject(resultStr);
+							if ("成功".equals(jo.optString("STATUS"))) {
+								if (type == 1) {
+									List<ImageItem> images = questions.get(curIndex).getImages();
+									for (int i = 0; i < images.size(); i++) {
+										if (images.get(i).getDownAddress().equals(delImagePath)) {
+											images.remove(i);
+										}
 									}
+									questions.get(curIndex).setImages(images);
+									File cacheFile = FileUtility.getCacheFile(delImagePath);
+									if (cacheFile.exists())
+										cacheFile.delete();
+									myPictureAdapter.setPicPathsByImages(images);
+								} else if (type == 2) {
+									JSONArray fujianArray = questions.get(curIndex).getFujianArray();
+									for (int i = 0; i < fujianArray.length(); i++) {
+										JSONObject item = (JSONObject) fujianArray.get(i);
+										if (item.optString("newname").equals(FileUtility.getFileRealName(jo.optString("path")))) {
+											fujianArray.remove(i);
+										}
+									}
+									questions.get(curIndex).setFujianArray(fujianArray);
+									View view = myListview.getChildAt(curIndex - myListview.getFirstVisiblePosition());
+									NonScrollableListView listview = (NonScrollableListView) view.findViewById(R.id.lv_choose);
+									SimpleAdapter fujianAdapter = setupFujianAdpter(questions.get(curIndex));
+									listview.setAdapter(fujianAdapter);
 								}
-								questions.get(curIndex).setImages(images);
-								File cacheFile=FileUtility.getCacheFile(delImagePath);
-								if(cacheFile.exists())
-									cacheFile.delete();
-								myPictureAdapter.setPicPathsByImages(images);
+								//myPictureAdapter.notifyDataSetChanged();
+							} else {
+								AppUtility.showToastMsg(getActivity(), jo.optString("STATUS"));
 							}
-							else if(type==2)
-							{
-								JSONArray fujianArray=questions.get(curIndex).getFujianArray();
-								for (int i = 0; i < fujianArray.length(); i++) {
-									JSONObject item=(JSONObject) fujianArray.get(i);
-									if(item.optString("newname").equals(FileUtility.getFileRealName(jo.optString("path")))){
-										fujianArray.remove(i);
-									}
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}
+					break;
+				case 3://图片上传
+					result = msg.obj.toString();
+					resultStr = "";
+					Bundle data = msg.getData();
+					String oldFileName = data.getString("oldFileName");
+					type = data.getInt("type");
+					if (AppUtility.isNotEmpty(result)) {
+						try {
+							resultStr = new String(Base64.decode(result
+									.getBytes("GBK")));
+							Log.d(TAG, resultStr);
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+						}
+					}
+					try {
+						JSONObject jo = new JSONObject(resultStr);
+						if ("OK".equals(jo.optString("STATUS"))) {
+
+							String newFileName = jo.getString("文件名");
+							if (type == 1) {
+								List<ImageItem> images = questions.get(curIndex).getImages();
+								FileUtility.fileRename(oldFileName, newFileName);
+								ImageItem ds = new ImageItem(jo);
+								images.add(ds);
+								questions.get(curIndex).setImages(images);
+								myPictureAdapter.setPicPathsByImages(images);
+							} else if (type == 2) {
+								if (progressDlg != null) progressDlg.dismiss();
+								Question question = questions.get(curIndex);
+								if (question != null) {
+									JSONArray fujianArray = question.getFujianArray();
+									JSONObject newItem = new JSONObject();
+									newItem.put("name", oldFileName);
+									newItem.put("newname", newFileName);
+									newItem.put("url", jo.optString("文件地址"));
+									fujianArray.put(newItem);
+									question.setFujianArray(fujianArray);
+									questions.set(curIndex, question);
+									View view = myListview.getChildAt(curIndex - myListview.getFirstVisiblePosition());
+									NonScrollableListView listview = (NonScrollableListView) view.findViewById(R.id.lv_choose);
+									SimpleAdapter fujianAdapter = setupFujianAdpter(questions.get(curIndex));
+									listview.setAdapter(fujianAdapter);
 								}
-								questions.get(curIndex).setFujianArray(fujianArray);
-								View view= myListview.getChildAt(curIndex-myListview.getFirstVisiblePosition());
-								NonScrollableListView listview=(NonScrollableListView) view.findViewById(R.id.lv_choose);
-								SimpleAdapter fujianAdapter=setupFujianAdpter(questions.get(curIndex));
-								listview.setAdapter(fujianAdapter);
+
+
 							}
 							//myPictureAdapter.notifyDataSetChanged();
-						}else{
-							AppUtility.showToastMsg(getActivity(), jo.optString("STATUS"));
 						}
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
-				}
-				break;
-			case 3://图片上传
-				result = msg.obj.toString();
-				resultStr = "";
-				Bundle data=msg.getData();
-				String oldFileName=data.getString("oldFileName");
-				type=data.getInt("type");
-				if (AppUtility.isNotEmpty(result)) {
-					try {
-						resultStr = new String(Base64.decode(result
-								.getBytes("GBK")));
-						Log.d(TAG, resultStr);
-					} catch (UnsupportedEncodingException e) {
-						e.printStackTrace();
-					}
-				}
-				try {
-					JSONObject jo = new JSONObject(resultStr);
-					if("OK".equals(jo.optString("STATUS"))){
-						
-						String newFileName=jo.getString("文件名");
-						if(type==1)
-						{
-							List<ImageItem> images=questions.get(curIndex).getImages();
-							FileUtility.fileRename(oldFileName, newFileName);
-							ImageItem ds = new ImageItem(jo);
-							images.add(ds);
-							questions.get(curIndex).setImages(images);
-							myPictureAdapter.setPicPathsByImages(images);
-						}
-						else if(type==2)
-						{
-							if(progressDlg!=null) progressDlg.dismiss();
-							Question question=questions.get(curIndex);
-							if(question!=null)
-							{
-								JSONArray fujianArray=question.getFujianArray();
-								JSONObject newItem=new JSONObject();
-								newItem.put("name", oldFileName);
-								newItem.put("newname", newFileName);
-								newItem.put("url", jo.optString("文件地址"));
-								fujianArray.put(newItem);
-								question.setFujianArray(fujianArray);
-								questions.set(curIndex, question);
-								View view= myListview.getChildAt(curIndex-myListview.getFirstVisiblePosition());
-								NonScrollableListView listview=(NonScrollableListView) view.findViewById(R.id.lv_choose);
-								SimpleAdapter fujianAdapter=setupFujianAdpter(questions.get(curIndex));
-								listview.setAdapter(fujianAdapter);
-							}
-							
-							
-						}
-						//myPictureAdapter.notifyDataSetChanged();
-					}
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-				break;
+					break;
 			}
 		}
 	};
@@ -480,11 +490,24 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
 			String fromTag=intent.getStringExtra("TAG");
+			String imageSource=intent.getStringExtra("imageSource");
 			curIndex=intent.getIntExtra("position",0);
 			Log.d(TAG, "--------action:" + action);
 			Log.d(TAG, "--------fromTag:" + fromTag);
 			if (action.equals(Constants.GET_PICTURE)&&fromTag.equals(TAG)) {
-				showGetPictureDiaLog();
+				if(imageSource!=null && imageSource.length()>0) {
+					 if(imageSource.equals("camera")) {
+						 if (AppUtility.checkPermission(getActivity(), 6, Manifest.permission.CAMERA))
+							 getPictureByCamera();
+					 }
+					 else if(imageSource.equals("gallery"))
+					 {
+						 if(AppUtility.checkPermission(getActivity(),7,Manifest.permission.READ_EXTERNAL_STORAGE))
+							 getPictureFromLocation();
+					 }
+				}
+				else
+					showGetPictureDiaLog();
 			}else if(action.equals(Constants.DEL_OR_LOOK_PICTURE)&&fromTag.equals(TAG)){
 				//查看详图或删除图片
 				delImagePath = intent.getStringExtra("imagePath");
@@ -528,12 +551,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				if (Build.VERSION.SDK_INT >= 23) 
-				{
-					if(AppUtility.checkPermission(getActivity(), 6,Manifest.permission.CAMERA))
-						getPictureByCamera();
-				}
-				else
+				if(AppUtility.checkPermission(getActivity(), 6,Manifest.permission.CAMERA))
 					getPictureByCamera();
 				getPictureDiaLog.dismiss();
 			}
@@ -543,12 +561,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				if (Build.VERSION.SDK_INT >= 23) 
-				{
-					if(AppUtility.checkPermission(getActivity(),7,Manifest.permission.READ_EXTERNAL_STORAGE))
-						getPictureFromLocation();
-				}
-				else
+				if(AppUtility.checkPermission(getActivity(),7,Manifest.permission.READ_EXTERNAL_STORAGE))
 					getPictureFromLocation();
 				getPictureDiaLog.dismiss();
 			}
@@ -730,6 +743,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 			jo.put("用户较验码", checkCode);
 			jo.put("DATETIME", datatime);
 			jo.put("language", language);
+			jo.put("version", CampusApplication.getVersion());
 		} catch (JSONException e1) {
 			e1.printStackTrace();
 		}
@@ -797,6 +811,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 			jo.put("DATETIME", datatime);
 			jo.put("language", language);
 			jo.put("client", "Android");
+			jo.put("version", CampusApplication.getVersion());
 			// jo.put("USER_ID", userId);//可不传
 			// jo.put("SCHOOLID", 0);//可不传
 			// / jo.put("FROMID", fromId);//可不传
@@ -989,6 +1004,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				}
 				joarr.put(joimages);
 			}
+
 			else if(mStatus.equals("附件"))
 			{
 				
@@ -1023,7 +1039,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				}
 				joarr.put(fujianArray);
 			}
-			else if(mStatus.equals("弹出列表"))
+			else if(mStatus.equals("弹出列表") || mStatus.equals("弹出多选"))
 			{
 				JSONArray fujianArray=questions.get(i).getFujianArray();
 				String isRequired = questions.get(i).getIsRequired();//是否必填
@@ -1044,7 +1060,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 						if(AppUtility.isNotEmpty(usersAnswer)){
 							joarr.put(usersAnswer);
 						}else{
-							AppUtility.showToastMsg(getActivity(),"请完成问卷再提交");
+							AppUtility.showToastMsg(getActivity(),"请填写所有必填项");
 							myListview.setSelection(i);
 							
 							return null;
@@ -1171,6 +1187,26 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 						uploadFile(new File(filepath),2);
 					
 				}
+				break;
+			case REQUEST_CODE_SelectMuti:
+				if(resultCode==1)
+				{
+					String returnJsonStr=data.getStringExtra("returnJson");
+					JSONArray returnJson=null;
+					try {
+						returnJson=new JSONArray(returnJsonStr);
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+					int index=data.getIntExtra("curIndex",-1);
+					if(index>-1 && returnJson!=null)
+					{
+						Question question=questions.get(index);
+						question.setFujianArray(returnJson);
+						adapter.notifyDataSetChanged();
+					}
+				}
+				break;
 		}
 	}
 
@@ -1224,6 +1260,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 			holder.bt_datetime=(Button)convertView.findViewById(R.id.bt_datetime);
 			holder.sp_select=(Spinner)convertView.findViewById(R.id.sp_select);
 			holder.sp_select1=(Spinner)convertView.findViewById(R.id.sp_select1);
+			holder.sp_select2=(Spinner)convertView.findViewById(R.id.sp_select2);
 			holder.etAnswer.setOnFocusChangeListener(mListener);
 			holder.etAnswer.setTag(position);
 			
@@ -1260,6 +1297,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				holder.sp_select.setVisibility(View.GONE);
 				holder.sp_select1.setVisibility(View.GONE);
 				final String[] answers = question.getOptions();
+				final List<JSONObject> jsonanswers = question.getOptionsJson();
 				holder.radioGroup.removeAllViews();
 				int checkIndex = -1;
 				holder.radioGroup.setOnCheckedChangeListener(null);
@@ -1269,10 +1307,32 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 					radioButton.setText(answers[i].toString());
 					radioButton.setTextSize(12.0f);
 					radioButton.setId(i);
-					radioButton.setEnabled(isEnable);
+					boolean bflag=false;
+					if(isEnable && !question.isIfRead())
+						bflag=true;
+					radioButton.setEnabled(bflag);
 					if (answers[i].equals(question.getUsersAnswer())) {
 						checkIndex = i;
 					}
+					holder.radioGroup.addView(radioButton);
+				}
+				for (int i = 0; i < jsonanswers.size(); i++) {
+					JSONObject objItem=jsonanswers.get(i);
+					String key=objItem.optString("key");
+					String value=objItem.optString("value");
+					View v= inflater.inflate(R.layout.my_radiobutton, parent, false);
+					RadioButton radioButton = (RadioButton) v.findViewById(R.id.rb_chenck);
+					radioButton.setText(value);
+					radioButton.setTextSize(12.0f);
+					radioButton.setId(i);
+					boolean bflag=false;
+					if(isEnable && !question.isIfRead())
+						bflag=true;
+					radioButton.setEnabled(bflag);
+					if (key.equals(question.getUsersAnswer())) {
+						checkIndex = i;
+					}
+					radioButton.setTag(key);
 					holder.radioGroup.addView(radioButton);
 				}
 				if (checkIndex != -1) {
@@ -1288,7 +1348,14 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 							public void onCheckedChanged(RadioGroup group,
 									int checkedId) {
 								Log.d(TAG, "选中了" + answers[checkedId]);
-								question.setUsersAnswer(answers[checkedId]);
+								if(answers.length>0)
+									question.setUsersAnswer(answers[checkedId]);
+								else if(jsonanswers.size()>0)
+								{
+									JSONObject objItem=jsonanswers.get(checkedId);
+									String key=objItem.optString("key");
+									question.setUsersAnswer(key);
+								}
 								questions.set(position, question);
 								questionnaireList.setQuestions(questions);
 								int linkIndex=question.getLinkUpdate();
@@ -1331,7 +1398,8 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 						getActivity(), position, question);
 				holder.multipleChoice.setAdapter(checkBoxAdapter);
 				
-			} else if (mStatus.equals("单行文本输入框")) {
+			}
+			else if (mStatus.equals("单行文本输入框")) {
 				holder.imageGridView.setVisibility(View.GONE);
 				holder.radioGroup.setVisibility(View.GONE);
 				holder.multipleChoice.setVisibility(View.GONE);
@@ -1345,9 +1413,10 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 					holder.tvAnswer.setText(question.getUsersAnswer());
 				} else {
 					holder.etAnswer.setVisibility(View.VISIBLE);
+					holder.etAnswer.setEnabled(!question.isIfRead());
 					holder.tvAnswer.setVisibility(View.GONE);
 					holder.etAnswer.setText(question.getUsersAnswer());
-					if(question.getLines()>0)
+					if(question.getLines()>2)
 						holder.etAnswer.setLines(question.getLines());
 					if (mFocusPosition == position) {
 						holder.etAnswer.requestFocus();
@@ -1380,7 +1449,8 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				});
 					
 				}
-			} else if (mStatus.equals("图片")) {
+			}
+			else if (mStatus.equals("图片")) {
 				holder.imageGridView.setVisibility(View.VISIBLE);
 				holder.radioGroup.setVisibility(View.GONE);
 				holder.multipleChoice.setVisibility(View.GONE);
@@ -1393,10 +1463,14 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				int size=5;
 				if(question.getLines()>0)
 					size=question.getLines();
-				myPictureAdapter = new MyPictureAdapter(getActivity(),isEnable,new ArrayList<String>(),size,"调查问卷");
+				boolean bflag=false;
+				if(!question.isIfRead() && isEnable)
+					bflag=true;
+				myPictureAdapter = new MyPictureAdapter(getActivity(),bflag,new ArrayList<String>(),size,"调查问卷");
 				myPictureAdapter.setFrom(TAG);
 				myPictureAdapter.setCurIndex(position);
 				myPictureAdapter.setPicPathsByImages(question.getImages());
+				myPictureAdapter.setImageSource(question.getImageSource());
 				holder.imageGridView.setAdapter(myPictureAdapter);
 			}
 			else if (mStatus.equals("日期")) {
@@ -1409,6 +1483,10 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				holder.bt_datetime.setVisibility(View.GONE);
 				holder.sp_select.setVisibility(View.GONE);
 				holder.sp_select1.setVisibility(View.GONE);
+				boolean bflag=false;
+				if(!question.isIfRead() && isEnable)
+					bflag=true;
+				holder.bt_date.setEnabled(bflag);
 				if(!AppUtility.isNotEmpty(question.getUsersAnswer()))
 				{
 					question.setUsersAnswer(DateHelper.getToday());
@@ -1465,6 +1543,10 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				holder.bt_datetime.setVisibility(View.VISIBLE);
 				holder.sp_select.setVisibility(View.GONE);
 				holder.sp_select1.setVisibility(View.GONE);
+				boolean bflag=false;
+				if(!question.isIfRead() && isEnable)
+					bflag=true;
+				holder.bt_datetime.setEnabled(bflag);
 				if(!AppUtility.isNotEmpty(question.getUsersAnswer()))
 				{
 					question.setUsersAnswer(DateHelper.getToday());
@@ -1496,22 +1578,45 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				holder.bt_datetime.setVisibility(View.GONE);
 				holder.sp_select.setVisibility(View.VISIBLE);
 				holder.sp_select1.setVisibility(View.GONE);
-				ArrayAdapter<String> aa = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_dropdown_item,question.getOptions());
-				holder.sp_select.setAdapter(aa);
+				boolean bflag=false;
+				if(!question.isIfRead() && isEnable)
+					bflag=true;
+				holder.sp_select.setEnabled(bflag);
 				int pos=0;
 				for(int i=0;i<question.getOptions().length;i++)
 				{
 					if(question.getOptions()[i].equalsIgnoreCase(question.getUsersAnswer()))
 						pos=i;
 				}
+				String [] listStr=new String[question.getOptionsJson().size()];
+				for(int i=0;i<question.getOptionsJson().size();i++)
+				{
+					JSONObject obj=question.getOptionsJson().get(i);
+					if(i==0 && !AppUtility.isNotEmpty(question.getUsersAnswer()))
+						question.setUsersAnswer(obj.optString("key"));
+					listStr[i]=obj.optString("value");
+					if(obj.optString("key").equals(question.getUsersAnswer()))
+						pos=i;
+				}
+				ArrayAdapter<String> aa;
+				if(question.getOptions().length>0)
+					aa = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_dropdown_item,question.getOptions());
+				else
+					aa = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_dropdown_item,listStr);
+				holder.sp_select.setAdapter(aa);
 				holder.sp_select.setSelection(pos);
 				holder.sp_select.setOnItemSelectedListener(new OnItemSelectedListener() {
 					
 					@Override
 					public void onItemSelected(AdapterView<?> parent,
 							View view, int position, long id) {
-						// TODO Auto-generated method stub
-						question.setUsersAnswer(question.getOptions()[position]);
+						if(question.getOptions().length>0)
+							question.setUsersAnswer(question.getOptions()[position]);
+						else
+						{
+							JSONObject obj=question.getOptionsJson().get(position);
+							question.setUsersAnswer(obj.optString("key"));
+						}
 					}
 					@Override
 					public void onNothingSelected(AdapterView<?> parent) {
@@ -1534,6 +1639,10 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				SimpleAdapter fujianAdapter=setupFujianAdpter(question);
 				holder.multipleChoice.setAdapter(fujianAdapter);
 				holder.multipleChoice.setTag(position);
+				boolean bflag=false;
+				if(!question.isIfRead() && isEnable)
+					bflag=true;
+				final boolean finalBflag = bflag;
 				holder.multipleChoice.setOnItemClickListener(new OnItemClickListener(){  
 					
 					@Override
@@ -1541,31 +1650,30 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 							int position, long id) {
 						curIndex=(Integer) parent.getTag();
 						final HashMap<String, Object> item=(HashMap<String, Object>) parent.getAdapter().getItem(position);
-                        if(item.get("url").toString().length()>0)
-						{
-							new AlertDialog.Builder(view.getContext())
-						    .setMessage("是否删除此附件?")
-						    .setPositiveButton("是", new DialogInterface.OnClickListener()
-						    {
-						    @Override
-						    public void onClick(DialogInterface dialog, int which) {
-						      
-						    	SubmitDeleteinfo(item.get("newname").toString(),2);
-						    }})
-						    .setNegativeButton("否", null)
-						    .show();
-						}
-						else
-						{
-							if (Build.VERSION.SDK_INT >= 23) 
-							{
-								if(AppUtility.checkPermission(getActivity(), 7,Manifest.permission.READ_EXTERNAL_STORAGE))
+						if(finalBflag) {
+							if (item.get("url").toString().length() > 0) {
+								new AlertDialog.Builder(view.getContext())
+										.setMessage("是否删除此附件?")
+										.setPositiveButton("是", new DialogInterface.OnClickListener() {
+											@Override
+											public void onClick(DialogInterface dialog, int which) {
+
+												SubmitDeleteinfo(item.get("newname").toString(), 2);
+											}
+										})
+										.setNegativeButton("否", null)
+										.show();
+							} else {
+								if (Build.VERSION.SDK_INT >= 23) {
+									if (AppUtility.checkPermission(getActivity(), 7, Manifest.permission.READ_EXTERNAL_STORAGE))
+										getFujian();
+								} else
 									getFujian();
+
 							}
-							else
-								getFujian();
-							
 						}
+						else if(item.get("url").toString().length()>0)
+							AppUtility.downloadAndOpenFile(item.get("url").toString(),view);
 					}     
 				});
 				
@@ -1595,21 +1703,46 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				holder.bt_datetime.setVisibility(View.GONE);
 				holder.sp_select.setVisibility(View.VISIBLE);
 				holder.sp_select1.setVisibility(View.VISIBLE);
-				ArrayAdapter<String> aa = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_dropdown_item,question.getOptions());
-				holder.sp_select.setAdapter(aa);
+				boolean bflag=false;
+				if(!question.isIfRead() && isEnable)
+					bflag=true;
+				holder.sp_select.setEnabled(bflag);
+				holder.sp_select1.setEnabled(bflag);
 				int pos=0;
 				for(int i=0;i<question.getOptions().length;i++)
 				{
 					if(question.getOptions()[i].equalsIgnoreCase(question.getUsersAnswerOne()))
 						pos=i;
 				}
+				String [] listStr=new String[question.getOptionsJson().size()];
+				for(int i=0;i<question.getOptionsJson().size();i++)
+				{
+					JSONObject obj=question.getOptionsJson().get(i);
+					if(i==0 && !AppUtility.isNotEmpty(question.getUsersAnswer()))
+						question.setUsersAnswer(obj.optString("key"));
+					listStr[i]=obj.optString("value");
+					if(obj.optString("key").equals(question.getUsersAnswer()))
+						pos=i;
+				}
+				ArrayAdapter<String> aa;
+				if(question.getOptions().length>0)
+					aa = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_dropdown_item,question.getOptions());
+				else
+					aa = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_dropdown_item,listStr);
+				holder.sp_select.setAdapter(aa);
 				holder.sp_select.setSelection(pos);
 				holder.sp_select.setOnItemSelectedListener(new OnItemSelectedListener() {
 					
 					@Override
 					public void onItemSelected(AdapterView<?> parent,
 							View view, int position, long id) {
-						question.setUsersAnswerOne(question.getOptions()[position]);
+						if(question.getOptions().length>0)
+							question.setUsersAnswerOne(question.getOptions()[position]);
+						else
+						{
+							JSONObject obj=question.getOptionsJson().get(position);
+							question.setUsersAnswerOne(obj.optString("key"));
+						}
 						reloadSpinner2(holder.sp_select1,question);
 					}
 					@Override
@@ -1644,6 +1777,182 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				});
 				
 			}
+			else if (mStatus.equals("三级下拉")) {
+				holder.imageGridView.setVisibility(View.GONE);
+				holder.radioGroup.setVisibility(View.GONE);
+				holder.multipleChoice.setVisibility(View.GONE);
+				holder.etAnswer.setVisibility(View.GONE);
+				holder.tvAnswer.setVisibility(View.GONE);
+				holder.bt_date.setVisibility(View.GONE);
+				holder.bt_datetime.setVisibility(View.GONE);
+				holder.sp_select.setVisibility(View.VISIBLE);
+				holder.sp_select1.setVisibility(View.VISIBLE);
+				holder.sp_select2.setVisibility(View.VISIBLE);
+				boolean bflag=false;
+				if(!question.isIfRead() && isEnable)
+					bflag=true;
+				holder.sp_select.setEnabled(bflag);
+				holder.sp_select1.setEnabled(bflag);
+				holder.sp_select2.setEnabled(bflag);
+
+				int pos1=0;
+				String answer2="";
+				try {
+					for(int i=0;i<question.getOptions().length;i++) {
+						String key1 = question.getOptions()[i];//key=省
+						JSONObject json2 = question.getSubOptions().optJSONObject(key1);
+						Iterator<String> it1 = json2.keys();
+						while (it1.hasNext()) {
+							String key2 = it1.next();//key=市
+							JSONArray json3 = json2.getJSONArray(key2);
+							for (int j = 0; j < json3.length(); j++) {
+								JSONObject townItem =  json3.getJSONObject(j);
+								if (townItem.optString("id").equals(question.getUsersAnswer())) {
+									pos1 = i;
+									answer2 = key2;
+								}
+							}
+						}
+					}
+				}catch (JSONException e) {
+					e.printStackTrace();
+				}
+				question.setUsersAnswerOne(question.getOptions()[pos1]);
+				question.setUsersAnswerTwo(answer2);
+				ArrayAdapter<String> aa = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_dropdown_item,question.getOptions());
+				holder.sp_select.setAdapter(aa);
+				holder.sp_select.setSelection(pos1);
+
+				holder.sp_select.setOnItemSelectedListener(new OnItemSelectedListener() {
+					@Override
+					public void onItemSelected(AdapterView<?> parent,
+											   View view, int position, long id) {
+						question.setUsersAnswerOne(question.getOptions()[position]);
+						reloadThreeSpinner1(holder.sp_select1,question,holder.sp_select2);
+
+					}
+					@Override
+					public void onNothingSelected(AdapterView<?> parent) {
+						// TODO Auto-generated method stub
+
+					}
+				});
+
+				holder.sp_select1.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+					@Override
+					public void onItemSelected(AdapterView<?> parent,
+											   View view, int position, long id) {
+						// TODO Auto-generated method stub
+						String selitem=(String)parent.getAdapter().getItem(position);
+						question.setUsersAnswerTwo(selitem);
+						JSONObject subOptionsJson=question.getSubOptions().optJSONObject(question.getUsersAnswerOne());
+						JSONArray grade3= null;
+						try {
+							grade3 = subOptionsJson.getJSONArray(selitem);
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						reloadThreeSpinner2(holder.sp_select2,question,grade3);
+
+					}
+					@Override
+					public void onNothingSelected(AdapterView<?> parent) {
+						// TODO Auto-generated method stub
+
+					}
+				});
+
+				holder.sp_select2.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+					@Override
+					public void onItemSelected(AdapterView<?> parent,
+											   View view, int position, long id) {
+						JSONObject subOptionsJson=question.getSubOptions().optJSONObject(question.getUsersAnswerOne());
+						JSONArray grade3=subOptionsJson.optJSONArray(question.getUsersAnswerTwo());
+						JSONObject item=grade3.optJSONObject(position);
+						if(item!=null)
+							question.setUsersAnswer(item.optString("id"));
+					}
+					@Override
+					public void onNothingSelected(AdapterView<?> parent) {
+						// TODO Auto-generated method stub
+
+					}
+				});
+				reloadThreeSpinner1(holder.sp_select1,question,holder.sp_select2);
+
+			}
+			else if (mStatus.equals("弹出多选")) {
+				holder.imageGridView.setVisibility(View.GONE);
+				holder.radioGroup.setVisibility(View.GONE);
+				holder.multipleChoice.setVisibility(View.VISIBLE);
+				holder.etAnswer.setVisibility(View.GONE);
+				holder.tvAnswer.setVisibility(View.GONE);
+				holder.bt_date.setVisibility(View.GONE);
+				holder.bt_datetime.setVisibility(View.GONE);
+				holder.sp_select.setVisibility(View.GONE);
+				holder.sp_select1.setVisibility(View.GONE);
+				holder.sp_select2.setVisibility(View.GONE);
+				ListViewImageAdapter fujianAdapter=setupPopMutiAdpter(question);
+				holder.multipleChoice.setAdapter(fujianAdapter);
+				holder.multipleChoice.setTag(position);
+				boolean bflag=false;
+				if(!question.isIfRead() && isEnable)
+					bflag=true;
+				final boolean finalBflag = bflag;
+				holder.multipleChoice.setOnItemClickListener(new OnItemClickListener(){
+
+					@Override
+					public void onItemClick(AdapterView<?> parent, View view,
+											int position, long id) {
+						curIndex=(Integer) parent.getTag();
+						final HashMap<String, Object> item=(HashMap<String, Object>) parent.getAdapter().getItem(position);
+						if(finalBflag)
+						{
+							if(item.get("id").toString().length()>0)
+							{
+								new AlertDialog.Builder(view.getContext())
+										.setMessage("是否删除此行?")
+										.setPositiveButton("是", new DialogInterface.OnClickListener()
+										{
+											@Override
+											public void onClick(DialogInterface dialog, int which) {
+												for(int i=0;i<question.getFujianArray().length();i++)
+												{
+													JSONObject jo= null;
+													try {
+														jo = question.getFujianArray().getJSONObject(i);
+														if(jo.optString("id").equals(item.get("id").toString()))
+														{
+															question.getFujianArray().remove(i);
+															adapter.notifyDataSetChanged();
+															break;
+														}
+													} catch (JSONException e) {
+														e.printStackTrace();
+													}
+
+												}
+											}})
+										.setNegativeButton("否", null)
+										.show();
+							}
+							else
+							{
+								Intent intent = new Intent(getActivity(), StudentSelectActivity.class);
+								intent.putExtra("选项",question.getOptions());
+								intent.putExtra("子选项",question.getSubOptions().toString());
+								intent.putExtra("用户答案",question.getFujianArray().toString());
+								intent.putExtra("curIndex",curIndex);
+								startActivityForResult(intent,REQUEST_CODE_SelectMuti);
+							}
+						}
+
+					}
+				});
+
+			}
 			return convertView;
 		}
 
@@ -1658,10 +1967,41 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 			NonScrollableGridView imageGridView;
 			Spinner sp_select;
 			Spinner sp_select1;
+			Spinner sp_select2;
 			Button bt_date;
 			Button bt_datetime;
 		}
 		
+	}
+	private ListViewImageAdapter setupPopMutiAdpter(Question question)
+	{
+		final ArrayList<HashMap<String, Object>> arrayList = new ArrayList<HashMap<String,Object>>();
+		for(int i=0;i<question.getFujianArray().length();i++){
+			JSONObject item = null;
+			try {
+				item = (JSONObject) question.getFujianArray().get(i);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(item!=null)
+			{
+				HashMap<String, Object> tempHashMap = new HashMap<String, Object>();
+				tempHashMap.put("name", item.optString("name"));
+				tempHashMap.put("icon",item.optString("icon") );
+				tempHashMap.put("id", item.optString("id"));
+				arrayList.add(tempHashMap);
+			}
+
+		}
+		HashMap<String, Object> tempHashMap = new HashMap<String, Object>();
+		tempHashMap.put("icon", "add");
+		tempHashMap.put("name", "弹出多选");
+		tempHashMap.put("id", "");
+		arrayList.add(tempHashMap);
+
+		ListViewImageAdapter fujianAdapter = new ListViewImageAdapter(getActivity(), arrayList);
+		return fujianAdapter;
 	}
 	private void reloadSpinner2(Spinner sp,Question question)
 	{
@@ -1688,6 +2028,59 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 							pos = i;
 					}
 				}
+			}
+			ArrayAdapter<String> bb = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_dropdown_item,subOptions);
+			sp.setAdapter(bb);
+			sp.setSelection(pos);
+		}
+	}
+	private void reloadThreeSpinner1(Spinner sp,Question question,Spinner sp2) {
+		try
+		{
+			JSONObject subOptionsJson=question.getSubOptions().optJSONObject(question.getUsersAnswerOne());
+			if(subOptionsJson!=null && subOptionsJson.length()>0)
+			{
+				String [] subOptions=new String[subOptionsJson.length()];
+				Iterator<String> it = subOptionsJson.keys();
+				int i=0;
+				int pos2=0;
+				JSONArray json3=null;
+				while(it.hasNext()) {
+					String key = it.next();
+					json3=subOptionsJson.getJSONArray(key);
+					subOptions[i]=key;
+					if(question.getUsersAnswerTwo().equals(key))
+						pos2=i;
+					i++;
+				}
+				question.setUsersAnswerTwo(subOptions[pos2]);
+				ArrayAdapter<String> bb = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_dropdown_item,subOptions);
+				sp.setAdapter(bb);
+				sp.setSelection(pos2);
+				reloadThreeSpinner2(sp2,question,subOptionsJson.getJSONArray(question.getUsersAnswerTwo()));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+	private void reloadThreeSpinner2(Spinner sp,Question question,JSONArray json3)  {
+		if(json3!=null && json3.length()>0)
+		{
+			String [] subOptions=new String[json3.length()];
+			int pos=0;
+			for(int i=0;i<json3.length();i++)
+			{
+				JSONObject item=json3.optJSONObject(i);
+				if(item!=null)
+					subOptions[i]=item.optString("name");
+				if(question.getUsersAnswer().equals(item.optString("id")))
+					pos=i;
+
+			}
+			try {
+				question.setUsersAnswer(json3.getJSONObject(pos).optString("id"));
+			} catch (JSONException e) {
+				e.printStackTrace();
 			}
 			ArrayAdapter<String> bb = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_dropdown_item,subOptions);
 			sp.setAdapter(bb);
@@ -1775,6 +2168,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 
 		private Context context;
 		private String[] anwsers;
+		private List<JSONObject> jsonanwsers;
 		private String anwser;
 		private int questionIndex;// question 在list中的下标
 		private Question question;
@@ -1787,6 +2181,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 			this.questionIndex = questionIndex;
 			this.question = question;
 			anwsers = question.getOptions();
+			jsonanwsers=question.getOptionsJson();
 			anwser = question.getUsersAnswer();
 			initDate();
 		}
@@ -1802,6 +2197,15 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 					isChecked.put(anwsers[i], false);
 				}
 			}
+			for(JSONObject item :jsonanwsers)
+			{
+				String key=item.optString("key");
+				if (list.contains(key)) {
+					isChecked.put(key, true);
+				} else {
+					isChecked.put(key, false);
+				}
+			}
 		}
 
 		public String getAnwser() {
@@ -1809,6 +2213,13 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 			for (int i = 0; i < anwsers.length; i++) {
 				if (isChecked.get(anwsers[i])) {
 					str.append(anwsers[i]).append("@");
+				}
+			}
+			for(JSONObject item :jsonanwsers)
+			{
+				String key=item.optString("key");
+				if (isChecked.get(key)) {
+					str.append(key).append("@");
 				}
 			}
 			if (str.indexOf(",") > -1) {
@@ -1840,14 +2251,29 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 		public View getView(final int position, View view, ViewGroup parent) {
 			view = inflater.inflate(R.layout.checkbox_item, parent, false);
 			final CheckBox cb = (CheckBox) view.findViewById(R.id.cb_chenck);
-
-			cb.setText(anwsers[position]);
-			if (isChecked.get(anwsers[position])) {
-				cb.setChecked(true);
-			} else {
-				cb.setChecked(false);
+			if(anwsers.length>0) {
+				cb.setText(anwsers[position]);
+				if (isChecked.get(anwsers[position])) {
+					cb.setChecked(true);
+				} else {
+					cb.setChecked(false);
+				}
 			}
-			cb.setEnabled(isEnable);
+			else if(jsonanwsers.size()>0)
+			{
+				JSONObject item=jsonanwsers.get(position);
+				cb.setText(item.optString("value"));
+				String key=item.optString("key");
+				if (isChecked.get(key)) {
+					cb.setChecked(true);
+				} else {
+					cb.setChecked(false);
+				}
+			}
+			boolean bflag=false;
+			if(isEnable && !question.isIfRead())
+				bflag=true;
+			cb.setEnabled(bflag);
 			cb.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {

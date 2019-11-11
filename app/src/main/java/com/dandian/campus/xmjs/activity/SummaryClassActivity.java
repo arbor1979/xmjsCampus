@@ -381,8 +381,15 @@ public class SummaryClassActivity extends Activity {
 					}
 					if(AppUtility.isNotEmpty(teacherInfo.getShouldTime()) && AppUtility.isNotEmpty(teacherInfo.getLatestTime()))
 					{
-						Date dt_begin=DateHelper.getStringDate(teacherInfo.getShouldTime(),"yyyy-MM-dd");
-						Date dt_end=DateHelper.getStringDate(teacherInfo.getLatestTime(),"yyyy-MM-dd");
+						String begintimeStr=teacherInfo.getShouldTime();
+						String endtimeStr=teacherInfo.getLatestTime();
+						if (begintimeStr.length()==10)
+							begintimeStr=begintimeStr+" 00:00:00";
+						if (endtimeStr.length()==10)
+							endtimeStr=endtimeStr+" 23:59:59";
+
+						Date dt_begin=DateHelper.getStringDate(begintimeStr,"");
+						Date dt_end=DateHelper.getStringDate(endtimeStr,"");
 						Date dt_now=new Date();
 						if(dt_now.getTime()>=dt_begin.getTime() && dt_now.getTime()<=dt_end.getTime())
 						{

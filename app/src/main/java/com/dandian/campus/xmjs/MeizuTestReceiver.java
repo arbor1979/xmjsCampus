@@ -1,6 +1,6 @@
 package com.dandian.campus.xmjs;
 
-import com.umeng.message.meizu.UmengMeizuPushReceiver;
+import org.android.agoo.mezu.MeizuPushReceiver;
 
-public class MeizuTestReceiver extends UmengMeizuPushReceiver {
+public class MeizuTestReceiver extends MeizuPushReceiver {
 }

@@ -73,6 +73,7 @@ public class TabSchoolActivtiy extends FragmentActivity {
 	private Timer timer; 
 	static LinearLayout layout_menu;
 	private Dao<User, Integer> userDao;
+	public final static int SCANNIN_GREQUEST_CODE = 2;
 	@SuppressLint("HandlerLeak")
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
@@ -111,7 +112,7 @@ public class TabSchoolActivtiy extends FragmentActivity {
 							timer=new Timer();
 							timer.schedule(new myTask(),0,10000);
 						}
-						*/
+
 						if(!user.getsStatus().equals("新生状态")) {
 							for (int i = 0; i < schoolWorkItems.size(); i++) {
 								SchoolWorkItem item = schoolWorkItems.get(i);
@@ -121,8 +122,11 @@ public class TabSchoolActivtiy extends FragmentActivity {
 								}
 							}
 							if (needCount)
-								getUnreadCount();
+
 						}
+						*/
+						getUnreadCount();
+
 						for(SchoolWorkItem item:schoolWorkItems)
 						{
 							if(item.getTemplateName().equals("通知"))
@@ -172,6 +176,10 @@ public class TabSchoolActivtiy extends FragmentActivity {
 								Notice nt=noticeInfoDao.queryBuilder().where().eq("id",item.getId()).and().eq("newsType", item.getNewsType()).and().eq("userNumber",user.getUserNumber()).queryForFirst();
 								if(nt==null)
 									noticeInfoDao.create(item);
+								else {
+									nt.updateself(item);
+									noticeInfoDao.update(nt);
+								}
 							}
 							getUnreadByTitle(noticesItem.getTitle());
 							
@@ -209,7 +217,7 @@ public class TabSchoolActivtiy extends FragmentActivity {
 						{
 								for(SchoolWorkItem item:schoolWorkItems)
 								{
-									if(item.getTemplateName().equals("浏览器"))
+									if(!item.getTemplateName().equals("通知"))
 										item.setUnread(jo.optInt(item.getWorkText()));
 									
 								}
@@ -473,16 +481,25 @@ public class TabSchoolActivtiy extends FragmentActivity {
 		});
 	}
 	
-	public void getUnreadCount() {
+	public void getUnreadCount() throws JSONException {
 		
 
 		long datatime = System.currentTimeMillis();
 		String checkCode = PrefUtility.get(Constants.PREF_CHECK_CODE, "");
-	
+		JSONObject funcObj=new JSONObject();
+		for(SchoolWorkItem item:schoolWorkItems) {
+			if(item.getIfShowCount().equals("是"))
+			{
+				String key=item.getWorkText();
+				funcObj.put(key,item.getInterfaceName());
+			}
+
+		}
 		JSONObject jo = new JSONObject();
 		try {
 			jo.put("用户较验码", checkCode);
 			jo.put("DATETIME", datatime);
+			jo.put("funcObj",funcObj);
 	
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
@@ -558,4 +575,58 @@ public class TabSchoolActivtiy extends FragmentActivity {
 			//}
 		}
 	};
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (requestCode ==  SCANNIN_GREQUEST_CODE){
+			if(resultCode == RESULT_OK){
+				Bundle bundle = data.getExtras();
+				String result = bundle.getString("result");
+				String jumpurl=bundle.getString("jumpurl");
+
+				String template=AppUtility.findUrlQueryString(jumpurl,"template");
+				String templategrade=AppUtility.findUrlQueryString(jumpurl,"templategrade");
+				String targettitle=AppUtility.findUrlQueryString(jumpurl,"targettitle");
+				if(template.length()==0)
+					template="浏览器";
+				if(jumpurl.indexOf("?")>0)
+					jumpurl+="&";
+				else
+					jumpurl+="?";
+				try {
+					result = new String(Base64.decode(result.getBytes("GBK")));
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+				if(result!=null && result.length()>0) {
+					if(template.equals("浏览器"))
+					{
+						Intent contractIntent = new Intent(this,WebSiteActivity.class);
+						String jiaoyanma = PrefUtility.get(Constants.PREF_CHECK_CODE, "");
+						jumpurl+= "scancode="+Base64.safeUrlbase64(bundle.getString("result"))+"&jiaoyanma=" + Base64.safeUrlbase64(jiaoyanma);
+						contractIntent.putExtra("url",jumpurl);
+						contractIntent.putExtra("title",targettitle);
+						startActivity(contractIntent);
+					}
+					else
+					{
+						jumpurl+="scancode="+Base64.safeUrlbase64(bundle.getString("result"));
+						Intent intent;
+						if (templategrade.equals("main"))
+							intent = new Intent(this, SchoolActivity.class);
+						else
+							intent = new Intent(this, SchoolDetailActivity.class);
+						intent.putExtra("title", targettitle);
+						intent.putExtra("interfaceName",jumpurl);
+						intent.putExtra("templateName",template);
+						startActivity(intent);
+					}
+				}
+				else
+					AppUtility.showToastMsg(this, "扫描结果为空");
+				Log.d(TAG,result);
+			}
+		}
+	}
 }

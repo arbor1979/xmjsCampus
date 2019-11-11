@@ -1,8 +1,11 @@
 package com.dandian.campus.xmjs.adapter;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.util.SparseBooleanArray;
@@ -13,9 +16,11 @@ import android.view.ViewGroup;
 import com.androidquery.AQuery;
 import com.dandian.campus.xmjs.R;
 import com.dandian.campus.xmjs.activity.SchoolActivity;
+import com.dandian.campus.xmjs.activity.TabSchoolActivtiy;
 import com.dandian.campus.xmjs.activity.WebSiteActivity;
 import com.dandian.campus.xmjs.base.Constants;
 import com.dandian.campus.xmjs.entity.SchoolWorkItem;
+import com.dandian.campus.xmjs.util.AppUtility;
 import com.dandian.campus.xmjs.util.BadgeView;
 import com.dandian.campus.xmjs.util.PrefUtility;
 
@@ -182,6 +187,15 @@ public class SchoolWorkGroupAdapter extends SectionedRecyclerViewAdapter<HeaderH
                     contractIntent.putExtra("url",url);
                     contractIntent.putExtra("title", item.getWorkText());
                     mContext.startActivity(contractIntent);
+                }
+                else if(item.getTemplateName().equals("二维码"))
+                {
+                    if (Build.VERSION.SDK_INT >= 23) {
+                        Activity act=(Activity)mContext;
+                        if (AppUtility.checkPermission(act.getParent(), 12, Manifest.permission.CAMERA))
+                            AppUtility.openScanCode((Activity)mContext, TabSchoolActivtiy.SCANNIN_GREQUEST_CODE,item.getInterfaceName());
+                    } else
+                        AppUtility.openScanCode((Activity)mContext,TabSchoolActivtiy.SCANNIN_GREQUEST_CODE,item.getInterfaceName());
                 }
                 else
                 {

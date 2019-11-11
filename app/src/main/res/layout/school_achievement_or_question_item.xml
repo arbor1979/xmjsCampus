@@ -65,5 +65,13 @@
         android:layout_marginRight="6dp"
         android:contentDescription="@null"
         android:src="@drawable/course_right1" />
+    <ImageView
+        android:id="@+id/iv_right1"
+        android:layout_width="25dp"
+        android:layout_height="match_parent"
+        android:layout_marginRight="6dp"
+        android:contentDescription="@null"
+        android:src="@drawable/pop_menu"
+        android:visibility="gone" />
 
 </LinearLayout>

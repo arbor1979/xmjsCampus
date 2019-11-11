@@ -11,7 +11,7 @@ public class SchoolWorkItem {
 	private String groupName;// 分组
 	private String transIcon;// 透明图标
 	private int unread;//未读
-
+	private String ifShowCount;//是否显示角标
 	public String getGroupName() {
 		return groupName;
 	}
@@ -32,6 +32,10 @@ public class SchoolWorkItem {
 
 	}
 
+	public String getIfShowCount() {
+		return ifShowCount;
+	}
+
 	public SchoolWorkItem(JSONObject jo) {
 		workPicPath = jo.optString("图标");
 		workText = jo.optString("文字");
@@ -39,6 +43,7 @@ public class SchoolWorkItem {
 		TemplateName = jo.optString("模板名称");
 		groupName=jo.optString("分组");
 		transIcon=jo.optString("透明图标");
+		ifShowCount=jo.optString("是否有角标");
 		if(transIcon==null || transIcon.length()==0)
 			transIcon=workPicPath;
 		unread=0;

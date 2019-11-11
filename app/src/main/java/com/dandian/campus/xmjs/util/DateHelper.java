@@ -547,6 +547,7 @@ public class DateHelper
 	{
 		if(pattern==null || pattern.length()==0)
 			pattern="yyyy-MM-dd HH:mm:ss";
+
 		DateFormat format = new SimpleDateFormat(pattern);
 		try {
 			return format.parse(str);

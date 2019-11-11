@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dandian.campus.xmjs"
-    android:versionCode="14"
-    android:versionName="1.4" >
+    android:versionCode="22"
+    android:versionName="2.2" >
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -23,7 +23,6 @@
 
     <application
         android:name=".CampusApplication"
-        android:allowBackup="true"
         android:icon="@mipmap/ic_launcher1"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
@@ -66,7 +65,10 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden" >
         </activity>
-
+        <activity
+            android:name="com.dandian.campus.xmjs.activity.StudentSelectActivity"
+            android:screenOrientation="portrait" >
+        </activity>
         <activity
             android:name="com.dandian.campus.xmjs.activity.LoginActivity"
              android:screenOrientation="portrait"
@@ -78,9 +80,7 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden" >
         </activity>
-        <activity
-            android:name="org.achartengine.GraphicalActivity"
-            android:screenOrientation="portrait" />
+
         <activity
             android:name="com.dandian.campus.xmjs.activity.SysSettingActivity"
             android:screenOrientation="portrait"
@@ -149,7 +149,8 @@
         <activity
             android:name="com.dandian.campus.xmjs.activity.SchoolDetailActivity"
             android:screenOrientation="portrait" 
-            android:configChanges="orientation|keyboardHidden|screenSize">
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:windowSoftInputMode="adjustPan">
             
         </activity>
         <activity
@@ -226,18 +227,7 @@
             android:name="com.dandian.campus.xmjs.activity.ChangePwdActivity"
             android:screenOrientation="portrait" >
         </activity>
-        <activity
-			android:name="com.alipay.sdk.app.H5PayActivity"
-			android:configChanges="orientation|keyboardHidden|navigation"
-			android:exported="false"
-			android:screenOrientation="behind" >
-		</activity>
-		<activity
-			android:name="com.alipay.sdk.auth.AuthActivity"
-			android:configChanges="orientation|keyboardHidden|navigation"
-			android:exported="false"
-			android:screenOrientation="behind" >
-		</activity>
+
         <activity
             android:configChanges="orientation|keyboardHidden"
             android:name="com.dandian.campus.xmjs.activity.CaptureActivity"

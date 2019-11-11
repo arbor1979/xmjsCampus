@@ -52,7 +52,18 @@ public class Notice implements Serializable{
 		if(this.ifread.length()==0)
 			this.ifread="0";
 	}
+	public void updateself(Notice newitem) {
 
+		this.title = newitem.getTitle();
+		this.time = newitem.getTime();
+		this.imageUrl = newitem.getImageUrl();
+		this.content = newitem.getContent();
+		this.endText = newitem.getEndText();
+		this.endUrl = newitem.getEndUrl();
+		this.ifread = newitem.getIfread();
+		if(this.ifread.length()==0)
+			this.ifread="0";
+	}
 	public String getNewsType() {
 		return newsType;
 	}

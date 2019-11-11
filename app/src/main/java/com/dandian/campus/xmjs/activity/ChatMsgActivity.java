@@ -49,6 +49,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.LayoutParams;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
@@ -83,6 +84,8 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxStatus;
 import com.androidquery.callback.BitmapAjaxCallback;
+import com.dandian.campus.xmjs.adapter.WaterfallAdapter;
+import com.dandian.campus.xmjs.entity.AlbumImageInfo;
 import com.example.androidgifdemo.MyTextViewEx;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
@@ -665,7 +668,7 @@ public class ChatMsgActivity extends FragmentActivity implements IXListViewListe
 					contString = imgpath;
 				}
 				ChatMsg entity = initData.sendChatToDatabase(type,toid, toname, 1,
-						contString, chatList,msg_type,userImage,"");
+						contString, chatList,msg_type,userImage,"","","");
 				
 				if ("txt".equals(type)) {
 					//initData();
@@ -1192,6 +1195,78 @@ public class ChatMsgActivity extends FragmentActivity implements IXListViewListe
 				*/
 				viewHolder.tvContent.setText("");
 				viewHolder.tvContent.insertGif(entity.getContent());
+				if(entity.getLinkUrl().length()>0)
+				{
+					viewHolder.tvContent.append(Html.fromHtml("<br><font color='#33b5e5'>[点击查看]</font>"));
+					viewHolder.tvContent.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View view) {
+							String jumpurl=entity.getLinkUrl();
+							String template=AppUtility.findUrlQueryString(jumpurl,"template");
+							String templategrade=AppUtility.findUrlQueryString(jumpurl,"templategrade");
+							String targettitle=AppUtility.findUrlQueryString(jumpurl,"targettitle");
+							if(template.length()==0)
+								template="浏览器";
+							if(jumpurl.indexOf("?")>0)
+								jumpurl+="&";
+							else
+								jumpurl+="?";
+							if(template.equals("浏览器"))
+							{
+								Intent contractIntent = new Intent(ChatMsgActivity.this,WebSiteActivity.class);
+								String jiaoyanma = PrefUtility.get(Constants.PREF_CHECK_CODE, "");
+								JSONObject obj=new JSONObject();
+								try {
+									obj.put("用户较验码",jiaoyanma);
+									jiaoyanma = Base64.encode(obj.toString().getBytes());
+								} catch (JSONException e) {
+									e.printStackTrace();
+								}
+								jumpurl = jumpurl + "jiaoyanma=" + jiaoyanma;
+								contractIntent.putExtra("url",jumpurl);
+								contractIntent.putExtra("title",targettitle);
+								startActivity(contractIntent);
+							}
+							else if(template.equals("相册"))
+							{
+								ArrayList<AlbumImageInfo> imageList= WaterfallAdapter.getImageList();
+								if(imageList!=null) {
+									for (int i=0;i<imageList.size();i++) {
+										AlbumImageInfo item=imageList.get(i);
+										if(item.getName().equals(templategrade))
+										{
+											Intent intent=new Intent(ChatMsgActivity.this,AlbumShowImagePage.class);
+											intent.putExtra("index", i);
+											startActivity(intent);
+										}
+
+									}
+								}
+								else
+								{
+									AppUtility.showToastMsg(ChatMsgActivity.this,"找不到此照片，请先刷新掌上校园相册");
+								}
+							}
+							else
+							{
+								if(template.equals("公告通知"))
+									template="通知";
+								Intent intent;
+								if (templategrade.equals("main"))
+									intent = new Intent(ChatMsgActivity.this, SchoolActivity.class);
+								else
+									intent = new Intent(ChatMsgActivity.this, SchoolDetailActivity.class);
+								intent.putExtra("title", targettitle);
+								intent.putExtra("interfaceName",jumpurl);
+								intent.putExtra("templateName",template);
+								startActivity(intent);
+							}
+
+						}
+					});
+				}
+				else
+					viewHolder.tvContent.setOnClickListener(null);
 			}
 			
 			if (entity.getMsgFlag()==1) {

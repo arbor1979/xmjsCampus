@@ -1,9 +1,19 @@
 package com.dandian.campus.xmjs.api;
 
+import android.os.Handler;
+import android.os.Message;
+
 import com.dandian.campus.xmjs.CampusApplication;
 import com.dandian.campus.xmjs.base.Constants;
 import com.dandian.campus.xmjs.entity.User;
+import com.dandian.campus.xmjs.util.Base64;
 import com.dandian.campus.xmjs.util.PrefUtility;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.Iterator;
 
 public class CampusAPI {
 	
@@ -491,5 +501,64 @@ public class CampusAPI {
 									 RequestListener listener) {
 		String url = schoolYingXinUrl+"school-module.php?action=needSubmit";
 		AsyncFoodSafeRunner.request(url, params, HTTP_METHOD, listener);
+	}
+	public static void httpPost(String Interface, JSONObject jsonParam, final Handler mHandler, final int completeCode)
+	{
+		CampusParameters params = new CampusParameters();
+		Iterator<String> iterator = jsonParam.keys();
+		while(iterator.hasNext()){
+			String key = (String) iterator.next();
+			String value="";
+			try {
+				value = jsonParam.getString(key);
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			params.add(key, value);
+		}
+		String checkCode = PrefUtility.get(Constants.PREF_CHECK_CODE, "");
+		long datatime = System.currentTimeMillis();
+		String thisVersion = CampusApplication.getVersion();
+		JSONObject jo = new JSONObject();
+		try {
+			jo.put("用户较验码", checkCode);
+			jo.put("DATETIME", datatime);
+			jo.put("version", thisVersion);
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+		}
+		String base64Str = Base64.encode(jo.toString().getBytes());
+		params.add(Constants.PARAMS_DATA, base64Str);
+		String url = "http://laoshi.dandian.net/InterfaceStudent/" + Interface;
+		if(Interface.substring(0, 4).toLowerCase().equals("http"))
+			url=Interface;
+		RequestListener listener=new RequestListener() {
+
+			@Override
+			public void onIOException(IOException e) {
+
+			}
+
+			@Override
+			public void onError(CampusException e) {
+				Message msg = new Message();
+				msg.what = -1;
+				msg.obj = e.getMessage();
+				mHandler.sendMessage(msg);
+			}
+
+			@Override
+			public void onComplete(String response) {
+				Message msg = new Message();
+				msg.what = completeCode;
+				msg.obj = response;
+				mHandler.sendMessage(msg);
+			}
+		};
+		AsyncFoodSafeRunner.request(
+				url, params,
+				HTTP_METHOD, listener);
+
 	}
 }

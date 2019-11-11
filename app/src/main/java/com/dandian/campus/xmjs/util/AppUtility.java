@@ -2,16 +2,19 @@ package com.dandian.campus.xmjs.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -19,6 +22,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.conn.util.InetAddressUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -81,6 +86,7 @@ import android.widget.Toast;
 
 import com.dandian.campus.xmjs.BuildConfig;
 import com.dandian.campus.xmjs.R;
+import com.dandian.campus.xmjs.activity.CaptureActivity;
 import com.dandian.campus.xmjs.activity.TabHostActivity;
 import com.dandian.campus.xmjs.api.CampusAPI;
 import com.dandian.campus.xmjs.api.CampusException;
@@ -977,7 +983,7 @@ public class AppUtility {
 	   	 request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE|DownloadManager.Request.NETWORK_WIFI);
 	   	 //request.setDestinationInExternalFilesDir(WebSiteActivity.this, null, "PacketCampus");
 	   	 downloadManager.enqueue(request);
-	   	 AppUtility.showToastMsg(context, "已开始后台下载..");
+	   	 AppUtility.showToastMsg(context, "已开始后台下载，下载完成后将自动打开..",3000);
 	}
 	public static boolean isServiceRunning(Context context, String className) {
         boolean isRunning = false;
@@ -1292,5 +1298,75 @@ public class AppUtility {
 		while(chineseLength(s)>length)
 			s=s.substring(0,s.length()-1);
 		return s;
+	}
+	public static String findUrlQueryString(String jumpurl,String template)
+	{
+		String templatevalue="";
+		String[] urlarr=jumpurl.split("\\?");
+		urlarr=urlarr[urlarr.length-1].split("&");
+		for(String item : urlarr)
+		{
+			String[] itemarr=item.split("=");
+			if(itemarr[0].equals(template)) {
+				templatevalue = itemarr[1];
+				break;
+			}
+		}
+		return templatevalue;
+	}
+	public static void openScanCode(Activity activity,int SCANNIN_GREQUEST_CODE,String jumpurl)
+	{
+		Intent intent = new Intent();
+		intent.setClass(activity, CaptureActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		intent.putExtra("jumpurl",jumpurl);
+		activity.startActivityForResult(intent, SCANNIN_GREQUEST_CODE);
+	}
+
+	public static String removeURLQuery(String jumpurl) {
+		String[] urlarr = jumpurl.split("\\?");
+		return urlarr[0];
+	}
+	public static String jsonToUrlQuery(JSONObject queryObj1) {
+		String templatevalue = "";
+		try {
+			Iterator it = queryObj1.keys();
+			while (it.hasNext()) {
+				String key = (String) it.next();
+				String value = queryObj1.getString(key);
+				if(templatevalue.length()>0)
+					templatevalue+="&";
+				templatevalue+= URLEncoder.encode(key,"utf-8")+"="+URLEncoder.encode(value,"utf-8");
+			}
+
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return templatevalue;
+	}
+	public static JSONObject parseQueryStrToJson(String queryStr)
+	{
+		JSONObject obj=new JSONObject();
+		String temp[]=queryStr.split("\\?");
+		if(temp.length>1)
+			queryStr=temp[1];
+		temp=queryStr.split("&");
+		for(int i=0;i<temp.length;i++)
+		{
+			String item[]=temp[i].split("=");
+			if(item.length==2 && item[1]!=null)
+			{
+				try {
+					obj.put(item[0], item[1]);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return obj;
 	}
 }

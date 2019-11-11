@@ -18,6 +18,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
+import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -168,6 +169,7 @@ public class WebSiteActivity extends Activity implements Alarmreceiver.BRInterac
 		mWebView.getSettings().setAllowFileAccess(true);
 		mWebView.getSettings().setJavaScriptEnabled(true);   
 		mWebView.getSettings().setDomStorageEnabled(true);
+
 		mWebView.getSettings().setBuiltInZoomControls(false);
 		mWebView.getSettings().setSupportZoom(false);  
 		mWebView.getSettings().setDisplayZoomControls(false);  
@@ -176,6 +178,7 @@ public class WebSiteActivity extends Activity implements Alarmreceiver.BRInterac
 		mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);   
 		//mWebView.getSettings().setPluginState(PluginState.ON);
 		mWebView.getSettings().setDefaultTextEncodingName("GBK");
+
 		btn_close=(ImageButton) findViewById(R.id.btn_close);
 		/*
 		mWebView.getSettings().setDatabaseEnabled(true);
@@ -234,17 +237,22 @@ public class WebSiteActivity extends Activity implements Alarmreceiver.BRInterac
 				if(mWebView.canGoBack())
 					mWebView.goBack();
 				else
-					finish();
+					closeSelf();
 			}
 		});
 		btn_close.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				finish();
+				closeSelf();
 			}
 		});
 	}
-
+	private void closeSelf()
+	{
+		Intent aintent = new Intent();
+		setResult(1,aintent);
+		finish();
+	}
 	public class MyChromeClient extends WebChromeClient implements OnCompletionListener {
 		
 		@Override
@@ -493,12 +501,16 @@ public class WebSiteActivity extends Activity implements Alarmreceiver.BRInterac
 			super.onPageFinished(view, url);
 			if(moodleText!=null && moodleText.length()>0)
 			{
+				/*
 				view.loadUrl("javascript:if(document.getElementById('region-main')) "
 						+ "{document.body.innerHTML=document.getElementById('region-main').innerHTML.replace(new RegExp('pluginfile.php','gm'),'pluginfile_dandian.php?');"
 						+ "var tags=document.getElementsByTagName('a');"
 						+ "for(var i=0;i<tags.length;i++)"
 						+ "{tags[i].innerHTML=decodeURIComponent(tags[i].innerHTML);}"
 						+ "setTimeout('',100);}");
+
+				 */
+				//view.loadUrl("javascript:var tags=document.getElementsByTagName('a');for(var i=0;i<tags.length;i++){if(tags[i]._href!='' && tags[i].href==''){tags[i].href=tags[i]._href;alert(tags[i].href);}}");
 			}
 			mWebView.setVisibility(View.VISIBLE);
 			loading.setVisibility(View.GONE);
@@ -530,9 +542,18 @@ public class WebSiteActivity extends Activity implements Alarmreceiver.BRInterac
 			if(navBarHeight>0) {
 				mWebView.loadUrl("javascript:document.body.style.paddingBottom='"+navBarHeight+"px'; void 0");
 			}
-			*/
-			
-	    }
+
+			view.loadUrl("javascript:if(typeof $ != 'undefined'){$(document).ready(function(){\n " +
+					"   $('body').on('click','a',function(){\n" +
+					"      var _href = $(this).attr('_href');\n" +
+					"      if(_href!=null && _href!='')\n" +
+					"      { \n" +
+					"         location.href = _href;           \n" +
+					"      }     \n" +
+					"   });\n" +
+					"});}");
+*/
+		}
 		public void onPageStarted(WebView view, String url, Bitmap favicon) {
 	        super.onPageStarted(view, url, favicon);
 	        mWebView.setVisibility(View.GONE);
@@ -556,6 +577,17 @@ public class WebSiteActivity extends Activity implements Alarmreceiver.BRInterac
 		        startActivity(searchAddress); 
 		        return true;
 		    }
+			else if (url.startsWith("weixin://") || url.startsWith("alipays://") || url.startsWith("jsbridge://")) {
+				//类型我目前用到的是微信、支付宝、拨号 三种跳转方式，其他类型自加
+				try {
+					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+					startActivity(intent);
+				}catch(ActivityNotFoundException a)
+				{
+					a.getMessage();
+				}
+				return true;
+			}
 			else if ( uri.getScheme().equals("js")) {
 				if (uri.getAuthority().equals("PersonInfo")) {
 					Intent intent = new Intent(WebSiteActivity.this,
@@ -579,29 +611,12 @@ public class WebSiteActivity extends Activity implements Alarmreceiver.BRInterac
 					intent.putExtra("templateName",uri.getQueryParameter("templateName"));
 					startActivity(intent);
 				}
+				else if(uri.getAuthority().equals("closeWebWindow"))
+				{
+					closeSelf();
+				}
 				return true;
 			}
-		    /*
-		    else if(url.toLowerCase(Locale.getDefault()).endsWith(".swf"))
-		    {
-		    	
-		    	if(!checkFlashplayer())
-		    	{
-		    		AppUtility.showToastMsg(WebSiteActivity.this, "请先安装flash插件");
-		    		Intent installIntent = new Intent(  
-                            "android.intent.action.VIEW");  
-                    installIntent.setData(Uri  
-                            .parse("market://details?id=com.adobe.flashplayer"));  
-                    startActivity(installIntent);  
-                    return true;
-		    	}
-		    	
-		    	AppUtility.showToastMsg(WebSiteActivity.this,"由于安卓对swf格式文件支持不佳，建议在电脑上打开swf文件",1);
-		    	//view.loadUrl(url);
-		    	return true;
-
-		    }
-		    */
 		    else
 		    {
 		    	//if(moodleText!=null && moodleText.length()>0)
@@ -619,8 +634,13 @@ public class WebSiteActivity extends Activity implements Alarmreceiver.BRInterac
 		        if(file.exists() && file.isFile())
 		        {
 		        	intent=IntentUtility.openUrl(WebSiteActivity.this,filePath);
-		        	if(intent==null)
-						view.loadUrl(url);
+		        	if(intent==null) {
+						if(url.indexOf("mycourse.cn")>0 || url.indexOf("about:blank")>=0)
+							return  false;
+						else
+							view.loadUrl(url);
+
+					}
 		        	else
 		        		IntentUtility.openIntent(WebSiteActivity.this, intent,true);
 		        }
@@ -630,7 +650,10 @@ public class WebSiteActivity extends Activity implements Alarmreceiver.BRInterac
 		        	intent=IntentUtility.openUrl(WebSiteActivity.this,url);
 		        	if(intent==null)
 		        	{
-		        		view.loadUrl(url);
+						if(url.indexOf("mycourse.cn")>0 || url.indexOf("about:blank")>=0)
+							return  false;
+						else
+							view.loadUrl(url);
 			    	}
 			    	else
 			    	{
@@ -741,7 +764,7 @@ public class WebSiteActivity extends Activity implements Alarmreceiver.BRInterac
 					 return true;
 				 }
 				 else {
-					 finish();
+					 closeSelf();
 					 return true;
 				 }
 			 }

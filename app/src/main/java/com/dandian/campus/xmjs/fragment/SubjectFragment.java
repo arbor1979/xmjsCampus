@@ -184,7 +184,7 @@ public class SubjectFragment extends Fragment {
 				}
 				
 				for (int i = 0; i < jaWeeks.length(); i++) {
-					if(PrefUtility.getInt("weekFirstDay", 0)==0)
+					if(PrefUtility.getInt("weekFirstDay", 1)==0)
 						weeks[i] = weekJson.getString(String.valueOf(i));
 					else
 					{
@@ -380,6 +380,16 @@ public class SubjectFragment extends Fragment {
 					{
 						color = Color.parseColor(getColor(teacherInfo.getCourseName()));
 					}
+					teacherInfoStr = teacherInfo.getCourseName();
+					teacherInfoStr= AppUtility.cutStringToLength(teacherInfoStr,12);
+					if(teacherInfo.getClassroom()!=null && teacherInfo.getClassroom().length()>0)
+						teacherInfoStr=teacherInfoStr + "("
+								+ teacherInfo.getClassroom() + ")";
+					if (userType.equals("老师") && PrefUtility.get(Constants.PREF_CLASSES_BANZHUREN_VIEW,"").length()==0)
+						teacherInfoStr=teacherInfoStr+ teacherInfo.getClassGrade();
+					else
+						teacherInfoStr=teacherInfoStr+ teacherInfo.getName();
+					bn.setText(teacherInfoStr);
 					TeacherInfo lastInfo = null;
 					TeacherInfo nextInfo = null;
 					if (row - 1 >= 0 && row - 1 <= table.length) {
@@ -407,8 +417,8 @@ public class SubjectFragment extends Fragment {
 								teacherInfoStr = teacherInfo.getCourseName();
                                 teacherInfoStr=AppUtility.cutStringToLength(teacherInfoStr,12);
                                 if(teacherInfo.getClassroom()!=null && teacherInfo.getClassroom().length()>0)
-                                    teacherInfoStr=teacherInfoStr + "\n"
-                                            + teacherInfo.getClassroom();
+									teacherInfoStr=teacherInfoStr + "("
+											+ teacherInfo.getClassroom()+")";
 								bn.setText(teacherInfoStr);
 								bn.setGravity(Gravity.BOTTOM);
 								MarginLayoutParams  layoutParams=(ViewGroup.MarginLayoutParams)bn.getLayoutParams();
@@ -433,7 +443,6 @@ public class SubjectFragment extends Fragment {
 					}
 					
 					bn.setBackgroundColor(color);
-					
 					//bn.setTextSize(TypedValue.COMPLEX_UNIT_PX,display.getWidth()/320*16);
 					//bn.getBackground().setAlpha(180);
 					bn.setId(color);
@@ -620,7 +629,7 @@ public class SubjectFragment extends Fragment {
 			for (int j = 0; j < sectionArray.length; j++) {
 				if (leftText.equals(sectionArray[j])) {
 					int col=0;
-					if(PrefUtility.getInt("weekFirstDay", 0)==0)
+					if(PrefUtility.getInt("weekFirstDay", 1)==0)
 					{
 						if(li.getWeek()==7)
 							li.setWeek(0);

@@ -12,6 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.dandian.campus.xmjs.CampusApplication;
 
@@ -219,26 +221,72 @@ public class FileUtility {
 			if (index > -1 && (index + 1) < fileName.length()) {
 				fileName = fileName.substring(index + 1);
 				String[] params = fileName.split("&");
-				for (String item : params) {
-					if (item.indexOf(".") > 0) {
-						String tempStr[] = item.split("=");
-						if (tempStr.length == 2)
-							return tempStr[1];
-
+				boolean bfind=false;
+				for(String item :params)
+				{
+					if(item.indexOf(".")>0) {
+						String tempStr[]=item.split("=");
+						if(tempStr.length==2)
+						{
+							bfind=true;
+							fileName=tempStr[1];
+							break;
+						}
 					}
 				}
-				index = fileName.lastIndexOf("=");
-				if (index > -1 && (index + 1) < fileName.length())
-					fileName = fileName.substring(index + 1);
+				if(!bfind) {
+					index = fileName.lastIndexOf("=");
+					if (index > -1 && (index + 1) < fileName.length())
+						fileName = fileName.substring(index + 1);
+				}
+
 			}
 		}
 		try {
-				fileName=java.net.URLDecoder.decode(fileName,"utf-8");
+				fileName=java.net.URLDecoder.decode(convertPercent(fileName),"gbk");
 			} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
+		if(fileName!=null)
+		{
+			Pattern pattern = Pattern.compile("[\\s\\\\/:\\*\\?\\\"<>\\|]");
+			Matcher matcher = pattern.matcher(fileName);
+			fileName= matcher.replaceAll("");
+		}
 		return  fileName;
     }
+	public static String convertPercent(String str){
+		StringBuilder sb = new StringBuilder(str);
+
+		for(int i = 0; i < sb.length(); i++){
+			char c = sb.charAt(i);
+			//判断是否为转码符号%
+			if(c == '%'){
+				if(((i + 1) < sb.length() -1) && ((i + 2) < sb.length() - 1)){
+					char first = sb.charAt(i + 1);
+					char second = sb.charAt(i + 2);
+					//如只是普通的%则转为%25
+					if(!(isHex(first) && isHex(second)))
+						sb.insert(i+1, "25");
+				}
+				else{//如只是普通的%则转为%25
+					sb.insert(i+1, "25");
+				}
+
+			}
+		}
+
+		return sb.toString();
+	}
+	public static boolean isHex(char c){
+		if(((c >= '0') && (c <= '9')) ||
+				((c >= 'a') && (c <= 'f')) ||
+				((c >= 'A') && (c <= 'F')))
+			return true;
+		else
+			return false;
+	}
+
 	public static boolean isUTF8(String key){
 		try {
 			key.getBytes("utf-8");

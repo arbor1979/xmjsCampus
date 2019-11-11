@@ -25,6 +25,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.text.Html.ImageGetter;
+import android.text.Spanned;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -154,7 +155,10 @@ public class MyImageGetter implements ImageGetter {
 			super.onPostExecute(result);
 			if (result != null) {
 				drawable.setDrawable(result);
-				tv.setText(tv.getText()); // 通过这里的重新设�? TextView 的文字来更新UI
+				Spanned spanned= (Spanned) tv.getText();
+				tv.setText(null);
+				tv.setText(spanned);
+				//tv.setText(tv.getText()); // 通过这里的重新设�? TextView 的文字来更新UI
 			}
 		}
 

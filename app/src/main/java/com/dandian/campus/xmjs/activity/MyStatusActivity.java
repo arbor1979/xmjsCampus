@@ -151,7 +151,6 @@ public class MyStatusActivity extends Activity {
 		relogin.setOnClickListener(TabHostActivity.menuListener);
 		getStatus();
 	}
-	
 	private void showProgress(boolean progress) {
 		if (progress) {
 			loadingLayout.setVisibility(View.VISIBLE);

@@ -50,7 +50,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.alipay.sdk.app.PayTask;
+import com.dandian.campus.xmjs.CampusApplication;
 import com.dandian.campus.xmjs.activity.ClassDetailActivity;
 import com.dandian.campus.xmjs.entity.PayResult;
 import com.dandian.campus.xmjs.entity.TeacherInfo;
@@ -394,6 +394,7 @@ public class SchoolAchievementDetailFragment extends Fragment {
 		try {
 			jo.put("用户较验码", checkCode);
 			jo.put("DATETIME", datatime);
+			jo.put("version", CampusApplication.getVersion());
 		
 		} catch (JSONException e1) {
 			e1.printStackTrace();
@@ -483,6 +484,7 @@ public class SchoolAchievementDetailFragment extends Fragment {
 		try {
 			jo.put("用户较验码", checkCode);
 			jo.put("DATETIME", datatime);
+			jo.put("version", CampusApplication.getVersion());
 		} catch (JSONException e1) {
 			e1.printStackTrace();
 		}
@@ -726,36 +728,6 @@ public class SchoolAchievementDetailFragment extends Fragment {
 				
 			});
 			
-			if(achievement.getFraction().indexOf("|||")>0)
-			{
-				holder.left.setText("");
-				holder.right.setText(achievement.getSubject());
-				
-				LayoutParams leftParams1 = new LayoutParams(0,LayoutParams.WRAP_CONTENT, 0.0f);
-				LayoutParams rightParams1 = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT, 0.0f);
-				holder.left.setLayoutParams(leftParams1);
-				holder.right.setLayoutParams(rightParams1);
-				holder.right.setGravity(Gravity.CENTER);
-				holder.right.setTextColor(Color.WHITE);
-				final String[] params=achievement.getFraction().split("\\|\\|\\|");
-				holder.celllayout.setBackgroundResource(R.color.moban_color_pink);
-				convertView.setOnClickListener(new OnClickListener(){
-					@Override
-					public void onClick(final View v) {
-						if(params.length==8)
-						{
-							pay(params[0],params[1],params[2],params[3],params[4],params[5],params[6],params[7]);
-							v.setClickable(false);
-							new Handler().postDelayed(new Runnable(){  
-							    public void run() {  
-							    	v.setClickable(true);
-							    }  
-							 }, 5000);  
-						}
-					}
-				});
-			}
-			
 			return convertView;
 		}
 		class Task extends TimerTask {
@@ -794,6 +766,7 @@ public class SchoolAchievementDetailFragment extends Fragment {
 		try {
 			jo.put("用户较验码", checkCode);
 			jo.put("DATETIME", datatime);
+			jo.put("version", CampusApplication.getVersion());
 		} catch (JSONException e1) {
 			e1.printStackTrace();
 		}
@@ -837,97 +810,5 @@ public class SchoolAchievementDetailFragment extends Fragment {
 			}
 		});
 	}
-	public void pay(String tradeid,String name,String price,String description,String partner,String seller_id,String rsa_private,String notify_url) {
-		// 订单
-		String orderInfo = getOrderInfo(tradeid,name, description, price,partner,seller_id,notify_url);
 
-		// 对订单做RSA 签名
-		String sign = sign(orderInfo,rsa_private);
-		try {
-			// 仅需对sign 做URL编码
-			sign = URLEncoder.encode(sign, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-
-		// 完整的符合支付宝参数规范的订单信息
-		final String payInfo = orderInfo + "&sign=\"" + sign + "\"&"
-				+ getSignType();
-
-		Runnable payRunnable = new Runnable() {
-
-			@Override
-			public void run() {
-				// 构造PayTask 对象
-				PayTask alipay = new PayTask(getActivity());
-				// 调用支付接口，获取支付结果
-				String result = alipay.pay(payInfo);
-
-				Message msg = new Message();
-				msg.what = 4;
-				msg.obj = result;
-				mHandler.sendMessage(msg);
-			}
-		};
-
-		// 必须异步调用
-		Thread payThread = new Thread(payRunnable);
-		payThread.start();
-	}
-	public String getOrderInfo(String tradeid,String subject, String body, String price,String partner,String seller_id,String notify_url) {
-		// 签约合作者身份ID
-		String orderInfo = "partner=" + "\"" + partner + "\"";
-
-		// 签约卖家支付宝账号
-		orderInfo += "&seller_id=" + "\"" + seller_id + "\"";
-
-		// 商户网站唯一订单号
-		orderInfo += "&out_trade_no=" + "\"" + tradeid + "\"";
-
-		// 商品名称
-		orderInfo += "&subject=" + "\"" + subject + "\"";
-
-		// 商品详情
-		orderInfo += "&body=" + "\"" + body + "\"";
-
-		// 商品金额
-		orderInfo += "&total_fee=" + "\"" + price + "\"";
-
-		// 服务器异步通知页面路径
-		orderInfo += "&notify_url=" + "\"" + notify_url
-				+ "\"";
-
-		// 服务接口名称， 固定值
-		orderInfo += "&service=\"mobile.securitypay.pay\"";
-
-		// 支付类型， 固定值
-		orderInfo += "&payment_type=\"1\"";
-
-		// 参数编码， 固定值
-		orderInfo += "&_input_charset=\"utf-8\"";
-
-		// 设置未付款交易的超时时间
-		// 默认30分钟，一旦超时，该笔交易就会自动被关闭。
-		// 取值范围：1m～15d。
-		// m-分钟，h-小时，d-天，1c-当天（无论交易何时创建，都在0点关闭）。
-		// 该参数数值不接受小数点，如1.5h，可转换为90m。
-		orderInfo += "&it_b_pay=\"30m\"";
-
-		// extern_token为经过快登授权获取到的alipay_open_id,带上此参数用户将使用授权的账户进行支付
-		// orderInfo += "&extern_token=" + "\"" + extern_token + "\"";
-
-		// 支付宝处理完请求后，当前页面跳转到商户指定页面的路径，可空
-		orderInfo += "&return_url=\"m.alipay.com\"";
-
-		// 调用银行卡支付，需配置此参数，参与签名， 固定值 （需要签约《无线银行卡快捷支付》才能使用）
-		// orderInfo += "&paymethod=\"expressGateway\"";
-
-		return orderInfo;
-	}
-	public String sign(String content,String rsa_private) {
-		return SignUtils.sign(content, rsa_private);
-	}
-	public String getSignType() {
-		return "sign_type=\"RSA\"";
-	}
 }

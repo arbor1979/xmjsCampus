@@ -983,14 +983,26 @@ public class Alarmreceiver extends BroadcastReceiver {
 									String content = jo2.optString("description"); //消息内容
 									String toname = jo2.optString("FROM_USERID_NAME");
 									String userImage = jo2.optString("FROM_USERID_IMAGE");
+									String fromTime=jo2.optString("FROM_DATETIME");
+									String linkUrl = jo2.optString("LINKURL");
 									String msg_type = "";
 									String msg_id = jo1.optString("MSG_ID");
-
+									String linkUrlStr="";
+									if(linkUrl!=null && linkUrl.length()>0)
+									{
+										try {
+											linkUrl=Base64.safeUrlbase64dec(linkUrl);
+											linkUrlStr = new String(Base64
+													.decode(linkUrl.getBytes("GBK")));
+										} catch (UnsupportedEncodingException e) {
+											e.printStackTrace();
+										}
+									}
 									ChatFriend chatFriend = chatFriendDao.queryBuilder().where().eq("toid", toid).and().eq("hostid", hostid).queryForFirst();
 									if (chatFriend != null)
 										chatFriend.setUnreadCnt(chatFriend.getUnreadCnt() + 1);
 									InitData initData = new InitData(context, database, null, null,null);
-									initData.sendChatToDatabase(type,toid, toname, 0, content, chatFriend,msg_type,userImage,msg_id);
+									initData.sendChatToDatabase(type,toid, toname, 0, content, chatFriend,msg_type,userImage,msg_id,fromTime,linkUrlStr);
 									toidList.add(toid);
 								}
 								Intent intentChat = new Intent("ChatInteract");
